@@ -1923,7 +1923,6 @@ export default function Products() {
   const [cart, setCart] = useState<Product[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [showOrderDialog, setShowOrderDialog] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'inperson'>('stripe');
   const [orderForm, setOrderForm] = useState({
     name: '',
     email: '',
@@ -1969,45 +1968,17 @@ export default function Products() {
         quantity: 1
       }));
 
-      if (paymentMethod === 'stripe') {
-        // PayPal payment
-        const response = await fetch('/api/checkout', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            items: orderItems,
-            customerInfo: orderForm
-          }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.approvalUrl) {
-          // Redirect to PayPal
-          window.open(data.approvalUrl, '_blank');
-          toast.success('Redirection vers PayPal...');
-          setCart([]);
-          setShowOrderDialog(false);
-          setShowCart(false);
-          setOrderForm({ name: '', email: '', phone: '', company: '', address: '', message: '' });
-        } else {
-          toast.error(data.error || 'Erreur lors de l\'envoi de la commande');
-        }
-      } else {
-        // In-person payment - send order via WhatsApp
-        const orderMessage = `NOUVELLE COMMANDE - PAIEMENT FACE-À-FACE\n\nNom: ${orderForm.name}\nEmail: ${orderForm.email}\nTéléphone: ${orderForm.phone}\nEntreprise: ${orderForm.company}\nAdresse: ${orderForm.address}\n\nProduits commandés:\n${orderItems.map(item => `- ${item.name}: ${item.price} MAD`).join('\n')}\n\nTotal: ${cartTotal} MAD\n\nMessage: ${orderForm.message}`;
-        
-        const whatsappUrl = `https://wa.me/212679825646?text=${encodeURIComponent(orderMessage)}`;
-        window.open(whatsappUrl, '_blank');
-        
-        toast.success('Commande envoyée avec succès');
-        setCart([]);
-        setShowOrderDialog(false);
-        setShowCart(false);
-        setOrderForm({ name: '', email: '', phone: '', company: '', address: '', message: '' });
-      }
+      // Send order via WhatsApp
+      const orderMessage = `NOUVELLE COMMANDE - PAIEMENT WHATSAPP\n\nNom: ${orderForm.name}\nEmail: ${orderForm.email}\nTéléphone: ${orderForm.phone}\nEntreprise: ${orderForm.company}\nAdresse: ${orderForm.address}\n\nProduits commandés:\n${orderItems.map(item => `- ${item.name}: ${item.price} MAD`).join('\n')}\n\nTotal: ${cartTotal} MAD\n\nMessage: ${orderForm.message}`;
+      
+      const whatsappUrl = `https://wa.me/212679825646?text=${encodeURIComponent(orderMessage)}`;
+      window.open(whatsappUrl, '_blank');
+      
+      toast.success('Commande envoyée avec succès');
+      setCart([]);
+      setShowOrderDialog(false);
+      setShowCart(false);
+      setOrderForm({ name: '', email: '', phone: '', company: '', address: '', message: '' });
     } catch (error) {
       toast.error('Erreur lors de l\'envoi de la commande');
       console.error('Order submission error:', error);
@@ -2220,64 +2191,16 @@ export default function Products() {
               <label className="block text-sm font-medium">
                 {language === 'ar' ? 'طريقة الدفع' : 'Mode de paiement'}
               </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('stripe')}
-                  className={`p-4 border rounded-lg text-center transition-all ${
-                    paymentMethod === 'stripe'
-                      ? 'border-accent bg-accent/10 text-accent'
-                      : 'border-border hover:border-accent/50'
-                  }`}
-                >
-                  <div className="font-medium mb-1">
-                    {language === 'ar' ? 'الدفع الإلكتروني' : 'Paiement en ligne'}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {language === 'ar' ? 'بطاقة bancaire immédiate' : 'Carte bancaire immédiate'}
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('inperson')}
-                  className={`p-4 border rounded-lg text-center transition-all ${
-                    paymentMethod === 'inperson'
-                      ? 'border-accent bg-accent/10 text-accent'
-                      : 'border-border hover:border-accent/50'
-                  }`}
-                >
-                  <div className="font-medium mb-1">
-                    {language === 'ar' ? 'دفع شخصي' : 'Paiement en face-à-face'}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {language === 'ar' ? 'عند الاستلام' : 'Sur place'}
-                  </div>
-                </button>
+              <div className="bg-muted p-3 rounded-lg text-sm">
+                <p className="font-medium mb-1">
+                  {language === 'ar' ? 'معلومات الدفع:' : 'Informations de paiement:'}
+                </p>
+                <ul className="text-xs text-muted-foreground space-y-1">
+                  <li>• {language === 'ar' ? 'الدفع عبر WhatsApp' : 'Paiement via WhatsApp'}</li>
+                  <li>• {language === 'ar' ? 'فاتورة manuelle envoyée par email' : 'Facture manuelle envoyée par email'}</li>
+                  <li>• {language === 'ar' ? 'Coordonner avec nous pour le rendez-vous' : 'Coordonner avec nous pour le rendez-vous'}</li>
+                </ul>
               </div>
-              {paymentMethod === 'stripe' && (
-                <div className="bg-muted p-3 rounded-lg text-sm">
-                  <p className="font-medium mb-1">
-                    {language === 'ar' ? 'معلومات الدفع en ligne:' : 'Informations de paiement en ligne:'}
-                  </p>
-                  <ul className="text-xs text-muted-foreground space-y-1">
-                    <li>• {language === 'ar' ? 'دفع آمن عبر PayPal' : 'Paiement sécurisé via PayPal'}</li>
-                    <li>• {language === 'ar' ? 'فاتورة تلقائية envoyée par email' : 'Facture automatique envoyée par email'}</li>
-                    <li>• {language === 'ar' ? 'دفع فوري' : 'Paiement immédiat'}</li>
-                  </ul>
-                </div>
-              )}
-              {paymentMethod === 'inperson' && (
-                <div className="bg-muted p-3 rounded-lg text-sm">
-                  <p className="font-medium mb-1">
-                    {language === 'ar' ? 'معلومات الدفع personnel:' : 'Informations de paiement en face-à-face:'}
-                  </p>
-                  <ul className="text-xs text-muted-foreground space-y-1">
-                    <li>• {language === 'ar' ? 'الدفع عند الاستلام' : 'Paiement à la livraison'}</li>
-                    <li>• {language === 'ar' ? 'فاتورة manuelle envoyée par email' : 'Facture manuelle envoyée par email'}</li>
-                    <li>• {language === 'ar' ? 'Coordonner avec nous pour le rendez-vous' : 'Coordonner avec nous pour le rendez-vous'}</li>
-                  </ul>
-                </div>
-              )}
             </div>
 
             <div className="space-y-4">
