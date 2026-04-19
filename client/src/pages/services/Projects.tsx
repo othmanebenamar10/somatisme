@@ -151,10 +151,10 @@ export default function Projects() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { icon: Settings, step: "01", title: t('projects.process.step1'), desc: "Analyse des besoins et rédaction des spécifications fonctionnelles (AF/AO)." },
-              { icon: Cpu, step: "02", title: t('projects.process.step2'), desc: "Étude électrique, programmation PLC/HMI et conception des architectures réseaux." },
-              { icon: Factory, step: "03", title: t('projects.process.step3'), desc: "Montage des armoires en atelier et tests de validation internes avant livraison." },
-              { icon: Droplets, step: "04", title: t('projects.process.step4'), desc: "Installation sur site, essais d'ensemble et formation des opérateurs." }
+              { icon: Settings, step: "01", title: t('projects.process.step1.title'), desc: t('projects.process.step1.desc') },
+              { icon: Cpu, step: "02", title: t('projects.process.step2.title'), desc: t('projects.process.step2.desc') },
+              { icon: Factory, step: "03", title: t('projects.process.step3.title'), desc: t('projects.process.step3.desc') },
+              { icon: Droplets, step: "04", title: t('projects.process.step4.title'), desc: t('projects.process.step4.desc') }
             ].map((item, i) => (
               <div key={i} className="relative p-8 bg-card border border-border rounded-3xl group hover:border-accent transition-all duration-300">
                 <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center text-accent mb-6 group-hover:bg-accent group-hover:text-white transition-colors">
