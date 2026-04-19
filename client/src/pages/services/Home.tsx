@@ -278,10 +278,11 @@ export default function Home() {
               <p className="text-lg text-muted-foreground mb-8">{t('home.why.subtitle')}</p>
               <div className="space-y-4">
                 {[
+                  t('home.why.item1'),
                   t('home.why.item2'),
                   t('home.why.item3'),
                   t('home.why.item4'),
-                  "Accompagnement personnalisé"
+                  t('home.why.item5'),
                 ].map((text, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center text-accent">
@@ -293,7 +294,7 @@ export default function Home() {
               </div>
             </div>
             <div className="rounded-3xl overflow-hidden shadow-2xl border-8 border-background">
-              <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80" alt="Tech" className="w-full h-full object-cover" />
+              <img src="/somatisme.png" alt="SOMATISME" className="w-full h-full object-cover" />
             </div>
           </div>
         </div>
