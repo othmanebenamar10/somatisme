@@ -24,6 +24,8 @@ const translations = {
     "home.why.item2": "Réactivité garantie : Intervention sous 24h/48h",
     "home.why.item3": "Conformité totale aux normes industrielles (NFC, CEI)",
     "home.why.item4": "Maîtrise des technologies Industrie 4.0",
+    "home.expertise.title": "Nos Domaines d'Expertise",
+    "home.expertise.subtitle": "Des solutions techniques complètes pour tous vos besoins industriels",
     "home.process.step1.title": "Audit & Analyse",
     "home.process.step1.desc": "Étude approfondie de vos besoins techniques et contraintes de production.",
     "home.process.step2.title": "Conception",
