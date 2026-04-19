@@ -21,6 +21,7 @@ import Contact from "./Contact";
 import Privacy from "./Privacy";
 import Terms from "./Terms";
 import Products from "../../pages/shop/Products";
+import WhatsAppButton from "../../components/WhatsAppButton";
 
 
 function ScrollToTop() {
@@ -75,6 +76,7 @@ function App() {
             <Toaster />
             <ScrollToTop />
             <Router />
+            <WhatsAppButton />
           </TooltipProvider>
         </LanguageProvider>
       </ThemeProvider>
