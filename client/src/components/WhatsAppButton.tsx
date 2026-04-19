@@ -1,8 +1,10 @@
 import { MessageCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useLocation } from 'wouter';
 
 export default function WhatsAppButton() {
   const [isVisible, setIsVisible] = useState(false);
+  const [location] = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -13,9 +15,32 @@ export default function WhatsAppButton() {
   }, []);
 
   const phoneNumber = '212679825646'; // User's WhatsApp number
-  const message = 'Bonjour, je suis intéressé par vos services industriels.';
+
+  const generateMessage = () => {
+    let message = 'Bonjour SOMATISME,\n\n';
+    
+    // Add context based on current page
+    if (location === '/products') {
+      message += 'Je suis intéressé par vos produits industriels.\n';
+      message += 'Pourriez-vous me donner plus d\'informations sur vos équipements ?\n';
+    } else if (location === '/services') {
+      message += 'Je souhaite en savoir plus sur vos services industriels.\n';
+      message += 'Quels services pouvez-vous me proposer ?\n';
+    } else if (location === '/contact') {
+      message += 'Je souhaite vous contacter pour un projet.\n';
+    } else if (location === '/projects') {
+      message += 'J\'ai vu vos projets réalisés et je suis impressionné.\n';
+      message += 'Pourriez-vous me faire une proposition ?\n';
+    } else {
+      message += 'Je suis intéressé par vos solutions d\'automatisme industriel.\n';
+    }
+    
+    message += '\nMerci de votre réponse.';
+    return message;
+  };
 
   const handleClick = () => {
+    const message = generateMessage();
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   };
