@@ -12,7 +12,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background border-b border-border">
-      <div className="container flex items-center justify-between h-16">
+      <div className="container flex items-center justify-between h-20">
         {/* Logo */}
         <Link href="/">
           <a className="flex items-center hover:opacity-80 transition-opacity">
@@ -21,6 +21,10 @@ export default function Header() {
               alt="SOMATISME" 
               className="h-10 md:h-12 w-auto object-contain"
             />
+            <div className="hidden md:flex flex-col ml-3">
+              <span className="text-sm font-bold text-foreground">SOMATISME</span>
+              <span className="text-xs text-muted-foreground">{t('header.tagline')}</span>
+            </div>
           </a>
         </Link>
 

@@ -10,6 +10,7 @@ const translations = {
     "nav.services": "Services",
     "nav.projects": "Projets",
     "nav.contact": "Contact",
+    "header.tagline": "Solutions d'automatisme industriel depuis plus de 15 ans",
     "home.hero.badge": "Expertise Industrielle",
     "home.hero.title": "Solutions d'Automatisme",
     "home.hero.title.accent": " Premium",
