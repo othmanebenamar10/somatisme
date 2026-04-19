@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 
 export const config = {
   runtime: 'nodejs',
+  maxDuration: 10, // 10 seconds timeout
 };
 
 export default async function handler(req: Request) {
@@ -85,6 +86,15 @@ export default async function handler(req: Request) {
       </div>
     `;
 
+    // Check if SMTP credentials are configured
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.error('SMTP credentials not configured');
+      return new Response(
+        JSON.stringify({ error: 'SMTP not configured' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: parseInt(process.env.SMTP_PORT || '587'),
@@ -93,6 +103,16 @@ export default async function handler(req: Request) {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
+      // Add timeout
+      connectionTimeout: 5000,
+      greetingTimeout: 5000,
+      socketTimeout: 5000,
+    });
+
+    // Verify connection with timeout
+    await transporter.verify().catch((err) => {
+      console.error('SMTP verification failed:', err);
+      throw new Error('SMTP connection failed');
     });
 
     await transporter.sendMail({
@@ -102,14 +122,17 @@ export default async function handler(req: Request) {
       html: emailContent,
     });
 
+    console.log('Email sent successfully for:', email);
+
     return new Response(
       JSON.stringify({ success: true, message: 'Email sent successfully' }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
     console.error('Contact API error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
-      JSON.stringify({ error: 'Failed to send email' }),
+      JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
