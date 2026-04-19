@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { loadStripe } from '@stripe/stripe-js';
 
 interface Product {
   id: string;
@@ -243,33 +244,32 @@ export default function Products() {
     try {
       const orderItems = cart.map(item => ({
         name: language === 'ar' ? item.nameAr : item.name,
+        description: language === 'ar' ? item.descriptionAr : item.description,
         price: item.price,
         quantity: 1
       }));
 
-      const response = await fetch('/api/contact', {
+      const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: orderForm.name,
-          email: orderForm.email,
-          phone: orderForm.phone,
-          company: orderForm.company,
-          subject: 'Commande de produits',
-          message: `Adresse: ${orderForm.address}\n\nProduits commandés:\n${orderItems.map(item => `- ${item.name}: ${item.price} MAD`).join('\n')}\n\nTotal: ${cartTotal} MAD\n\nMessage: ${orderForm.message}`
+          items: orderItems,
+          customerInfo: orderForm
         }),
       });
 
       const data = await response.json();
 
-      if (response.ok) {
-        toast.success(language === 'ar' ? 'تم إرسال الطلب بنجاح' : 'Commande envoyée avec succès');
-        setCart([]);
-        setShowOrderDialog(false);
-        setShowCart(false);
-        setOrderForm({ name: '', email: '', phone: '', company: '', address: '', message: '' });
+      if (response.ok && data.sessionId) {
+        const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
+        if (stripe) {
+          const { error } = await (stripe as any).redirectToCheckout({ sessionId: data.sessionId });
+          if (error) {
+            toast.error(error.message || language === 'ar' ? 'خطأ في الدفع' : 'Erreur de paiement');
+          }
+        }
       } else {
         toast.error(data.error || language === 'ar' ? 'خطأ في إرسال الطلب' : 'Erreur lors de l\'envoi de la commande');
       }
