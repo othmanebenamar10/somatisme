@@ -422,58 +422,21 @@ export default function Products() {
       }));
 
       if (paymentMethod === 'stripe') {
-        const response = await fetch('/api/checkout', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            items: orderItems,
-            customerInfo: orderForm
-          }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.sessionId) {
-          const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
-          if (stripe) {
-            const { error } = await (stripe as any).redirectToCheckout({ sessionId: data.sessionId });
-            if (error) {
-              toast.error(error.message || language === 'ar' ? 'خطأ في الدفع' : 'Erreur de paiement');
-            }
-          }
-        } else {
-          toast.error(data.error || language === 'ar' ? 'خطأ في إرسال الطلب' : 'Erreur lors de l\'envoi de la commande');
-        }
+        // Stripe payment - show configuration message
+        toast.info(language === 'ar' ? 'الدفع عبر الإنترنت غير متاح حالياً. يرجى استخدام الدفع المباشر' : 'Le paiement en ligne n\'est pas disponible actuellement. Veuillez utiliser le paiement face-à-face');
+        return;
       } else {
-        // In-person payment - send order via email
-        const response = await fetch('/api/contact', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: orderForm.name,
-            email: orderForm.email,
-            phone: orderForm.phone,
-            company: orderForm.company,
-            subject: 'Commande en face-à-face - Facture demandée',
-            message: `Mode de paiement: Face-à-face (Paiement sur place)\n\nAdresse: ${orderForm.address}\n\nProduits commandés:\n${orderItems.map(item => `- ${item.name}: ${item.price} MAD`).join('\n')}\n\nTotal: ${cartTotal} MAD\n\nMessage: ${orderForm.message}`
-          }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          toast.success(language === 'ar' ? 'تم إرسال الطلب بنجاح' : 'Commande envoyée avec succès');
-          setCart([]);
-          setShowOrderDialog(false);
-          setShowCart(false);
-          setOrderForm({ name: '', email: '', phone: '', company: '', address: '', message: '' });
-        } else {
-          toast.error(data.error || language === 'ar' ? 'خطأ في إرسال الطلب' : 'Erreur lors de l\'envoi de la commande');
-        }
+        // In-person payment - send order via WhatsApp
+        const orderMessage = `NOUVELLE COMMANDE - PAIEMENT FACE-À-FACE\n\nNom: ${orderForm.name}\nEmail: ${orderForm.email}\nTéléphone: ${orderForm.phone}\nEntreprise: ${orderForm.company}\nAdresse: ${orderForm.address}\n\nProduits commandés:\n${orderItems.map(item => `- ${item.name}: ${item.price} MAD`).join('\n')}\n\nTotal: ${cartTotal} MAD\n\nMessage: ${orderForm.message}`;
+        
+        const whatsappUrl = `https://wa.me/212600000000?text=${encodeURIComponent(orderMessage)}`;
+        window.open(whatsappUrl, '_blank');
+        
+        toast.success(language === 'ar' ? 'تم إرسال الطلب بنجاح' : 'Commande envoyée avec succès');
+        setCart([]);
+        setShowOrderDialog(false);
+        setShowCart(false);
+        setOrderForm({ name: '', email: '', phone: '', company: '', address: '', message: '' });
       }
     } catch (error) {
       toast.error(language === 'ar' ? 'خطأ في إرسال الطلب' : 'Erreur lors de l\'envoi de la commande');
