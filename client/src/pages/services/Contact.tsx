@@ -228,7 +228,7 @@ export default function Contact() {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      placeholder="Ex: Jean Dupont"
+                      placeholder={t('contact.form.name.placeholder')}
                       className="pl-10 bg-background/50 border-border focus:border-accent/50 focus:ring-accent/20 transition-all h-12 rounded-xl"
                     />
                   </div>
@@ -245,7 +245,7 @@ export default function Contact() {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      placeholder="contact@entreprise.ma"
+                      placeholder={t('contact.form.email.placeholder')}
                       className="pl-10 bg-background/50 border-border focus:border-accent/50 focus:ring-accent/20 transition-all h-12 rounded-xl"
                     />
                   </div>
@@ -264,7 +264,7 @@ export default function Contact() {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      placeholder="05 XX XX XX XX"
+                      placeholder={t('contact.form.phone.placeholder')}
                       className="pl-10 bg-background/50 border-border focus:border-accent/50 focus:ring-accent/20 transition-all h-12 rounded-xl"
                     />
                   </div>
@@ -280,7 +280,7 @@ export default function Contact() {
                       name="company"
                       value={formData.company}
                       onChange={handleChange}
-                      placeholder="Nom de votre société"
+                      placeholder={t('contact.form.company.placeholder')}
                       className="pl-10 bg-background/50 border-border focus:border-accent/50 focus:ring-accent/20 transition-all h-12 rounded-xl"
                     />
                   </div>
