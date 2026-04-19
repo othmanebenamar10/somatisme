@@ -1,7 +1,9 @@
 import { Link } from 'wouter';
 import { Mail, Phone, MapPin, Linkedin } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Footer() {
+  const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -16,7 +18,7 @@ export default function Footer() {
               </a>
             </Link>
             <p className="text-sm opacity-90 mb-4">
-              Solutions d'automatisme industriel, régulation et installation électrique pour l'industrie.
+              {t('footer.tagline')}
             </p>
             <div className="flex gap-4">
               <a href="https://www.linkedin.com/in/fouad-ben-amar-20295354?utm_source=share_via&utm_content=profile&utm_medium=member_ios" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
@@ -81,22 +83,22 @@ export default function Footer() {
               <li className="flex items-start gap-2">
                 <Phone size={16} className="mt-0.5 flex-shrink-0" />
                 <a href="tel:+212523302829" className="hover:opacity-80 transition-opacity">
-                  05 23 30 28 29
+                  {t('footer.phone')}
                 </a>
               </li>
               <li className="flex items-start gap-2">
                 <Phone size={16} className="mt-0.5 flex-shrink-0 opacity-0" />
-                <span className="opacity-80 text-xs">Fax: 05 23 30 28 33</span>
+                <span className="opacity-80 text-xs">{t('footer.fax')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <Mail size={16} className="mt-0.5 flex-shrink-0" />
                 <a href="mailto:info@somatisme.ma" className="hover:opacity-80 transition-opacity">
-                  info@somatisme.ma
+                  {t('footer.email')}
                 </a>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin size={16} className="mt-0.5 flex-shrink-0" />
-                <span>Mohammedia, Maroc</span>
+                <span>{t('footer.address')}</span>
               </li>
             </ul>
           </div>
@@ -105,10 +107,10 @@ export default function Footer() {
         {/* Divider */}
         <div className="border-t border-primary-foreground/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-sm opacity-70">
-            <p>&copy; {currentYear} SOMATISME. Tous droits réservés.</p>
+            <p>{t('footer.copyright')}</p>
             <div className="flex flex-wrap justify-center gap-x-8 gap-y-2">
-              <a href="#" className="hover:opacity-100 transition-opacity">Politique de confidentialité</a>
-              <a href="#" className="hover:opacity-100 transition-opacity">Conditions d'utilisation</a>
+              <a href="#" className="hover:opacity-100 transition-opacity">{t('footer.privacy')}</a>
+              <a href="#" className="hover:opacity-100 transition-opacity">{t('footer.terms')}</a>
             </div>
           </div>
         </div>

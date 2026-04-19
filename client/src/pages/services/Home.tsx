@@ -309,14 +309,14 @@ export default function Home() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-heading text-primary-foreground mb-6">
-              Prêt à transformer votre industrie ?
+              {t('cta.home.title')}
             </h2>
             <p className="text-lg opacity-90 max-w-2xl mx-auto mb-8">
-              Contactez nos experts pour discuter de vos besoins spécifiques
+              {t('cta.home.subtitle')}
             </p>
             <Link href="/contact">
               <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2">
-                Nous contacter maintenant
+                {t('cta.home.button')}
                 <ArrowRight size={18} />
               </Button>
             </Link>
