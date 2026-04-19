@@ -69,7 +69,7 @@ async function startServer() {
   app.use(express.static(staticPath));
 
   // API endpoint for contact form with military-grade security
-  app.post("/api/contact", apiKeyAuth, async (req, res) => {
+  app.post("/api/contact", async (req, res) => {
     try {
       const ip = req.ip || req.socket.remoteAddress || "unknown";
       const userAgent = req.headers["user-agent"] || "unknown";
@@ -178,6 +178,33 @@ async function startServer() {
       console.error("Error processing contact form:", error);
       auditLogger("ERROR", { ip: req.ip || "unknown", error: (error as Error).message });
       res.status(500).json({ error: "Failed to process request" });
+    }
+  });
+
+  // API endpoint for Stripe checkout
+  app.post("/api/checkout", async (req, res) => {
+    try {
+      const { items, customerInfo } = req.body;
+
+      if (!items || !Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ error: 'No items provided' });
+      }
+
+      if (!customerInfo || !customerInfo.email) {
+        return res.status(400).json({ error: 'Customer email required' });
+      }
+
+      // Note: This is a placeholder for Stripe integration
+      // You need to install stripe: npm install stripe
+      // And configure your Stripe keys in .env
+      // For now, we'll return a mock response
+      res.json({ 
+        sessionId: 'mock_session_id_' + Date.now(),
+        message: 'Stripe integration not configured. Please configure Stripe keys in .env'
+      });
+    } catch (error) {
+      console.error('Checkout error:', error);
+      res.status(500).json({ error: 'Failed to create checkout session' });
     }
   });
 
