@@ -217,6 +217,7 @@ const translations = {
     "service.formation.title": "Formation",
     "service.realisation.title": "Réalisation sur Site",
     "service.realisation.hero": "La maîtrise technique et la tenue des délais pour vos projets industriels.",
+    "service.realisation.domains.title": "Nos Domaines d'Intervention",
     "service.conseil.feature1.title": "Aide à la décision",
     "service.conseil.feature1.desc": "Analyses comparatives et évaluations techniques pour sécuriser vos investissements.",
     "service.conseil.feature2.title": "Innovation",
