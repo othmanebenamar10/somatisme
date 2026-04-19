@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 /**
  * SOMATISME - Service: Maintenance Industrielle
@@ -11,6 +12,7 @@ import Footer from '@/components/Footer';
  */
 
 export default function Maintenance() {
+  const { t } = useLanguage();
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
