@@ -204,6 +204,7 @@ export default function Products() {
   const [cart, setCart] = useState<Product[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [showOrderDialog, setShowOrderDialog] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'b2b'>('stripe');
   const [orderForm, setOrderForm] = useState({
     name: '',
     email: '',
@@ -249,29 +250,59 @@ export default function Products() {
         quantity: 1
       }));
 
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          items: orderItems,
-          customerInfo: orderForm
-        }),
-      });
+      if (paymentMethod === 'stripe') {
+        const response = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            items: orderItems,
+            customerInfo: orderForm
+          }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (response.ok && data.sessionId) {
-        const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
-        if (stripe) {
-          const { error } = await (stripe as any).redirectToCheckout({ sessionId: data.sessionId });
-          if (error) {
-            toast.error(error.message || language === 'ar' ? 'خطأ في الدفع' : 'Erreur de paiement');
+        if (response.ok && data.sessionId) {
+          const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
+          if (stripe) {
+            const { error } = await (stripe as any).redirectToCheckout({ sessionId: data.sessionId });
+            if (error) {
+              toast.error(error.message || language === 'ar' ? 'خطأ في الدفع' : 'Erreur de paiement');
+            }
           }
+        } else {
+          toast.error(data.error || language === 'ar' ? 'خطأ في إرسال الطلب' : 'Erreur lors de l\'envoi de la commande');
         }
       } else {
-        toast.error(data.error || language === 'ar' ? 'خطأ في إرسال الطلب' : 'Erreur lors de l\'envoi de la commande');
+        // B2B payment - send order via email
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: orderForm.name,
+            email: orderForm.email,
+            phone: orderForm.phone,
+            company: orderForm.company,
+            subject: 'Commande B2B - Facture demandée',
+            message: `Mode de paiement: B2B (Facture/Virement bancaire)\n\nAdresse: ${orderForm.address}\n\nProduits commandés:\n${orderItems.map(item => `- ${item.name}: ${item.price} MAD`).join('\n')}\n\nTotal: ${cartTotal} MAD\n\nMessage: ${orderForm.message}`
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          toast.success(language === 'ar' ? 'تم إرسال الطلب بنجاح' : 'Commande envoyée avec succès');
+          setCart([]);
+          setShowOrderDialog(false);
+          setShowCart(false);
+          setOrderForm({ name: '', email: '', phone: '', company: '', address: '', message: '' });
+        } else {
+          toast.error(data.error || language === 'ar' ? 'خطأ في إرسال الطلب' : 'Erreur lors de l\'envoi de la commande');
+        }
       }
     } catch (error) {
       toast.error(language === 'ar' ? 'خطأ في إرسال الطلب' : 'Erreur lors de l\'envoi de la commande');
@@ -478,6 +509,59 @@ export default function Products() {
                 <span>{language === 'ar' ? 'المجموع' : 'Total'}:</span>
                 <span>{cartTotal} MAD</span>
               </div>
+            </div>
+
+            {/* Payment Method Selector */}
+            <div className="space-y-3">
+              <label className="block text-sm font-medium">
+                {language === 'ar' ? 'طريقة الدفع' : 'Mode de paiement'}
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('stripe')}
+                  className={`p-4 border rounded-lg text-center transition-all ${
+                    paymentMethod === 'stripe'
+                      ? 'border-accent bg-accent/10 text-accent'
+                      : 'border-border hover:border-accent/50'
+                  }`}
+                >
+                  <div className="font-medium mb-1">
+                    {language === 'ar' ? 'الدفع الإلكتروني' : 'Paiement en ligne'}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {language === 'ar' ? 'بطاقة bancaire immédiate' : 'Carte bancaire immédiate'}
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('b2b')}
+                  className={`p-4 border rounded-lg text-center transition-all ${
+                    paymentMethod === 'b2b'
+                      ? 'border-accent bg-accent/10 text-accent'
+                      : 'border-border hover:border-accent/50'
+                  }`}
+                >
+                  <div className="font-medium mb-1">
+                    {language === 'ar' ? 'دفع B2B' : 'Paiement B2B'}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {language === 'ar' ? 'فاتورة / تحويل بنكي' : 'Facture / Virement'}
+                  </div>
+                </button>
+              </div>
+              {paymentMethod === 'b2b' && (
+                <div className="bg-muted p-3 rounded-lg text-sm">
+                  <p className="font-medium mb-1">
+                    {language === 'ar' ? 'معلومات الدفع B2B:' : 'Informations de paiement B2B:'}
+                  </p>
+                  <ul className="text-xs text-muted-foreground space-y-1">
+                    <li>• {language === 'ar' ? 'سيتم إرسال فاتورة إليك عبر البريد الإلكتروني' : 'Une facture vous sera envoyée par email'}</li>
+                    <li>• {language === 'ar' ? 'الدفع عن طريق التحويل البنكي' : 'Paiement par virement bancaire'}</li>
+                    <li>• {language === 'ar' ? 'شروط الدفع: 30 يوماً' : 'Conditions de paiement: 30 jours'}</li>
+                  </ul>
+                </div>
+              )}
             </div>
 
             <div className="space-y-4">
