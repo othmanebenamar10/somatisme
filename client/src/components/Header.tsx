@@ -35,6 +35,9 @@ export default function Header() {
           <Link href="/projects">
             <a className="text-foreground hover:text-primary transition-colors font-medium">{t('nav.projects')}</a>
           </Link>
+          <Link href="/products">
+            <a className="text-foreground hover:text-primary transition-colors font-medium">{t('nav.products')}</a>
+          </Link>
           <Link href="/contact">
             <Button className="bg-accent hover:bg-accent/90">
               {t('cta.contact')}
@@ -64,6 +67,9 @@ export default function Header() {
               </Link>
               <Link href="/projects">
                 <a className="text-foreground hover:text-primary transition-colors font-medium text-lg">{t('nav.projects')}</a>
+              </Link>
+              <Link href="/products">
+                <a className="text-foreground hover:text-primary transition-colors font-medium text-lg">{t('nav.products')}</a>
               </Link>
             </div>
             <Link href="/contact">

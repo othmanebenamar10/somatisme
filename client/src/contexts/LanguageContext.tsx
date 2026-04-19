@@ -9,6 +9,7 @@ const translations = {
     "nav.about": "À Propos",
     "nav.services": "Services",
     "nav.projects": "Projets",
+    "nav.products": "Produits",
     "nav.contact": "Contact",
     "header.tagline": "Solutions d'automatisme industriel depuis plus de 15 ans",
     "home.hero.badge": "Expertise Industrielle",
