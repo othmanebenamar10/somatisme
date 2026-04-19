@@ -14,7 +14,7 @@ export default function Footer() {
           <div>
             <Link href="/">
               <a className="inline-block mb-4 hover:opacity-80 transition-opacity">
-                <img src="/logo.png" alt="SOMATISME" className="h-12 w-auto object-contain brightness-0 invert opacity-90" />
+                <img src="/logo-somatisme.png" alt="SOMATISME" className="h-12 w-auto object-contain brightness-0 invert opacity-90" />
               </a>
             </Link>
             <p className="text-sm opacity-90 mb-4">
