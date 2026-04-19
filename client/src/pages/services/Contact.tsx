@@ -34,21 +34,35 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Sécurité : Si le champ caché est rempli, c'est un bot
     if (botField) return;
 
-    if (!formData.email.includes('@')) {
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
       return toast.error(t('contact.form.validation.email'));
     }
 
     setIsSubmitting(true);
 
     try {
-      // Simulate form submission
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success(t('contact.form.success'));
-      setFormData({ name: '', email: '', phone: '', company: '', subject: '', message: '' });
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(t('contact.form.success'));
+        setFormData({ name: '', email: '', phone: '', company: '', subject: '', message: '' });
+      } else {
+        toast.error(data.error || t('contact.form.error'));
+      }
     } catch (error) {
       toast.error(t('contact.form.error'));
     } finally {

@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-type Language = 'fr';
+type Language = 'fr' | 'en' | 'es';
 
 interface LanguageContextType {
   language: Language;
+  setLanguage: (lang: Language) => void;
   t: (key: string) => string;
   isRTL: boolean;
 }
@@ -101,7 +102,6 @@ const translations = {
     "service.formation.title": "Formation",
     "service.realisation.title": "Réalisation sur Site",
     "service.realisation.hero": "La maîtrise technique et la tenue des délais pour vos projets industriels.",
-    "service.realisation.domains.title": "Domaines d'Intervention",
     "service.conseil.feature1.title": "Aide à la décision",
     "service.conseil.feature1.desc": "Analyses comparatives et évaluations techniques pour sécuriser vos investissements.",
     "service.conseil.feature2.title": "Innovation",
@@ -133,8 +133,7 @@ const translations = {
     "contact.faq.q1": "Dans quelles zones intervenez-vous ?",
     "contact.faq.a1": "Nous intervenons sur l'ensemble du territoire marocain et à l'international pour des projets spécifiques.",
     "contact.faq.q2": "Quels sont vos délais pour un devis ?",
-    "contact.info.hq": "Siège Social",
-    "contact.info.hq.address": "Rue résistance residence Nassime GH 12 Appartement N°1, Mohammedia",
+    "contact.faq.a2": "Pour une demande standard, nous nous engageons à vous fournir un chiffrage détaillé sous 48h à 72h après réception du cahier des charges.",
     "projects.hero.title": "Nos Réalisations",
     "projects.hero.subtitle": "Une expertise prouvée par des projets complexes et critiques.",
     "projects.tech.stack": "Technologies déployées",
@@ -146,14 +145,11 @@ const translations = {
     "projects.process.step3": "Câblage & Tests FAT",
     "projects.process.step4": "Mise en service & SAT",
     "projects.cta.title": "Un projet spécifique ?",
-    "service.realisation.title": "Réalisation sur Site",
-    "service.realisation.hero": "La maîtrise technique et la tenue des délais pour vos projets industriels.",
     "service.realisation.subtitle": "Excellence Opérationnelle sur le Terrain",
     "service.realisation.desc": "SOMATISME assure le montage et la mise en service de vos installations avec une rigueur absolue. Nos équipes interviennent pour garantir que chaque composant est installé selon les normes de sécurité et de performance les plus strictes.",
     "service.realisation.safety.title": "Sécurité & Conformité QHSE",
     "service.realisation.safety.desc": "La sécurité sur site est notre priorité. Nos techniciens disposent des habilitations nécessaires et respectent scrupuleusement les Plans de Prévention (PPSPS).",
     "service.realisation.safety.item1": "Habilitations électriques (B1V, B2V, BR, BC)",
-    "service.realisation.domains.title": "Domaines d'Intervention",
     "service.realisation.cta.title": "Un projet de mise en service ?",
     "service.realisation.cta.btn": "Démarrer votre projet",
     "contact.form.phone": "Téléphone",
@@ -167,10 +163,6 @@ const translations = {
     "contact.form.subject.other": "Autre demande",
     "contact.form.message": "Message *",
     "contact.form.message.placeholder": "Décrivez votre projet...",
-    "contact.form.submit": "Envoyer le message",
-    "contact.form.submitting": "Envoi en cours...",
-    "contact.form.success": "Message envoyé avec succès ! Nous vous recontacterons bientôt.",
-    "contact.form.error": "Erreur lors de l'envoi du message. Veuillez réessayer.",
     "contact.faq.q3": "Quelles marques d'automates supportez-vous ?",
     "contact.faq.a3": "Nous sommes experts sur Siemens (S7, TIA Portal), Schneider (M580, M340), Rockwell et Omron.",
     "contact.faq.q4": "Proposez-vous des contrats de maintenance ?",
@@ -291,8 +283,7 @@ const translations = {
     "contact.faq.q1": "In which areas do you operate?",
     "contact.faq.a1": "We operate throughout Morocco and internationally for specific projects.",
     "contact.faq.q2": "What are your lead times for a quote?",
-    "contact.info.hq": "Headquarters",
-    "contact.info.hq.address": "Rue résistance residence Nassime GH 12 Apartment N°1, Mohammedia",
+    "contact.faq.a2": "For a standard request, we commit to providing a detailed quote within 48h to 72h after receiving the specifications.",
     "projects.hero.title": "Our Achievements",
     "projects.hero.subtitle": "Expertise proven by complex and critical projects.",
     "projects.tech.stack": "Deployed Technologies",
@@ -304,14 +295,11 @@ const translations = {
     "projects.process.step3": "Wiring & FAT Testing",
     "projects.process.step4": "Commissioning & SAT",
     "projects.cta.title": "A specific project?",
-    "service.realisation.title": "On-Site Realization",
-    "service.realisation.hero": "Technical mastery and adherence to deadlines for your industrial projects.",
     "service.realisation.subtitle": "Operational Excellence in the Field",
     "service.realisation.desc": "SOMATISME ensures the assembly and commissioning of your installations with absolute rigor. Our teams intervene to ensure that every component is installed according to the strictest safety and performance standards.",
     "service.realisation.safety.title": "QHSE Safety & Compliance",
     "service.realisation.safety.desc": "Site safety is our priority. Our technicians have the necessary authorizations and scrupulously respect the Prevention Plans (PPSPS).",
     "service.realisation.safety.item1": "Electrical authorizations (B1V, B2V, BR, BC)",
-    "service.realisation.domains.title": "Fields of Intervention",
     "service.realisation.cta.title": "A commissioning project?",
     "service.realisation.cta.btn": "Start your project",
     "contact.form.phone": "Phone",
@@ -325,10 +313,6 @@ const translations = {
     "contact.form.subject.other": "Other request",
     "contact.form.message": "Message *",
     "contact.form.message.placeholder": "Describe your project...",
-    "contact.form.submit": "Send Message",
-    "contact.form.submitting": "Sending...",
-    "contact.form.success": "Message sent successfully! We will get back to you soon.",
-    "contact.form.error": "Error sending message. Please try again.",
     "contact.faq.q3": "Which PLC brands do you support?",
     "contact.faq.a3": "We are experts in Siemens (S7, TIA Portal), Schneider (M580, M340), Rockwell, and Omron.",
     "contact.faq.q4": "Do you offer maintenance contracts?",

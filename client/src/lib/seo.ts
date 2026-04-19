@@ -6,8 +6,8 @@
 export const siteConfig = {
   name: 'SOMATISME',
   description: 'Solutions d\'automatisme industriel, régulation, installation électrique et maintenance pour les entreprises B2B.',
-  url: 'https://somatisme.ma', // Remplace par ton vrai domaine (.ma ou .com)
-  ogImage: 'https://somatisme.com/og-image.png',
+  url: 'https://somatisme.ma',
+  ogImage: 'https://somatisme.ma/og-image.png',
   links: {
     linkedin: 'https://www.linkedin.com/in/fouad-ben-amar-20295354?utm_source=share_via&utm_content=profile&utm_medium=member_ios',
   },

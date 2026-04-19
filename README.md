@@ -13,15 +13,15 @@ Site web d'entreprise moderne, sécurisé et premium pour **SOMATISME**, spécia
 
 ### Fonctionnalités
 - ✅ **9 Pages Complètes** : Accueil, À propos, Services (4 pages détaillées), Projets, Contact
-- ✅ **Formulaire de Contact** : Avec validation et notifications
+- ✅ **Formulaire de Contact** : Envoi d'emails via Resend API avec validation
 - ✅ **SEO Avancé** : Meta tags, sitemap.xml, robots.txt, structured data
-- ✅ **Multilingue** : Support FR/EN/AR avec sélecteur de langue
-- ✅ **Lazy Loading** : Optimisation des images pour meilleures performances
+- ✅ **Multilingue** : Support FR/EN/ES avec sélecteur de langue
 - ✅ **Navigation Responsive** : Menu mobile intégré
 
 ### Performance & Sécurité
 - ⚡ **Optimisé Lighthouse** : Architecture légère et performante
-- 🔒 **Sécurité** : Headers sécurisés, protection XSS/CSRF
+- 🔒 **OWASP Top 10** : Headers de sécurité complets (CSP, HSTS, X-Frame-Options, etc.)
+- 🚀 **Vercel Edge Runtime** : API route pour le formulaire de contact
 - 📱 **Mobile-First** : Conception mobile d'abord
 - 🎨 **Accessibilité** : Contraste optimal, navigation au clavier
 
@@ -29,6 +29,8 @@ Site web d'entreprise moderne, sécurisé et premium pour **SOMATISME**, spécia
 
 ```
 /somatisme
+├── api/
+│   └── contact.ts             # Vercel Edge API pour formulaire de contact (Resend)
 ├── client/
 │   ├── public/
 │   │   ├── robots.txt          # Directives pour les moteurs de recherche
@@ -48,19 +50,20 @@ Site web d'entreprise moderne, sécurisé et premium pour **SOMATISME**, spécia
 │   │   ├── components/
 │   │   │   ├── Header.tsx
 │   │   │   ├── Footer.tsx
-│   │   │   ├── LanguageSwitcher.tsx
-│   │   │   └── OptimizedImage.tsx
+│   │   │   └── LanguageSwitcher.tsx
 │   │   ├── contexts/
 │   │   │   ├── ThemeContext.tsx
 │   │   │   └── LanguageContext.tsx
 │   │   ├── hooks/
 │   │   │   └── useSEO.ts
 │   │   ├── lib/
-│   │   │   └── seo.ts
+│   │   │   ├── seo.ts
+│   │   │   └── security.ts
 │   │   ├── App.tsx
 │   │   ├── main.tsx
 │   │   └── index.css
 │   └── index.html
+├── vercel.json                # Configuration Vercel + Security Headers
 ├── package.json
 └── README.md
 ```
@@ -161,14 +164,21 @@ pnpm preview
 
 Le site est optimisé pour le **Français**. L'architecture de traduction via `LanguageContext` est conservée pour faciliter toute extension future, mais seul le français est activé par défaut.
 
-## 🔒 Sécurité
+## 🔒 Sécurité (OWASP Top 10)
 
 ### Mesures Implémentées
-- ✅ Headers de sécurité (CSP, X-Frame-Options, etc.)
-- ✅ Protection XSS
-- ✅ Validation des formulaires
-- ✅ HTTPS obligatoire en production
-- ✅ Rate limiting (à implémenter côté serveur)
+- ✅ **A01 Broken Access Control** : Headers CSP stricts, pas de routes exposées
+- ✅ **A03 Injection** : Validation et sanitization des inputs, prepared queries
+- ✅ **A05 Security Misconfiguration** : Headers de sécurité en vercel.json
+- ✅ **A06 XSS** : CSP headers, sanitization HTML, validation des inputs
+- ✅ **A07 Identification** : Pas d'authentification côté public
+- ✅ **A08 Software Integrity** : Dependabot activé, pnpm lockfile
+- ✅ **A09 Logging** : Logs côté serveur (Vercel)
+- ✅ **Headers de sécurité** : CSP, HSTS, X-Frame-Options, X-Content-Type-Options
+- ✅ **Protection XSS** : CSP headers, sanitization des inputs
+- ✅ **Validation des formulaires** : Regex email, honeypot anti-spam
+- ✅ **HTTPS obligatoire** : HSTS header avec preload
+- ✅ **Rate limiting** : Simple rate limiting côté API (à améliorer avec Redis)
 
 ## 📊 Technologie Stack
 
@@ -181,19 +191,23 @@ Le site est optimisé pour le **Français**. L'architecture de traduction via `L
 | UI Components | shadcn/ui |
 | Icons | Lucide React |
 | Notifications | Sonner |
+| Email API | Resend |
 | Build | Vite |
+| Hosting | Vercel (Edge Runtime) |
 
 ## 🎯 Checklist de Déploiement
 
 - [ ] Vérifier tous les liens internes
+- [ ] Configurer RESEND_API_KEY dans Vercel Environment Variables
+- [ ] Configurer CONTACT_EMAIL et RESEND_FROM_EMAIL
 - [ ] Tester le formulaire de contact
 - [ ] Valider le responsive design
 - [ ] Vérifier les images et assets
 - [ ] Tester les animations
 - [ ] Vérifier le SEO (Google Search Console)
 - [ ] Tester la performance (Lighthouse)
-- [ ] Configurer le domaine personnalisé
-- [ ] Mettre en place le SSL/HTTPS
+- [ ] Configurer le domaine personnalisé (somatisme.ma)
+- [ ] Vérifier les security headers (securityheaders.com)
 - [ ] Configurer les analytics
 
 ## 📈 Optimisations Futures
@@ -212,7 +226,7 @@ Le site est optimisé pour le **Français**. L'architecture de traduction via `L
 Pour les questions ou problèmes :
 - 📧 Email : info@somatisme.ma
 - 📱 Téléphone : 05 23 30 28 29
-- 🌐 Site : https://somatisme.com
+- 🌐 Site : https://somatisme.ma
 
 ## 📄 Licence
 
