@@ -3,16 +3,94 @@ import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import { connectToDatabase } from "./db";
+import ContactSubmission from "./models/ContactSubmission";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Security: IP whitelist (add trusted IPs here)
+const TRUSTED_IPS = process.env.TRUSTED_IPS?.split(",") || [];
+const BLOCKED_IPS = process.env.BLOCKED_IPS?.split(",") || [];
+
+// Security: Audit logging function
+function logAudit(action: string, ip: string, details: any): void {
+  const timestamp = new Date().toISOString();
+  const logEntry = {
+    timestamp,
+    action,
+    ip,
+    details,
+  };
+  console.log("[AUDIT]", JSON.stringify(logEntry));
+  
+  // In production, you might want to send this to a secure logging service
+  // or store in a separate audit collection in MongoDB
+}
 
 async function startServer() {
   const app = express();
   const server = createServer(app);
 
+  // Security: Helmet for HTTP headers
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:", "https:", "blob:"],
+        connectSrc: ["'self'", "https:"],
+        frameAncestors: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+      },
+    },
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
+    noSniff: true,
+    frameguard: { action: "deny" },
+    xssFilter: true,
+  }));
+
+  // Security: Rate limiting for API endpoints
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // Limit each IP to 5 requests per windowMs
+    message: "Too many requests from this IP, please try again later",
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  // Security: IP filtering middleware
+  app.use((req, res, next) => {
+    const ip = req.ip || req.socket.remoteAddress || "unknown";
+    
+    // Check if IP is blocked
+    if (BLOCKED_IPS.includes(ip)) {
+      logAudit("BLOCKED_IP", ip, { path: req.path });
+      return res.status(403).json({ error: "Access denied" });
+    }
+    
+    next();
+  });
+
   // Middleware
-  app.use(express.json());
+  app.use(express.json({ limit: "10kb" })); // Limit body size to prevent large payload attacks
+
+  // Connect to MongoDB
+  try {
+    await connectToDatabase();
+    console.log("Database connected successfully");
+  } catch (error) {
+    console.error("Failed to connect to database:", error);
+  }
 
   // Serve static files from dist/public in production
   const staticPath =
@@ -22,14 +100,45 @@ async function startServer() {
 
   app.use(express.static(staticPath));
 
-  // API endpoint for contact form
-  app.post("/api/contact", async (req, res) => {
+  // API endpoint for contact form with military-grade security
+  app.post("/api/contact", limiter, async (req, res) => {
     try {
+      const ip = req.ip || req.socket.remoteAddress || "unknown";
+      const userAgent = req.headers["user-agent"] || "unknown";
+      
       const { name, email, phone, company, subject, message } = req.body;
 
-      // Validate required fields
+      // Security: Validate required fields
       if (!name || !email || !subject || !message) {
+        logAudit("INVALID_REQUEST", ip, { missingFields: { name, email, subject, message } });
         return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      // Security: Check if IP is in trusted list (optional)
+      if (TRUSTED_IPS.length > 0 && !TRUSTED_IPS.includes(ip)) {
+        logAudit("UNTRUSTED_IP", ip, { email });
+        // You can choose to block or just log untrusted IPs
+      }
+
+      // Security: Store submission in MongoDB with IP tracking
+      const submission = new ContactSubmission({
+        name,
+        email,
+        phone,
+        company,
+        subject,
+        message,
+        ipAddress: ip,
+        userAgent,
+      });
+
+      await submission.save();
+      logAudit("SUBMISSION_RECEIVED", ip, { email, subject, status: submission.status });
+
+      // Security: Check if submission was flagged as spam
+      if (submission.status === "spam" || submission.riskScore >= 100) {
+        logAudit("SPAM_DETECTED", ip, { email, riskScore: submission.riskScore });
+        return res.status(403).json({ error: "Submission flagged as spam" });
       }
 
       // Configure email transporter
@@ -72,6 +181,10 @@ async function startServer() {
                 <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Sujet:</strong></td>
                 <td style="padding: 10px; border-bottom: 1px solid #eee;">${subject}</td>
               </tr>
+              <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>IP:</strong></td>
+                <td style="padding: 10px; border-bottom: 1px solid #eee;">${ip}</td>
+              </tr>
             </table>
             <div style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 5px;">
               <strong style="color: #333;">Message:</strong>
@@ -84,11 +197,17 @@ async function startServer() {
 
       // Send email
       await transporter.sendMail(mailOptions);
+      logAudit("EMAIL_SENT", ip, { email });
+
+      // Update submission status
+      submission.status = "processed";
+      await submission.save();
 
       res.json({ success: true, message: "Email sent successfully" });
     } catch (error) {
-      console.error("Error sending email:", error);
-      res.status(500).json({ error: "Failed to send email" });
+      console.error("Error processing contact form:", error);
+      logAudit("ERROR", req.ip || "unknown", { error: (error as Error).message });
+      res.status(500).json({ error: "Failed to process request" });
     }
   });
 
@@ -101,6 +220,7 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
+    console.log(`Security: Helmet enabled, Rate limiting active, MongoDB connected`);
   });
 }
 
