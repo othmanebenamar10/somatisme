@@ -1790,14 +1790,14 @@ const products: Product[] = [
   },
   {
     id: '132',
-    name: '1/2'' UW-15',
-    nameAr: '1/2'' UW-15',
+    name: '1/2 UW-15',
+    nameAr: '1/2 UW-15',
     category: 'equipment',
     categoryAr: 'معدات',
     price: 220,
     image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop',
-    description: '1/2\'\' UW-15 Uni-D Type Brass Solenoid Valve 220VAC',
-    descriptionAr: '1/2\'\' UW-15 Uni-D Type Brass Solenoid Valve 220VAC',
+    description: '1/2 UW-15 Uni-D Type Brass Solenoid Valve 220VAC',
+    descriptionAr: '1/2 UW-15 Uni-D Type Brass Solenoid Valve 220VAC',
     brand: 'Somatisme',
     stock: 2
   },
