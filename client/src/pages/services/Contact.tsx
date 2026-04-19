@@ -319,9 +319,9 @@ export default function Contact() {
           <div className="space-y-6">
             {[
               { q: t('contact.faq.q1'), a: t('contact.faq.a1') },
+              { q: t('contact.faq.q2'), a: t('contact.faq.a2') },
               { q: t('contact.faq.q3'), a: t('contact.faq.a3') },
-              { q: t('contact.faq.q4'), a: t('contact.faq.a4') },
-              { q: t('contact.faq.q2'), a: "Pour une demande standard, nous nous engageons à vous fournir un chiffrage détaillé sous 48h à 72h après réception du cahier des charges." }
+              { q: t('contact.faq.q4'), a: t('contact.faq.a4') }
             ].map((item, i) => (
               <motion.div 
                 key={i}

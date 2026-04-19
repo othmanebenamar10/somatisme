@@ -246,9 +246,13 @@ const translations = {
     "contact.form.error": "Erreur lors de l'envoi.",
     "contact.faq.title": "Questions Fréquentes",
     "contact.faq.q1": "Dans quelles zones intervenez-vous ?",
-    "contact.faq.a1": "Nous intervenons sur l'ensemble du territoire marocain et à l'international pour des projets spécifiques.",
-    "contact.faq.q2": "Quels sont vos délais pour un devis ?",
-    "contact.faq.a2": "Pour une demande standard, nous nous engageons à vous fournir un chiffrage détaillé sous 48h à 72h après réception du cahier des charges.",
+    "contact.faq.a1": "Nous intervenons sur l'ensemble du territoire marocain et à l'international pour des projets spécifiques. Nos équipes sont basées à Mohammedia et peuvent se déployer rapidement sur tous les sites industriels du Maroc et des pays limitrophes selon vos besoins.",
+    "contact.faq.q2": "Quelles marques d'automates supportez-vous ?",
+    "contact.faq.a2": "Nous sommes experts sur les principales marques d'automatismes industriels : Siemens (S7, TIA Portal), Schneider (M580, M340), Rockwell et Omron. Notre expertise multimarque nous permet de travailler avec vos équipements existants ou de vous conseiller sur les meilleures solutions pour vos nouveaux projets.",
+    "contact.faq.q3": "Proposez-vous des contrats de maintenance ?",
+    "contact.faq.a3": "Oui, nous proposons des contrats de maintenance préventive et curative sur mesure, adaptés à votre parc machine. Nos contrats incluent des visites régulières, des audits de performance, un support technique 24/7 et des interventions d'urgence pour assurer la continuité de vos opérations.",
+    "contact.faq.q4": "Quels sont vos délais pour un devis ?",
+    "contact.faq.a4": "Pour une demande standard, nous nous engageons à vous fournir un chiffrage détaillé sous 48h à 72h après réception du cahier des charges. Pour les projets d'urgence ou complexes, nous pouvons proposer une intervention rapide pour évaluer vos besoins sur site.",
     "projects.tech.stack": "Technologies déployées",
     "projects.results": "Résultats obtenus",
     "projects.process.step1": "Étude & Cahier des Charges",
@@ -273,10 +277,6 @@ const translations = {
     "contact.form.subject.other": "Autre demande",
     "contact.form.message": "Message *",
     "contact.form.message.placeholder": "Décrivez votre projet...",
-    "contact.faq.q3": "Quelles marques d'automates supportez-vous ?",
-    "contact.faq.a3": "Nous sommes experts sur Siemens (S7, TIA Portal), Schneider (M580, M340), Rockwell et Omron.",
-    "contact.faq.q4": "Proposez-vous des contrats de maintenance ?",
-    "contact.faq.a4": "Oui, nous proposons des contrats de maintenance préventive et curative sur mesure, adaptés à votre parc machine."
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
