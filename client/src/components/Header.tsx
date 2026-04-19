@@ -3,7 +3,6 @@ import { Link } from 'wouter';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,7 +40,6 @@ export default function Header() {
               {t('cta.contact')}
             </Button>
           </Link>
-          <LanguageSwitcher />
         </nav>
 
         {/* Mobile Menu Button */}
@@ -68,7 +66,6 @@ export default function Header() {
                 <a className="text-foreground hover:text-primary transition-colors font-medium text-lg">{t('nav.projects')}</a>
               </Link>
             </div>
-            <LanguageSwitcher />
             <Link href="/contact">
               <Button className="w-full bg-accent hover:bg-accent/90">
                 {t('cta.contact')}
