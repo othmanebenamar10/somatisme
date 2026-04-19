@@ -14,7 +14,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
  */
 
 export default function Contact() {
-  const { t, isRTL } = useLanguage();
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -299,7 +299,7 @@ export default function Contact() {
                   {isSubmitting ? t('contact.form.submitting') : (
                     <>
                       {t('contact.form.submit')}
-                      <Send size={20} className={`transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 ${isRTL ? "rotate-180" : ""}`} />
+                      <Send size={20} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                     </>
                   )}
                 </span>
