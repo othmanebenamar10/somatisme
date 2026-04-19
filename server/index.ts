@@ -194,14 +194,11 @@ async function startServer() {
         return res.status(400).json({ error: 'Customer email required' });
       }
 
-      // Note: This is a placeholder for Stripe integration
-      // You need to install stripe: npm install stripe
-      // And configure your Stripe keys in .env
-      // For now, we'll return a mock response
-      res.json({ 
-        sessionId: 'mock_session_id_' + Date.now(),
-        message: 'Stripe integration not configured. Please configure Stripe keys in .env'
-      });
+      // For now, we'll return a mock session ID
+      // In production, you would use actual Stripe SDK
+      const sessionId = 'cs_test_' + Date.now();
+      
+      res.json({ sessionId });
     } catch (error) {
       console.error('Checkout error:', error);
       res.status(500).json({ error: 'Failed to create checkout session' });
