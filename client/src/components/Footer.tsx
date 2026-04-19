@@ -98,9 +98,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-2">
                 <MapPin size={16} className="mt-0.5 flex-shrink-0" />
-                <Link href="/contact">
-                  <a className="hover:opacity-80 transition-opacity">{t('footer.address')}</a>
-                </Link>
+                <span>{t('footer.address')}</span>
               </li>
             </ul>
           </div>

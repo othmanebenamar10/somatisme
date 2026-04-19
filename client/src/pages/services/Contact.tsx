@@ -351,23 +351,6 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* Map Section */}
-      <section className="py-0">
-        <div className="container">
-          <div className="rounded-2xl overflow-hidden border border-border shadow-lg">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3324.9!2d-7.401109!3d33.6805959!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda7b6641b741d3d:0x7afd60ececc03ab2!2sSOMATISME!5e0!4m5!1s0xda7b6641b741d3d:0x7afd60ececc03ab2!8m2!3d33.6805959!4d-7.401109!16s%2Fg%2F11csqxwr59"
-              width="100%"
-              height="400"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
-          </div>
-        </div>
-      </section>
-
       {/* FAQ Section to fill space and add value */}
       <section className="py-20 bg-muted/30">
         <div className="container max-w-4xl">
