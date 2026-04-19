@@ -57,13 +57,7 @@ export default function Contact() {
       return;
     }
 
-    // Show terms dialog first
-    setShowTermsDialog(true);
-  };
-
-  const handleTermsAccept = async () => {
-    if (!termsAccepted) return;
-    setShowTermsDialog(false);
+    // TEMPORARY: Direct submission without terms dialog
     setIsSubmitting(true);
 
     try {
@@ -78,16 +72,16 @@ export default function Contact() {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success(t('contact.form.success'));
+        toast.success(data.message || t('contact.form.success'));
         setFormData({ name: '', email: '', phone: '', company: '', subject: '', message: '' });
       } else {
         toast.error(data.error || t('contact.form.error'));
       }
     } catch (error) {
       toast.error(t('contact.form.error'));
+      console.error('Form submission error:', error);
     } finally {
       setIsSubmitting(false);
-      setTermsAccepted(false);
     }
   };
 
@@ -361,60 +355,6 @@ export default function Contact() {
           </div>
         </div>
       </section>
-
-      {/* Terms Dialog */}
-      <Dialog open={showTermsDialog} onOpenChange={setShowTermsDialog}>
-        <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">{t('contact.terms.title')}</DialogTitle>
-            <DialogDescription>{t('contact.terms.description')}</DialogDescription>
-          </DialogHeader>
-          <div className="flex-1 overflow-y-auto pr-2 my-4 text-sm text-muted-foreground space-y-4">
-            <div className="space-y-4">
-              <h3 className="font-bold text-foreground">Acceptation des Conditions</h3>
-              <p>En soumettant ce formulaire, vous acceptez que SOMATISME traite vos données personnelles aux fins de répondre à votre demande de devis ou de service.</p>
-
-              <h3 className="font-bold text-foreground">Collecte des Données</h3>
-              <p>Nous collectons vos informations de contact (nom, email, téléphone, entreprise) et les détails de votre projet uniquement pour vous fournir nos services industriels.</p>
-
-              <h3 className="font-bold text-foreground">Utilisation des Données</h3>
-              <p>Vos données sont utilisées pour traiter vos demandes, vous fournir des informations sur nos solutions, et communiquer avec vous sur vos projets. Nous ne vendons ni ne louons vos données à des tiers.</p>
-
-              <h3 className="font-bold text-foreground">Protection des Données</h3>
-              <p>Nous mettons en œuvre des mesures de sécurité techniques et organisationnelles appropriées pour protéger vos données contre l'accès non autorisé, conformément à la réglementation en vigueur.</p>
-
-              <h3 className="font-bold text-foreground">Vos Droits</h3>
-              <p>Vous avez le droit d'accéder, rectifier, supprimer ou limiter le traitement de vos données personnelles. Pour exercer ces droits, contactez-nous à info@somatisme.ma.</p>
-
-              <h3 className="font-bold text-foreground">Délai de Conservation</h3>
-              <p>Vos données sont conservées uniquement pendant la durée nécessaire à la prestation de nos services et conformément aux obligations légales.</p>
-
-              <h3 className="font-bold text-foreground">Contact</h3>
-              <p>Pour toute question concernant le traitement de vos données, contactez-nous à info@somatisme.ma ou par téléphone au 05 23 30 28 29.</p>
-            </div>
-          </div>
-          <div className="space-y-4 pt-4 border-t border-border">
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={termsAccepted}
-                onChange={(e) => setTermsAccepted(e.target.checked)}
-                className="mt-1 w-4 h-4 rounded border-border text-accent focus:ring-accent"
-              />
-              <span className="text-sm text-foreground">
-                {t('contact.terms.accept')}
-              </span>
-            </label>
-            <Button
-              onClick={handleTermsAccept}
-              disabled={!termsAccepted}
-              className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
-            >
-              {t('contact.terms.submit')}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <Footer />
     </div>
