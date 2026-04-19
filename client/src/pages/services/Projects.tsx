@@ -21,7 +21,7 @@ export default function Projects() {
       category: 'Automatisme',
       tech: 'Siemens S7-1500, WinCC OA, Profinet, Variateurs ABB ACS580',
       result: '+25% de productivité, traçabilité totale, réduction des rebuts',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.46 PM.jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.22.55 PM.jpeg',
     },
     {
       title: 'Installation Électrique Complexe',
@@ -29,7 +29,7 @@ export default function Projects() {
       category: 'Installation Électrique',
       tech: 'TGBT 3200A, Disjoncteurs Masterpact, Etude de sélectivité, Canalisations préfabriquées',
       result: 'Conformité NFC 15-100, continuité de service assurée, sécurité renforcée',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.46 PM (1).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.22.55 PM (1).jpeg',
     },
     {
       title: 'Système de Régulation Avancé',
@@ -37,7 +37,7 @@ export default function Projects() {
       category: 'Régulation',
       tech: 'Capteurs Endress+Hauser, Vannes de régulation Fisher, Boucles PID Yokogawa',
       result: 'Précision de mesure < 0.1%, réduction pertes matières de 15%',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.46 PM (2).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.22.55 PM (2).jpeg',
     },
     {
       title: 'Maintenance Préventive 24/7',
@@ -45,7 +45,7 @@ export default function Projects() {
       category: 'Maintenance',
       tech: 'Audit thermographique FLIR, Analyse vibratoire Emerson, Supervision SCADA',
       result: 'Réduction de 15% des arrêts non programmés, allongement durée de vie équipements',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.46 PM (3).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.22.55 PM (3).jpeg',
     },
     {
       title: 'Retrofit Presse Hydraulique 500T',
@@ -53,7 +53,7 @@ export default function Projects() {
       category: 'Modernisation',
       tech: 'Siemens S7-1500F, Safety I/O, Profisafe, HMI TP1200',
       result: 'Temps de cycle -18%, conformité sécurité machine CE',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.47 PM.jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.22.55 PM (4).jpeg',
     },
     {
       title: 'Contrôle Commande Station Pompage',
@@ -61,7 +61,7 @@ export default function Projects() {
       category: 'Traitement Eau',
       tech: 'Schneider M580, Radio/GPRS, Logiciel de supervision Vijeo Citect',
       result: 'Optimisation énergétique de 20%, monitoring 24/7, réduction interventions terrain',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.47 PM (1).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.23.53 PM.jpeg',
     },
     {
       title: 'Modernisation Tableau de Commande',
@@ -69,7 +69,7 @@ export default function Projects() {
       category: 'Modernisation',
       tech: 'Siemens S7-1200, HMI TP1200, Communication Ethernet PROFINET',
       result: 'Disponibilité +30%, opérateurs satisfaits, diagnostic facilité',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.47 PM (2).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.23.59 PM.jpeg',
     },
     {
       title: 'Installation Capteurs Industriels',
@@ -77,7 +77,7 @@ export default function Projects() {
       category: 'Instrumentation',
       tech: 'Capteurs Endress+Hauser, Yokogawa, Krohne, Communication 4-20mA, HART',
       result: 'Précision améliorée, maintenance prédictive, conformité normes industrielles',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.29.05 PM.jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.23.59 PM (1).jpeg',
     },
     {
       title: 'Câblage Industriel',
@@ -85,7 +85,7 @@ export default function Projects() {
       category: 'Installation Électrique',
       tech: 'Câbles Nexans, Gaines techniques, Mise aux normes',
       result: 'Conformité NFC 15-100, sécurité renforcée',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.22.55 PM.jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.24.10 PM.jpeg',
     },
     {
       title: 'Installation Motéducteurs',
@@ -93,7 +93,7 @@ export default function Projects() {
       category: 'Automatisme',
       tech: 'Motéducteurs SEW-Eurodrive, Variateurs, Alignement',
       result: 'Fiabilité améliorée, maintenance facilitée',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.22.55 PM (1).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.24.10 PM (1).jpeg',
     },
     {
       title: 'Tableau de Distribution Secondaire',
@@ -101,7 +101,7 @@ export default function Projects() {
       category: 'Installation Électrique',
       tech: 'Tableaux Schneider, Disjoncteurs, Protection différentielle',
       result: 'Sécurité renforcée, conformité normes',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.22.55 PM (2).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.24.10 PM (2).jpeg',
     },
     {
       title: 'Installation Prises Industrielles',
@@ -109,7 +109,7 @@ export default function Projects() {
       category: 'Installation Électrique',
       tech: 'Prises Schneider P17, IP44, Protection',
       result: 'Sécurité opérateurs, conformité normes',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.22.55 PM (3).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.24.10 PM (3).jpeg',
     },
     {
       title: 'Câblage API',
@@ -117,7 +117,7 @@ export default function Projects() {
       category: 'Automatisme',
       tech: 'API Siemens S7-1500, Modules E/S ET200SP, PROFINET',
       result: 'Performance optimale, diagnostic facilité',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.22.55 PM (4).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.24.59 PM.jpeg',
     },
     {
       title: 'Installation Contacteurs',
@@ -125,7 +125,7 @@ export default function Projects() {
       category: 'Installation Électrique',
       tech: 'Contacteurs Siemens 3RT, Protection moteur, 24V DC',
       result: 'Fiabilité améliorée, maintenance facilitée',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.23.53 PM.jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.40 PM.jpeg',
     },
     {
       title: 'Installation Variateurs',
@@ -133,7 +133,7 @@ export default function Projects() {
       category: 'Automatisme',
       tech: 'Variateurs ABB ACS580, Contrôle vectoriel, Mise en service',
       result: 'Économie d\'énergie, contrôle précis',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.23.59 PM.jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.41 PM.jpeg',
     },
     {
       title: 'Câblage Régulateurs PID',
@@ -141,7 +141,7 @@ export default function Projects() {
       category: 'Régulation',
       tech: 'Régulateurs Yokogawa UT520, Entrées universelles, Sorties relais',
       result: 'Précision de contrôle, stabilité améliorée',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.23.59 PM (1).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.41 PM (1).jpeg',
     },
     {
       title: 'Installation Disjoncteurs',
@@ -149,7 +149,7 @@ export default function Projects() {
       category: 'Installation Électrique',
       tech: 'Disjoncteurs Schneider NSX, Micrologic, Sélectivité',
       result: 'Protection optimale, sélectivité assurée',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.24.10 PM.jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.41 PM (2).jpeg',
     },
     {
       title: 'Installation Capteurs Température',
@@ -157,7 +157,7 @@ export default function Projects() {
       category: 'Instrumentation',
       tech: 'Capteurs PT100, -50 à +200°C, Haute précision',
       result: 'Précision de mesure, fiabilité',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.24.10 PM (1).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.41 PM (3).jpeg',
     },
     {
       title: 'Installation Démarreurs Progressifs',
@@ -165,7 +165,7 @@ export default function Projects() {
       category: 'Installation Électrique',
       tech: 'Démarreurs Schneider ATS48, 75kW, Mise en service',
       result: 'Démarrage progressif, protection moteur',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.24.10 PM (2).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.42 PM.jpeg',
     },
     {
       title: 'Installation Transformateurs',
@@ -173,7 +173,7 @@ export default function Projects() {
       category: 'Installation Électrique',
       tech: 'Transformateurs, Classe 0.5, 100/5A',
       result: 'Précision de mesure, conformité',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.24.10 PM (3).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.42 PM (1).jpeg',
     },
     {
       title: 'Câblage HMI',
@@ -181,7 +181,7 @@ export default function Projects() {
       category: 'Automatisme',
       tech: 'HMI Siemens TP1200, WinCC Unified, API S7-1500',
       result: 'Interface intuitive, supervision facilitée',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.24.59 PM.jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.43 PM.jpeg',
     },
     {
       title: 'Installation Vannes Régulation',
@@ -189,7 +189,7 @@ export default function Projects() {
       category: 'Régulation',
       tech: 'Vannes pneumatiques, Positionneurs, Contrôle débit',
       result: 'Contrôle précis, stabilité',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.40 PM.jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.43 PM (1).jpeg',
     },
     {
       title: 'Installation Relais Protection',
@@ -197,7 +197,7 @@ export default function Projects() {
       category: 'Installation Électrique',
       tech: 'Relais de protection, Surveillance moteur, Surcharge',
       result: 'Protection optimale, diagnostic',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.41 PM.jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.43 PM (2).jpeg',
     },
     {
       title: 'Câblage Modules E/S',
@@ -205,7 +205,7 @@ export default function Projects() {
       category: 'Automatisme',
       tech: 'Modules E/S ET200SP, PROFINET, 16 canaux',
       result: 'Installation propre, diagnostic facilité',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.41 PM (1).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.46 PM.jpeg',
     },
     {
       title: 'Installation Transmetteurs Pression',
@@ -213,7 +213,7 @@ export default function Projects() {
       category: 'Instrumentation',
       tech: 'Transmetteurs pression, HART, 4-20mA, 0-100 bar',
       result: 'Précision, communication HART',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.41 PM (2).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.46 PM (1).jpeg',
     },
     {
       title: 'Installation Analyseurs Réseau',
@@ -221,7 +221,7 @@ export default function Projects() {
       category: 'Installation Électrique',
       tech: 'Analyseurs réseau, THD, Harmoniques, EN50160',
       result: 'Qualité réseau, conformité',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.41 PM (3).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.46 PM (2).jpeg',
     },
     {
       title: 'Installation Variateurs Sécurité',
@@ -229,7 +229,7 @@ export default function Projects() {
       category: 'Automatisme',
       tech: 'Variateurs sécurité Siemens SIRIUS, STO, SS1, SIL 3',
       result: 'Sécurité machine, conformité CE',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.42 PM.jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.46 PM (3).jpeg',
     },
     {
       title: 'Câblage Transformateurs Mesure',
@@ -237,7 +237,7 @@ export default function Projects() {
       category: 'Installation Électrique',
       tech: 'Transformateurs mesure, Classe 0.5, 100/5A',
       result: 'Précision comptage, conformité',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.42 PM (1).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.47 PM.jpeg',
     },
     {
       title: 'Installation Débitmètres',
@@ -245,7 +245,7 @@ export default function Projects() {
       category: 'Instrumentation',
       tech: 'Débitmètres électromagnétiques, ±0.5%, HART',
       result: 'Précision mesure, monitoring',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.43 PM.jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.47 PM (1).jpeg',
     },
     {
       title: 'Câblage API Modbus',
@@ -253,7 +253,7 @@ export default function Projects() {
       category: 'Automatisme',
       tech: 'Module Modbus RTU, 8 E/S, Isolation galvanique',
       result: 'Communication fiable, isolation',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.43 PM (1).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.47 PM (2).jpeg',
     },
     {
       title: 'Installation Câbles Industriels',
@@ -261,7 +261,7 @@ export default function Projects() {
       category: 'Installation Électrique',
       tech: 'Câbles 1.5mm², 3 conducteurs, Cuivre, RO2',
       result: 'Conformité, durabilité',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.25.43 PM (2).jpeg',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.29.05 PM.jpeg',
     }
   ];
 
