@@ -407,7 +407,7 @@ export default function Products() {
 
   const handleOrderSubmit = async () => {
     if (!orderForm.name || !orderForm.email || !orderForm.phone) {
-      toast.error(language === 'ar' ? 'الرجاء ملء جميع الحقول المطلوبة' : 'Veuillez remplir tous les champs requis');
+      toast.error('Veuillez remplir tous les champs requis');
       return;
     }
 
@@ -438,13 +438,13 @@ export default function Products() {
 
         if (response.ok && data.sessionId) {
           // For now, just show success message
-          toast.success(language === 'ar' ? 'تم إنشاء جلسة الدفع بنجاح' : 'Session de paiement créée avec succès');
+          toast.success('Session de paiement créée avec succès');
           setCart([]);
           setShowOrderDialog(false);
           setShowCart(false);
           setOrderForm({ name: '', email: '', phone: '', company: '', address: '', message: '' });
         } else {
-          toast.error(data.error || language === 'ar' ? 'خطأ في إرسال الطلب' : 'Erreur lors de l\'envoi de la commande');
+          toast.error(data.error || 'Erreur lors de l\'envoi de la commande');
         }
       } else {
         // In-person payment - send order via WhatsApp
@@ -453,14 +453,14 @@ export default function Products() {
         const whatsappUrl = `https://wa.me/212600000000?text=${encodeURIComponent(orderMessage)}`;
         window.open(whatsappUrl, '_blank');
         
-        toast.success(language === 'ar' ? 'تم إرسال الطلب بنجاح' : 'Commande envoyée avec succès');
+        toast.success('Commande envoyée avec succès');
         setCart([]);
         setShowOrderDialog(false);
         setShowCart(false);
         setOrderForm({ name: '', email: '', phone: '', company: '', address: '', message: '' });
       }
     } catch (error) {
-      toast.error(language === 'ar' ? 'خطأ في إرسال الطلب' : 'Erreur lors de l\'envoi de la commande');
+      toast.error('Erreur lors de l\'envoi de la commande');
       console.error('Order submission error:', error);
     } finally {
       setIsSubmitting(false);
