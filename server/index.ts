@@ -7,6 +7,15 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { connectToDatabase } from "./db";
 import ContactSubmission from "./models/ContactSubmission";
+import {
+  securityHeaders,
+  rateLimiter,
+  ipAccessControl,
+  apiKeyAuth,
+  pathProtection,
+  sanitizeInput,
+  auditLogger
+} from "./security";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,52 +43,11 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
 
-  // Security: Helmet for HTTP headers
-  app.use(helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        imgSrc: ["'self'", "data:", "https:", "blob:"],
-        connectSrc: ["'self'", "https:"],
-        frameAncestors: ["'none'"],
-        baseUri: ["'self'"],
-        formAction: ["'self'"],
-      },
-    },
-    hsts: {
-      maxAge: 31536000,
-      includeSubDomains: true,
-      preload: true,
-    },
-    noSniff: true,
-    frameguard: { action: "deny" },
-    xssFilter: true,
-  }));
-
-  // Security: Rate limiting for API endpoints
-  const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // Limit each IP to 5 requests per windowMs
-    message: "Too many requests from this IP, please try again later",
-    standardHeaders: true,
-    legacyHeaders: false,
-  });
-
-  // Security: IP filtering middleware
-  app.use((req, res, next) => {
-    const ip = req.ip || req.socket.remoteAddress || "unknown";
-    
-    // Check if IP is blocked
-    if (BLOCKED_IPS.includes(ip)) {
-      logAudit("BLOCKED_IP", ip, { path: req.path });
-      return res.status(403).json({ error: "Access denied" });
-    }
-    
-    next();
-  });
+  // Military-grade security middleware
+  app.use(securityHeaders);
+  app.use(rateLimiter);
+  app.use(ipAccessControl);
+  app.use(pathProtection);
 
   // Middleware
   app.use(express.json({ limit: "10kb" })); // Limit body size to prevent large payload attacks
@@ -101,22 +69,24 @@ async function startServer() {
   app.use(express.static(staticPath));
 
   // API endpoint for contact form with military-grade security
-  app.post("/api/contact", limiter, async (req, res) => {
+  app.post("/api/contact", apiKeyAuth, async (req, res) => {
     try {
       const ip = req.ip || req.socket.remoteAddress || "unknown";
       const userAgent = req.headers["user-agent"] || "unknown";
       
-      const { name, email, phone, company, subject, message } = req.body;
+      // Sanitize input
+      const sanitizedBody = sanitizeInput(req.body);
+      const { name, email, phone, company, subject, message } = sanitizedBody;
 
       // Security: Validate required fields
       if (!name || !email || !subject || !message) {
-        logAudit("INVALID_REQUEST", ip, { missingFields: { name, email, subject, message } });
+        auditLogger("INVALID_REQUEST", { ip, userAgent, missingFields: { name, email, subject, message } });
         return res.status(400).json({ error: "Missing required fields" });
       }
 
       // Security: Check if IP is in trusted list (optional)
       if (TRUSTED_IPS.length > 0 && !TRUSTED_IPS.includes(ip)) {
-        logAudit("UNTRUSTED_IP", ip, { email });
+        auditLogger("UNTRUSTED_IP", { ip, userAgent, email });
         // You can choose to block or just log untrusted IPs
       }
 
@@ -133,11 +103,11 @@ async function startServer() {
       });
 
       await submission.save();
-      logAudit("SUBMISSION_RECEIVED", ip, { email, subject, status: submission.status });
+      auditLogger("SUBMISSION_RECEIVED", { ip, userAgent, email, subject, status: submission.status });
 
       // Security: Check if submission was flagged as spam
       if (submission.status === "spam" || submission.riskScore >= 100) {
-        logAudit("SPAM_DETECTED", ip, { email, riskScore: submission.riskScore });
+        auditLogger("SPAM_DETECTED", { ip, userAgent, email, riskScore: submission.riskScore });
         return res.status(403).json({ error: "Submission flagged as spam" });
       }
 
@@ -197,7 +167,7 @@ async function startServer() {
 
       // Send email
       await transporter.sendMail(mailOptions);
-      logAudit("EMAIL_SENT", ip, { email });
+      auditLogger("EMAIL_SENT", { ip, userAgent, email });
 
       // Update submission status
       submission.status = "processed";
@@ -206,7 +176,7 @@ async function startServer() {
       res.json({ success: true, message: "Email sent successfully" });
     } catch (error) {
       console.error("Error processing contact form:", error);
-      logAudit("ERROR", req.ip || "unknown", { error: (error as Error).message });
+      auditLogger("ERROR", { ip: req.ip || "unknown", error: (error as Error).message });
       res.status(500).json({ error: "Failed to process request" });
     }
   });
