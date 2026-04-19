@@ -12,7 +12,7 @@ export default function WhatsAppButton() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const phoneNumber = '212600000000'; // Replace with actual WhatsApp number
+  const phoneNumber = '212679825646'; // User's WhatsApp number
   const message = 'Bonjour, je suis intéressé par vos services industriels.';
 
   const handleClick = () => {
