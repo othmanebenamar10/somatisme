@@ -73,6 +73,13 @@ export default function Contact() {
       return;
     }
 
+    // Validation téléphone (06xxxxxxxx ou +212...)
+    const phoneRegex = /^(06\d{8}|(\+212|00212)\d{9})$/;
+    if (formData.phone && !phoneRegex.test(formData.phone)) {
+      toast.error(t('contact.form.validation.phone'));
+      return;
+    }
+
     // Show terms dialog first
     setShowTermsDialog(true);
   };
