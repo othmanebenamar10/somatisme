@@ -21,7 +21,7 @@ export default function Projects() {
       category: 'Automatisme',
       tech: 'Siemens S7-1500, WinCC OA, Profinet',
       result: '+25% de productivité, traçabilité totale',
-      image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663572602219/DJ3UxwC3g4oRjvX9YeHeX4/somatisme-automation-tech-FSEKAzPRsDfEawe3XPbZBV.webp',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.46 PM.jpeg',
     },
     {
       title: 'Installation Électrique Complexe',
@@ -29,7 +29,7 @@ export default function Projects() {
       category: 'Installation Électrique',
       tech: 'TGBT 2500A, Etude de sélectivité, Canalisations préfabriquées',
       result: 'Conformité NFC 15-100, continuité de service assurée',
-      image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663572602219/DJ3UxwC3g4oRjvX9YeHeX4/somatisme-electrical-installation-oYfQNxYRmAM255cbCAQrfv.webp',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.46 PM (1).jpeg',
     },
     {
       title: 'Système de Régulation Avancé',
@@ -37,7 +37,7 @@ export default function Projects() {
       category: 'Régulation',
       tech: 'Capteurs Endress+Hauser, Vannes de régulation, Boucles PID',
       result: 'Précision de mesure < 0.1%, réduction pertes matières',
-      image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663572602219/DJ3UxwC3g4oRjvX9YeHeX4/somatisme-automation-tech-FSEKAzPRsDfEawe3XPbZBV.webp',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.46 PM (2).jpeg',
     },
     {
       title: 'Maintenance Préventive 24/7',
@@ -45,7 +45,7 @@ export default function Projects() {
       category: 'Maintenance',
       tech: 'Audit thermographique, Analyse vibratoire, Supervision SCADA',
       result: 'Réduction de 15% des arrêts non programmés',
-      image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663572602219/DJ3UxwC3g4oRjvX9YeHeX4/somatisme-maintenance-service-SMhhN34tGncAZQFNgaur8M.webp',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.46 PM (3).jpeg',
     },
     {
       title: 'Retrofit Presse Hydraulique 500T',
@@ -53,7 +53,7 @@ export default function Projects() {
       category: 'Modernisation',
       tech: 'Siemens S7-1500F, Safety I/O, Profisafe',
       result: 'Temps de cycle -18%, conformité sécurité machine',
-      image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.47 PM.jpeg',
     },
     {
       title: 'Contrôle Commande Station Pompage',
@@ -61,8 +61,24 @@ export default function Projects() {
       category: 'Traitement Eau',
       tech: 'Schneider M580, Radio/GPRS, Logiciel de supervision',
       result: 'Optimisation énergétique de 20%, monitoring 24/7',
-      image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.47 PM (1).jpeg',
     },
+    {
+      title: 'Modernisation Tableau de Commande',
+      description: 'Remplacement d\'anciens relais par API moderne avec interface HMI. Amélioration de la fiabilité et de l\'ergonomie.',
+      category: 'Modernisation',
+      tech: 'Siemens S7-1200, HMI TP1200, Communication Ethernet',
+      result: 'Disponibilité +30%, opérateurs satisfaits',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.27.47 PM (2).jpeg',
+    },
+    {
+      title: 'Installation Capteurs Industriels',
+      description: 'Déploiement de capteurs de pression, température et débit pour système de supervision centralisé.',
+      category: 'Instrumentation',
+      tech: 'Endress+Hauser, Yokogawa, Communication 4-20mA',
+      result: 'Précision améliorée, maintenance prédictive',
+      image: '/projects/WhatsApp Image 2026-04-19 at 11.29.05 PM.jpeg',
+    }
   ];
 
   return (

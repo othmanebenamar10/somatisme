@@ -41,11 +41,11 @@ export default function Home() {
 
   const partnersData = [
     { name: 'Procter & Gamble', url: 'www.pg.ma', logoUrl: '/pg.png' },
-    { name: 'Smart Strategies', url: 'www.smartstrategies.ma', logoUrl: '/Smart-Strategies.png' },
-    { name: 'Espace Metal', url: 'www.espacemetal.net', logoUrl: '/Espace-Metal.png' },
-    { name: 'Comaprom', url: '', logoUrl: '/Comaprom.png' },
-    { name: 'Electroprint', url: '', logoUrl: '/Electroprint.png' },
-    { name: 'FATER', url: '', logoUrl: '/FATER.png' },
+    { name: 'Smart Strategies', url: 'www.smartstrategies.ma', logoUrl: '/brands/Smart-Strategies.png' },
+    { name: 'Espace Metal', url: 'www.espacemetal.net', logoUrl: '/brands/Espace-Metal.png' },
+    { name: 'Comaprom', url: '', logoUrl: '/brands/Comaprom.png' },
+    { name: 'Electroprint', url: '', logoUrl: '/brands/Electroprint.png' },
+    { name: 'FATER', url: '', logoUrl: '/brands/FATER.png' },
   ];
 
   return (
