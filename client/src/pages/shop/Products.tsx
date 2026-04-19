@@ -450,7 +450,7 @@ export default function Products() {
         // In-person payment - send order via WhatsApp
         const orderMessage = `NOUVELLE COMMANDE - PAIEMENT FACE-À-FACE\n\nNom: ${orderForm.name}\nEmail: ${orderForm.email}\nTéléphone: ${orderForm.phone}\nEntreprise: ${orderForm.company}\nAdresse: ${orderForm.address}\n\nProduits commandés:\n${orderItems.map(item => `- ${item.name}: ${item.price} MAD`).join('\n')}\n\nTotal: ${cartTotal} MAD\n\nMessage: ${orderForm.message}`;
         
-        const whatsappUrl = `https://wa.me/212600000000?text=${encodeURIComponent(orderMessage)}`;
+        const whatsappUrl = `https://wa.me/212679825646?text=${encodeURIComponent(orderMessage)}`;
         window.open(whatsappUrl, '_blank');
         
         toast.success('Commande envoyée avec succès');
