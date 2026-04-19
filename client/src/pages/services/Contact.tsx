@@ -27,35 +27,12 @@ export default function Contact() {
   const [botField, setBotField] = useState(''); // Anti-spam Honeypot
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showTermsDialog, setShowTermsDialog] = useState(false);
-  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const termsContentRef = useRef<HTMLDivElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
-  // Scroll detection for terms dialog
-  useEffect(() => {
-    const handleScroll = () => {
-      if (termsContentRef.current) {
-        const { scrollTop, scrollHeight, clientHeight } = termsContentRef.current;
-        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
-        setHasScrolledToBottom(isAtBottom);
-      }
-    };
-
-    const currentRef = termsContentRef.current;
-    if (currentRef) {
-      currentRef.addEventListener('scroll', handleScroll);
-    }
-    return () => {
-      if (currentRef) {
-        currentRef.removeEventListener('scroll', handleScroll);
-      }
-    };
-  }, [showTermsDialog]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,7 +88,6 @@ export default function Contact() {
     } finally {
       setIsSubmitting(false);
       setTermsAccepted(false);
-      setHasScrolledToBottom(false);
     }
   };
 
@@ -393,10 +369,7 @@ export default function Contact() {
             <DialogTitle className="text-2xl">{t('contact.terms.title')}</DialogTitle>
             <DialogDescription>{t('contact.terms.description')}</DialogDescription>
           </DialogHeader>
-          <div
-            ref={termsContentRef}
-            className="flex-1 overflow-y-auto pr-2 my-4 text-sm text-muted-foreground space-y-4"
-          >
+          <div className="flex-1 overflow-y-auto pr-2 my-4 text-sm text-muted-foreground space-y-4">
             <div className="space-y-4">
               <h3 className="font-bold text-foreground">Acceptation des Conditions</h3>
               <p>En soumettant ce formulaire, vous acceptez que SOMATISME traite vos données personnelles aux fins de répondre à votre demande de devis ou de service.</p>
@@ -418,13 +391,6 @@ export default function Contact() {
 
               <h3 className="font-bold text-foreground">Contact</h3>
               <p>Pour toute question concernant le traitement de vos données, contactez-nous à info@somatisme.ma ou par téléphone au 05 23 30 28 29.</p>
-
-              {!hasScrolledToBottom && (
-                <div className="flex items-center gap-2 text-accent bg-accent/10 p-3 rounded-lg">
-                  <ArrowRight size={16} className="animate-pulse" />
-                  <span className="text-xs">{t('contact.terms.scroll')}</span>
-                </div>
-              )}
             </div>
           </div>
           <div className="space-y-4 pt-4 border-t border-border">
@@ -433,10 +399,9 @@ export default function Contact() {
                 type="checkbox"
                 checked={termsAccepted}
                 onChange={(e) => setTermsAccepted(e.target.checked)}
-                disabled={!hasScrolledToBottom}
                 className="mt-1 w-4 h-4 rounded border-border text-accent focus:ring-accent"
               />
-              <span className={`text-sm ${!hasScrolledToBottom ? 'text-muted-foreground' : 'text-foreground'}`}>
+              <span className="text-sm text-foreground">
                 {t('contact.terms.accept')}
               </span>
             </label>
