@@ -40,12 +40,12 @@ export default function Home() {
   };
 
   const partnersData = [
-    { name: 'Procter & Gamble', url: 'www.pg.ma', logoUrl: '/logo-pg.png' },
-    { name: 'Smart Strategies', url: 'www.smartstrategies.ma', logoUrl: '/logo-smart.png' },
-    { name: 'Espace Metal', url: 'www.espacemetal.net', logoUrl: '/logo-espace-metal.png' },
-    { name: 'Comaprom', url: '', logoUrl: '/logo-comaprom.png' },
-    { name: 'Electroprint', url: '', logoUrl: '/logo-electroprint.png' },
-    { name: 'FATER', url: '', logoUrl: '/logo-fater.png' },
+    { name: 'Procter & Gamble', url: 'www.pg.ma', logoUrl: '/pg.png' },
+    { name: 'Smart Strategies', url: 'www.smartstrategies.ma', logoUrl: '/Smart-Strategies.png' },
+    { name: 'Espace Metal', url: 'www.espacemetal.net', logoUrl: '/Espace-Metal.png' },
+    { name: 'Comaprom', url: '', logoUrl: '/Comaprom.png' },
+    { name: 'Electroprint', url: '', logoUrl: '/Electroprint.png' },
+    { name: 'FATER', url: '', logoUrl: '/FATER.png' },
   ];
 
   return (
