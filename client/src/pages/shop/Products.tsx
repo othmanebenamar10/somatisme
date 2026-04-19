@@ -3,10 +3,13 @@ import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { ShoppingCart, Filter, Search, Star, Check } from 'lucide-react';
+import { ShoppingCart, Filter, Search, Star, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
 
 interface Product {
   id: string;
@@ -199,6 +202,16 @@ export default function Products() {
   const [searchQuery, setSearchQuery] = useState('');
   const [cart, setCart] = useState<Product[]>([]);
   const [showCart, setShowCart] = useState(false);
+  const [showOrderDialog, setShowOrderDialog] = useState(false);
+  const [orderForm, setOrderForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    address: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const filteredProducts = products.filter((product) => {
     const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
@@ -218,6 +231,55 @@ export default function Products() {
   };
 
   const cartTotal = cart.reduce((sum, item) => sum + item.price, 0);
+
+  const handleOrderSubmit = async () => {
+    if (!orderForm.name || !orderForm.email || !orderForm.phone) {
+      toast.error(language === 'ar' ? 'الرجاء ملء جميع الحقول المطلوبة' : 'Veuillez remplir tous les champs requis');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const orderItems = cart.map(item => ({
+        name: language === 'ar' ? item.nameAr : item.name,
+        price: item.price,
+        quantity: 1
+      }));
+
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: orderForm.name,
+          email: orderForm.email,
+          phone: orderForm.phone,
+          company: orderForm.company,
+          subject: 'Commande de produits',
+          message: `Adresse: ${orderForm.address}\n\nProduits commandés:\n${orderItems.map(item => `- ${item.name}: ${item.price} MAD`).join('\n')}\n\nTotal: ${cartTotal} MAD\n\nMessage: ${orderForm.message}`
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(language === 'ar' ? 'تم إرسال الطلب بنجاح' : 'Commande envoyée avec succès');
+        setCart([]);
+        setShowOrderDialog(false);
+        setShowCart(false);
+        setOrderForm({ name: '', email: '', phone: '', company: '', address: '', message: '' });
+      } else {
+        toast.error(data.error || language === 'ar' ? 'خطأ في إرسال الطلب' : 'Erreur lors de l\'envoi de la commande');
+      }
+    } catch (error) {
+      toast.error(language === 'ar' ? 'خطأ في إرسال الطلب' : 'Erreur lors de l\'envoi de la commande');
+      console.error('Order submission error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -319,7 +381,7 @@ export default function Products() {
                       <span>{language === 'ar' ? 'المجموع' : 'Total'}:</span>
                       <span>{cartTotal} MAD</span>
                     </div>
-                    <Button className="w-full">
+                    <Button className="w-full" onClick={() => setShowOrderDialog(true)}>
                       {language === 'ar' ? 'إتمام الطلب' : 'Commander'}
                     </Button>
                   </div>
@@ -392,6 +454,120 @@ export default function Products() {
           )}
         </div>
       </section>
+
+      {/* Order Dialog */}
+      <Dialog open={showOrderDialog} onOpenChange={setShowOrderDialog}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">
+              {language === 'ar' ? 'إتمام الطلب' : 'Commander'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div className="bg-muted p-4 rounded-lg">
+              <h3 className="font-bold mb-2">
+                {language === 'ar' ? 'ملخص الطلب' : 'Récapitulatif de la commande'}
+              </h3>
+              {cart.map((item, index) => (
+                <div key={index} className="flex justify-between text-sm py-1 border-b last:border-0">
+                  <span>{language === 'ar' ? item.nameAr : item.name}</span>
+                  <span>{item.price} MAD</span>
+                </div>
+              ))}
+              <div className="flex justify-between font-bold mt-2 pt-2 border-t">
+                <span>{language === 'ar' ? 'المجموع' : 'Total'}:</span>
+                <span>{cartTotal} MAD</span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  {language === 'ar' ? 'الاسم الكامل *' : 'Nom complet *'}
+                </label>
+                <Input
+                  value={orderForm.name}
+                  onChange={(e) => setOrderForm({ ...orderForm, name: e.target.value })}
+                  placeholder={language === 'ar' ? 'الاسم الكامل' : 'Nom complet'}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  {language === 'ar' ? 'البريد الإلكتروني *' : 'Email *'}
+                </label>
+                <Input
+                  type="email"
+                  value={orderForm.email}
+                  onChange={(e) => setOrderForm({ ...orderForm, email: e.target.value })}
+                  placeholder={language === 'ar' ? 'البريد الإلكتروني' : 'Email'}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  {language === 'ar' ? 'رقم الهاتف *' : 'Téléphone *'}
+                </label>
+                <Input
+                  type="tel"
+                  value={orderForm.phone}
+                  onChange={(e) => setOrderForm({ ...orderForm, phone: e.target.value })}
+                  placeholder={language === 'ar' ? 'رقم الهاتف' : 'Téléphone'}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  {language === 'ar' ? 'الشركة' : 'Entreprise'}
+                </label>
+                <Input
+                  value={orderForm.company}
+                  onChange={(e) => setOrderForm({ ...orderForm, company: e.target.value })}
+                  placeholder={language === 'ar' ? 'اسم الشركة' : 'Nom de l\'entreprise'}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  {language === 'ar' ? 'العنوان' : 'Adresse'}
+                </label>
+                <Input
+                  value={orderForm.address}
+                  onChange={(e) => setOrderForm({ ...orderForm, address: e.target.value })}
+                  placeholder={language === 'ar' ? 'العنوان' : 'Adresse'}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  {language === 'ar' ? 'رسالة إضافية' : 'Message additionnel'}
+                </label>
+                <Textarea
+                  value={orderForm.message}
+                  onChange={(e) => setOrderForm({ ...orderForm, message: e.target.value })}
+                  placeholder={language === 'ar' ? 'أي معلومات إضافية...' : 'Toute information supplémentaire...'}
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setShowOrderDialog(false)}
+                className="flex-1"
+              >
+                {language === 'ar' ? 'إلغاء' : 'Annuler'}
+              </Button>
+              <Button
+                onClick={handleOrderSubmit}
+                disabled={isSubmitting}
+                className="flex-1 bg-accent hover:bg-accent/90"
+              >
+                {isSubmitting
+                  ? (language === 'ar' ? 'جاري الإرسال...' : 'Envoi en cours...')
+                  : (language === 'ar' ? 'إرسال الطلب' : 'Envoyer la commande')
+                }
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
