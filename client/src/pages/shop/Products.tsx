@@ -95,6 +95,71 @@ const products: Product[] = [
     descriptionAr: 'مستشعر ضغط سيراميك. 0-10 بار، مخرج 4-20mA، IP67.',
     brand: 'Endress+Hauser',
     stock: 25
+  },
+  {
+    id: '6',
+    name: 'API Modicon M340 Schneider',
+    nameAr: 'أتمتة Modicon M340 Schneider',
+    category: 'automation',
+    categoryAr: 'أتمتة',
+    price: 15000,
+    image: 'https://images.unsplash.com/photo-1563770095086-a5d7e044a00f?w=400&h=400&fit=crop',
+    description: 'Automate programmable Schneider Modicon M340. Haute performance, modularité.',
+    descriptionAr: 'أتمتة قابلة للبرمجة Schneider Modicon M340. أداء عالي، معيارية.',
+    brand: 'Schneider',
+    stock: 12
+  },
+  {
+    id: '7',
+    name: 'Contacteur Siemens 3RT',
+    nameAr: 'مفتاح Siemens 3RT',
+    category: 'electrical',
+    categoryAr: 'كهرباء',
+    price: 1200,
+    image: 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=400&h=400&fit=crop',
+    description: 'Contacteur Siemens 3RT. 3 pôles, 24V DC, commande électronique.',
+    descriptionAr: 'مفتاح Siemens 3RT. 3 قطب، 24V DC، تحكم إلكتروني.',
+    brand: 'Siemens',
+    stock: 50
+  },
+  {
+    id: '8',
+    name: 'Vanne de Régulation Siemens',
+    nameAr: 'صمام تنظيم Siemens',
+    category: 'regulation',
+    categoryAr: 'تنظيم',
+    price: 1800,
+    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=400&fit=crop',
+    description: 'Vanne papillon motorisée DN50. Actionneur pneumatique, positionneur.',
+    descriptionAr: 'صمام فراشة محرك DN50. مشغل هوائي، موضع.',
+    brand: 'Siemens',
+    stock: 30
+  },
+  {
+    id: '9',
+    name: 'HMI Siemens TP1200',
+    nameAr: 'واجهة HMI Siemens TP1200',
+    category: 'automation',
+    categoryAr: 'أتمتة',
+    price: 8500,
+    image: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=400&h=400&fit=crop',
+    description: 'Panneau tactile Siemens TP1200. 12", WinCC Unified, multi-touch.',
+    descriptionAr: 'لوحة لمس Siemens TP1200. 12"، WinCC Unified، multi-touch.',
+    brand: 'Siemens',
+    stock: 8
+  },
+  {
+    id: '10',
+    name: 'Disjoncteur Compact NSX',
+    nameAr: 'قاطع Compact NSX',
+    category: 'electrical',
+    categoryAr: 'كهرباء',
+    price: 5800,
+    image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&h=400&fit=crop',
+    description: 'Disjoncteur Schneider Compact NSX. 250A, Micrologic, sélectivité.',
+    descriptionAr: 'قاطع Schneider Compact NSX. 250A، Micrologic، انتقائية.',
+    brand: 'Schneider',
+    stock: 12
   }
 ];
 
