@@ -181,7 +181,7 @@ async function startServer() {
     }
   });
 
-  // API endpoint for Stripe checkout
+  // API endpoint for PayPal checkout
   app.post("/api/checkout", async (req, res) => {
     try {
       const { items, customerInfo } = req.body;
@@ -194,11 +194,14 @@ async function startServer() {
         return res.status(400).json({ error: 'Customer email required' });
       }
 
-      // For now, we'll return a mock session ID
-      // In production, you would use actual Stripe SDK
-      const sessionId = 'cs_test_' + Date.now();
+      // Calculate total amount
+      const total = items.reduce((sum: number, item: any) => sum + item.price, 0);
+
+      // For PayPal integration, you would use PayPal SDK
+      // For now, return approval URL for PayPal
+      const approvalUrl = `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=${process.env.PAYPAL_EMAIL || 'your-paypal-email@example.com'}&item_name=Commande SOMATISME&amount=${total.toFixed(2)}&currency_code=MAD`;
       
-      res.json({ sessionId });
+      res.json({ approvalUrl });
     } catch (error) {
       console.error('Checkout error:', error);
       res.status(500).json({ error: 'Failed to create checkout session' });

@@ -422,7 +422,7 @@ export default function Products() {
       }));
 
       if (paymentMethod === 'stripe') {
-        // Stripe payment
+        // PayPal payment
         const response = await fetch('/api/checkout', {
           method: 'POST',
           headers: {
@@ -436,9 +436,10 @@ export default function Products() {
 
         const data = await response.json();
 
-        if (response.ok && data.sessionId) {
-          // For now, just show success message
-          toast.success('Session de paiement créée avec succès');
+        if (response.ok && data.approvalUrl) {
+          // Redirect to PayPal
+          window.open(data.approvalUrl, '_blank');
+          toast.success('Redirection vers PayPal...');
           setCart([]);
           setShowOrderDialog(false);
           setShowCart(false);
@@ -711,7 +712,7 @@ export default function Products() {
                     {language === 'ar' ? 'معلومات الدفع en ligne:' : 'Informations de paiement en ligne:'}
                   </p>
                   <ul className="text-xs text-muted-foreground space-y-1">
-                    <li>• {language === 'ar' ? 'دفع آمن عبر Stripe' : 'Paiement sécurisé via Stripe'}</li>
+                    <li>• {language === 'ar' ? 'دفع آمن عبر PayPal' : 'Paiement sécurisé via PayPal'}</li>
                     <li>• {language === 'ar' ? 'فاتورة تلقائية envoyée par email' : 'Facture automatique envoyée par email'}</li>
                     <li>• {language === 'ar' ? 'دفع فوري' : 'Paiement immédiat'}</li>
                   </ul>
