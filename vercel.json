@@ -3,6 +3,14 @@
   "outputDirectory": "dist/public",
   "installCommand": "pnpm install",
   "framework": "vite",
+  "env": {
+    "SMTP_HOST": "@smtp-host",
+    "SMTP_PORT": "@smtp-port",
+    "SMTP_USER": "@smtp-user",
+    "SMTP_PASS": "@smtp-pass",
+    "EMAIL_FROM": "@email-from",
+    "EMAIL_TO": "@email-to"
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ],
