@@ -204,7 +204,7 @@ export default function Products() {
   const [cart, setCart] = useState<Product[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [showOrderDialog, setShowOrderDialog] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'b2b' | 'inperson'>('stripe');
+  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'inperson'>('stripe');
   const [orderForm, setOrderForm] = useState({
     name: '',
     email: '',
@@ -276,11 +276,7 @@ export default function Products() {
           toast.error(data.error || language === 'ar' ? 'خطأ في إرسال الطلب' : 'Erreur lors de l\'envoi de la commande');
         }
       } else {
-        // B2B or in-person payment - send order via email
-        const isB2B = paymentMethod === 'b2b';
-        const subject = isB2B ? 'Commande B2B - Facture demandée' : 'Commande en face-à-face - Facture demandée';
-        const paymentMode = isB2B ? 'B2B (Facture/Virement bancaire)' : 'Face-à-face (Paiement sur place)';
-
+        // In-person payment - send order via email
         const response = await fetch('/api/contact', {
           method: 'POST',
           headers: {
@@ -291,8 +287,8 @@ export default function Products() {
             email: orderForm.email,
             phone: orderForm.phone,
             company: orderForm.company,
-            subject: subject,
-            message: `Mode de paiement: ${paymentMode}\n\nAdresse: ${orderForm.address}\n\nProduits commandés:\n${orderItems.map(item => `- ${item.name}: ${item.price} MAD`).join('\n')}\n\nTotal: ${cartTotal} MAD\n\nMessage: ${orderForm.message}`
+            subject: 'Commande en face-à-face - Facture demandée',
+            message: `Mode de paiement: Face-à-face (Paiement sur place)\n\nAdresse: ${orderForm.address}\n\nProduits commandés:\n${orderItems.map(item => `- ${item.name}: ${item.price} MAD`).join('\n')}\n\nTotal: ${cartTotal} MAD\n\nMessage: ${orderForm.message}`
           }),
         });
 
@@ -520,7 +516,7 @@ export default function Products() {
               <label className="block text-sm font-medium">
                 {language === 'ar' ? 'طريقة الدفع' : 'Mode de paiement'}
               </label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('stripe')}
@@ -535,22 +531,6 @@ export default function Products() {
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {language === 'ar' ? 'بطاقة bancaire immédiate' : 'Carte bancaire immédiate'}
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('b2b')}
-                  className={`p-4 border rounded-lg text-center transition-all ${
-                    paymentMethod === 'b2b'
-                      ? 'border-accent bg-accent/10 text-accent'
-                      : 'border-border hover:border-accent/50'
-                  }`}
-                >
-                  <div className="font-medium mb-1">
-                    {language === 'ar' ? 'دفع B2B' : 'Paiement B2B'}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {language === 'ar' ? 'فاتورة / تحويل بنكي' : 'Facture / Virement'}
                   </div>
                 </button>
                 <button
@@ -579,18 +559,6 @@ export default function Products() {
                     <li>• {language === 'ar' ? 'دفع آمن عبر Stripe' : 'Paiement sécurisé via Stripe'}</li>
                     <li>• {language === 'ar' ? 'فاتورة تلقائية envoyée par email' : 'Facture automatique envoyée par email'}</li>
                     <li>• {language === 'ar' ? 'دفع فوري' : 'Paiement immédiat'}</li>
-                  </ul>
-                </div>
-              )}
-              {paymentMethod === 'b2b' && (
-                <div className="bg-muted p-3 rounded-lg text-sm">
-                  <p className="font-medium mb-1">
-                    {language === 'ar' ? 'معلومات الدفع B2B:' : 'Informations de paiement B2B:'}
-                  </p>
-                  <ul className="text-xs text-muted-foreground space-y-1">
-                    <li>• {language === 'ar' ? 'سيتم إرسال فاتورة إليك عبر البريد الإلكتروني' : 'Une facture vous sera envoyée par email'}</li>
-                    <li>• {language === 'ar' ? 'الدفع عن طريق التحويل البنكي' : 'Paiement par virement bancaire'}</li>
-                    <li>• {language === 'ar' ? 'شروط الدفع: 30 يوماً' : 'Conditions de paiement: 30 jours'}</li>
                   </ul>
                 </div>
               )}
