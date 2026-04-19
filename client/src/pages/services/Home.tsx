@@ -137,11 +137,12 @@ export default function Home() {
       </section>
 
       {/* Partners Ticker Section */}
-      <section className="py-12 border-y border-border bg-background overflow-hidden">
+      <section className="py-16 border-y border-border bg-background overflow-hidden">
         <div className="container mb-8">
-          <h2 className="text-center text-sm font-bold uppercase tracking-widest text-muted-foreground">
+          <h2 className="text-center text-lg font-bold uppercase tracking-widest text-muted-foreground mb-2">
             {t('about.partners.title')}
           </h2>
+          <p className="text-center text-muted-foreground">{t('about.partners.subtitle')}</p>
         </div>
         <div className="relative flex">
           <motion.div
@@ -156,7 +157,7 @@ export default function Home() {
                 ease: "linear",
               },
             }}
-        className="flex flex-none gap-24 pr-24 items-center"
+        className="flex flex-none gap-32 pr-32 items-center"
           >
         {[...partnersData, ...partnersData].map((partner, index) => (
               <div
@@ -166,7 +167,7 @@ export default function Home() {
                 <img 
                   src={partner.logoUrl} 
                   alt={partner.name} 
-                  className="h-12 w-auto object-contain max-w-[150px]" 
+                  className="h-20 w-auto object-contain max-w-[200px]" 
                   onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${partner.name}&background=random`; }} 
                 />
               </div>
