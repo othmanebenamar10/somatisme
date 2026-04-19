@@ -109,8 +109,8 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-sm opacity-70">
             <p>{t('footer.copyright')}</p>
             <div className="flex flex-wrap justify-center gap-x-8 gap-y-2">
-              <a href="#" className="hover:opacity-100 transition-opacity">{t('footer.privacy')}</a>
-              <a href="#" className="hover:opacity-100 transition-opacity">{t('footer.terms')}</a>
+              <a href="/privacy" className="hover:opacity-100 transition-opacity">{t('footer.privacy')}</a>
+              <a href="/terms" className="hover:opacity-100 transition-opacity">{t('footer.terms')}</a>
             </div>
           </div>
         </div>

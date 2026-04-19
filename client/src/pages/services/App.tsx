@@ -18,6 +18,8 @@ import Realisation from "./Realisation";
 import Formation from "./Formation";
 import Projects from "./Projects";
 import Contact from "./Contact";
+import Privacy from "./Privacy";
+import Terms from "./Terms";
 
 
 function ScrollToTop() {
@@ -45,6 +47,8 @@ function Router() {
       <Route path="/services/formation" component={Formation} />
       <Route path="/projects" component={Projects} />
       <Route path="/contact" component={Contact} />
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/terms" component={Terms} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
