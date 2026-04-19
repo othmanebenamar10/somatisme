@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://somatisme.ma/sitemap.xml
