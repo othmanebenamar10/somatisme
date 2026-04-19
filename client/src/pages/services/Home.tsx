@@ -93,15 +93,15 @@ export default function Home() {
               <div className="flex gap-8 pt-8">
                 <div>
                   <p className="text-2xl font-bold text-primary">50+</p>
-                  <p className="text-sm text-muted-foreground">Projets réalisés</p>
+                  <p className="text-sm text-muted-foreground">{t('home.hero.stats.projects')}</p>
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-primary">15+</p>
-                  <p className="text-sm text-muted-foreground">Années d'expérience</p>
+                  <p className="text-sm text-muted-foreground">{t('home.hero.stats.experience')}</p>
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-primary">100%</p>
-                  <p className="text-sm text-muted-foreground">Client satisfaits</p>
+                  <p className="text-sm text-muted-foreground">{t('home.hero.stats.satisfaction')}</p>
                 </div>
               </div>
             </motion.div>
@@ -115,7 +115,7 @@ export default function Home() {
             >
               <div className="relative rounded-lg overflow-hidden shadow-2xl">
                 <img
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663572602219/DJ3UxwC3g4oRjvX9YeHeX4/somatisme-hero-industrial-eHKFdvCVLBVo9w8jk262oq.webp"
+                  src="/somatisme.png"
                   alt="Automatisme industriel"
                   className="w-full h-auto object-cover"
                 />
@@ -128,8 +128,8 @@ export default function Home() {
                 transition={{ duration: 4, repeat: Infinity }}
                 className="absolute -bottom-6 -left-6 bg-card border border-border rounded-lg p-4 shadow-lg max-w-xs"
               >
-                <p className="text-sm font-semibold text-foreground mb-2">Technologie de Pointe</p>
-                <p className="text-xs text-muted-foreground">Systèmes d'automatisme dernière génération</p>
+                <p className="text-sm font-semibold text-foreground mb-2">{t('home.hero.card.title')}</p>
+                <p className="text-xs text-muted-foreground">{t('home.hero.card.desc')}</p>
               </motion.div>
             </motion.div>
           </div>
