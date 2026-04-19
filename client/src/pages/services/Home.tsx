@@ -200,26 +200,26 @@ export default function Home() {
             {[
               {
                 icon: Cpu,
-                title: 'Automatisme Industriel',
-                description: 'Systèmes de contrôle et d\'automatisation avancés',
+                title: t('home.expertise.automation.title'),
+                description: t('home.expertise.automation.desc'),
                 href: '/services/automation',
               },
               {
                 icon: Zap,
-                title: 'Régulation & Instrumentation',
-                description: 'Mesure et contrôle de précision',
+                title: t('home.expertise.regulation.title'),
+                description: t('home.expertise.regulation.desc'),
                 href: '/services/regulation',
               },
               {
                 icon: Shield,
-                title: 'Installation Électrique',
-                description: 'Solutions électriques sécurisées et conformes',
+                title: t('home.expertise.electrical.title'),
+                description: t('home.expertise.electrical.desc'),
                 href: '/services/electrical',
               },
               {
                 icon: Wrench,
-                title: 'Maintenance Industrielle',
-                description: 'Support technique et maintenance préventive',
+                title: t('home.expertise.maintenance.title'),
+                description: t('home.expertise.maintenance.desc'),
                 href: '/services/maintenance',
               },
             ].map((service, index) => (
