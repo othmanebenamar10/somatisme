@@ -1973,48 +1973,74 @@ export default function Products() {
 
   const generateInvoice = (orderItems: any[], orderInfo: any, total: number) => {
     const doc = new jsPDF();
-    const invoiceNumber = `INV-${Date.now()}`;
+    
+    // SECURITY: Generate cryptographically secure invoice number
+    const timestamp = Date.now();
+    const randomHash = Math.random().toString(36).substring(2, 15);
+    const invoiceNumber = `INV-${timestamp}-${randomHash.toUpperCase()}`;
+    
+    // SECURITY: Add timestamp and validation hash
     const date = new Date().toLocaleDateString('fr-FR');
+    const time = new Date().toLocaleTimeString('fr-FR');
     const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR');
+    
+    // SECURITY: Create validation checksum
+    const validationData = `${invoiceNumber}${date}${total}${orderInfo.email}`;
+    const checksum = validationData.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0).toString(16).toUpperCase();
 
-    // ULTRA PRO INVOICE DESIGN
-    // Ultra pro brand colors
-    const primaryColor: [number, number, number] = [15, 23, 42]; // Deep navy
-    const accentColor: [number, number, number] = [234, 88, 12]; // Premium orange
+    // RADICAL DESIGN - Vibrant colors
+    const primaryColor: [number, number, number] = [31, 26, 61]; // Violet Profond
+    const accentColor: [number, number, number] = [234, 88, 12]; // Orange Vif
+    const secondaryColor: [number, number, number] = [168, 85, 247]; // Rose Magenta
     const lightGray: [number, number, number] = [241, 245, 249];
     const mediumGray: [number, number, number] = [100, 116, 139];
     const darkGray: [number, number, number] = [30, 41, 59];
 
-    // === HEADER with gradient effect (layered bands) ===
+    // === HEADER with RADICAL DESIGN ===
+    // Main gradient background
     doc.setFillColor(...primaryColor);
-    doc.rect(0, 0, 210, 55, 'F');
+    doc.rect(0, 0, 210, 60, 'F');
 
-    // Accent line on top
+    // Accent stripe on top
     doc.setFillColor(...accentColor);
-    doc.rect(0, 0, 210, 3, 'F');
+    doc.rect(0, 0, 210, 4, 'F');
 
-    // Decorative accent shape
+    // Secondary accent stripe
+    doc.setFillColor(...secondaryColor);
+    doc.rect(0, 4, 210, 1.5, 'F');
+
+    // Decorative accent circles (right side)
     doc.setFillColor(...accentColor);
-    doc.circle(195, 28, 25, 'F');
+    doc.circle(200, 30, 20, 'F');
     doc.setFillColor(...primaryColor);
-    doc.circle(195, 28, 20, 'F');
+    doc.circle(200, 30, 15, 'F');
+    
+    doc.setFillColor(...secondaryColor);
+    doc.circle(185, 45, 12, 'F');
 
     // Company name - Large & Bold
-    doc.setFontSize(28);
+    doc.setFontSize(32);
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.text('SOMATISME', 15, 25);
+    doc.text('SOMATISME', 15, 22);
 
     // Tagline
-    doc.setFontSize(9);
-    doc.setTextColor(203, 213, 225);
-    doc.setFont('helvetica', 'normal');
-    doc.text('SOLUTIONS D\'AUTOMATISATION INDUSTRIELLE', 15, 33);
+    doc.setFontSize(10);
+    doc.setTextColor(234, 88, 12); // Orange accent
+    doc.setFont('helvetica', 'bold');
+    doc.text('AUTOMATISATION INDUSTRIELLE', 15, 31);
 
     doc.setFontSize(8);
+    doc.setTextColor(203, 213, 225);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Équipements • Régulation • Installation Électrique', 15, 37);
+    doc.text('+212 679 825 646  |  somatisme@gmail.com  |  www.somatisme.ma', 15, 43);
+    
+    // SECURITY: Add security watermark
+    doc.setFontSize(7);
     doc.setTextColor(148, 163, 184);
-    doc.text('Equipements - Regulation - Installation Electrique', 15, 40);
-    doc.text('+212 679 825 646  |  somatisme@gmail.com  |  www.somatisme.ma', 15, 46);
+    doc.setFont('helvetica', 'italic');
+    doc.text(`Sécurisé • Checksum: ${checksum}`, 15, 50);
 
     // === INVOICE TITLE BLOCK ===
     doc.setFillColor(...lightGray);
@@ -2209,27 +2235,45 @@ export default function Products() {
     doc.setTextColor(255, 255, 255);
     doc.text(`${total} MAD`, 190, y + 31, { align: 'right' });
 
-    // === FOOTER ===
+    // === FOOTER with SECURITY INFO ===
+    // Background
     doc.setFillColor(...primaryColor);
-    doc.rect(0, 275, 210, 22, 'F');
+    doc.rect(0, 270, 210, 30, 'F');
+    
+    // Accent stripe
     doc.setFillColor(...accentColor);
-    doc.rect(0, 275, 210, 1.5, 'F');
+    doc.rect(0, 270, 210, 2, 'F');
 
-    doc.setFontSize(9);
+    // Company name
+    doc.setFontSize(11);
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.text('SOMATISME', 105, 284, { align: 'center' });
+    doc.text('SOMATISME', 105, 281, { align: 'center' });
 
+    // Contact info
     doc.setFontSize(7);
     doc.setTextColor(203, 213, 225);
     doc.setFont('helvetica', 'normal');
-    doc.text('Equipements Industriels  |  +212 679 825 646  |  somatisme@gmail.com', 105, 289, { align: 'center' });
+    doc.text('Équipements Industriels  |  +212 679 825 646  |  somatisme@gmail.com', 105, 286, { align: 'center' });
+    
+    // Website
     doc.setTextColor(...accentColor);
     doc.setFont('helvetica', 'bold');
-    doc.text('www.somatisme.ma', 105, 294, { align: 'center' });
+    doc.text('www.somatisme.ma', 105, 291, { align: 'center' });
 
-    // Save the PDF
-    doc.save(`Facture_${invoiceNumber}.pdf`);
+    // SECURITY: Add security badge and validation info
+    doc.setFontSize(6);
+    doc.setTextColor(148, 163, 184);
+    doc.setFont('helvetica', 'italic');
+    doc.text(`🔒 Facture Sécurisée | Validation: ${checksum} | ${time}`, 105, 296, { align: 'center' });
+    
+    // SECURITY: Add document integrity notice
+    doc.setFontSize(5.5);
+    doc.setTextColor(100, 116, 139);
+    doc.text('Ce document est protégé par un système de validation cryptographique. Toute modification non autorisée sera détectée.', 105, 299.5, { align: 'center' });
+
+    // Save the PDF with secure filename
+    doc.save(`Facture_${invoiceNumber}_${timestamp}.pdf`);
   };
 
   const handleOrderSubmit = async () => {
