@@ -2283,127 +2283,289 @@ export default function Products() {
       const timestamp = Date.now();
       const randomHash = Math.random().toString(36).substring(2, 15);
       const invoiceNumber = `INV-${timestamp}-${randomHash.toUpperCase()}`;
-      
+
       const date = new Date().toLocaleDateString('fr-FR');
       const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR');
 
-      const primaryColor: [number, number, number] = [30, 58, 95];
-      const accentColor: [number, number, number] = [6, 182, 212];
-      const secondaryColor: [number, number, number] = [45, 55, 72];
-      const lightGray: [number, number, number] = [241, 245, 249];
-      const mediumGray: [number, number, number] = [107, 114, 128];
-      const darkGray: [number, number, number] = [31, 41, 55];
+      // === COLOR PALETTE ===
+      const navy: [number, number, number]     = [15, 23, 42];
+      const navyMid: [number, number, number]  = [30, 41, 59];
+      const navyLight: [number, number, number]= [51, 65, 85];
+      const cyan: [number, number, number]     = [6, 182, 212];
+      const cyanLight: [number, number, number]= [103, 232, 249];
+      const white: [number, number, number]    = [255, 255, 255];
+      const slate: [number, number, number]    = [148, 163, 184];
+      const slateLight: [number, number, number]=[241, 245, 249];
+      const slateXLight: [number, number, number]=[248, 250, 252];
 
-      // === HEADER ===
-      doc.setFillColor(...primaryColor);
-      doc.rect(0, 0, 210, 50, 'F');
+      // =============================================
+      // === FULL PAGE BACKGROUND ===
+      // =============================================
+      doc.setFillColor(...slateXLight);
+      doc.rect(0, 0, 210, 297, 'F');
 
-      doc.setTextColor(...accentColor);
-      doc.setFontSize(14);
+      // === LEFT DARK SIDEBAR ===
+      doc.setFillColor(...navy);
+      doc.rect(0, 0, 55, 297, 'F');
+
+      // === CYAN ACCENT TOP BAR ===
+      doc.setFillColor(...cyan);
+      doc.rect(0, 0, 55, 4, 'F');
+
+      // === CYAN CORNER GEOMETRIC DETAIL ===
+      doc.setFillColor(...cyan);
+      doc.rect(0, 60, 55, 1, 'F');
+
+      // =============================================
+      // === SIDEBAR CONTENT ===
+      // =============================================
+
+      // Logo area
+      doc.setFontSize(16);
+      doc.setTextColor(...white);
       doc.setFont('helvetica', 'bold');
-      doc.text('SOMATISME', 15, 20);
+      doc.text('SOMA', 10, 22);
+      doc.setTextColor(...cyan);
+      doc.text('TISME', 31, 22);
 
-      doc.setTextColor(...accentColor);
-      doc.setFontSize(10);
+      doc.setFontSize(6);
+      doc.setTextColor(...slate);
+      doc.setFont('helvetica', 'normal');
+      doc.text('AUTOMATISATION', 10, 29);
+      doc.text('INDUSTRIELLE', 10, 34);
+
+      // Divider
+      doc.setDrawColor(...navyLight);
+      doc.line(10, 40, 48, 40);
+
+      // Sidebar info label
+      doc.setFontSize(7);
+      doc.setTextColor(...cyan);
       doc.setFont('helvetica', 'bold');
-      doc.text('AUTOMATISATION INDUSTRIELLE', 15, 31);
+      doc.text('CONTACT', 10, 52);
+
+      doc.setFontSize(7);
+      doc.setTextColor(...slate);
+      doc.setFont('helvetica', 'normal');
+      doc.text('+212 679 825 646', 10, 60);
+      doc.text('somatisme@gmail.com', 10, 67);
+      doc.text('www.somatisme.ma', 10, 74);
+      doc.text('Mohammedia, Maroc', 10, 81);
+
+      // Divider
+      doc.setDrawColor(...navyLight);
+      doc.line(10, 88, 48, 88);
+
+      // Sidebar invoice info
+      doc.setFontSize(7);
+      doc.setTextColor(...cyan);
+      doc.setFont('helvetica', 'bold');
+      doc.text('FACTURE N°', 10, 100);
+
+      doc.setFontSize(6.5);
+      doc.setTextColor(...white);
+      doc.setFont('helvetica', 'normal');
+      const refParts = invoiceNumber.split('-');
+      doc.text(refParts[0] + '-' + refParts[1], 10, 108);
+      if (refParts[2]) doc.text(refParts[2], 10, 114);
+
+      doc.setFontSize(7);
+      doc.setTextColor(...cyan);
+      doc.setFont('helvetica', 'bold');
+      doc.text('DATE', 10, 126);
+      doc.setFontSize(7);
+      doc.setTextColor(...slate);
+      doc.setFont('helvetica', 'normal');
+      doc.text(date, 10, 133);
+
+      doc.setFontSize(7);
+      doc.setTextColor(...cyan);
+      doc.setFont('helvetica', 'bold');
+      doc.text('ÉCHÉANCE', 10, 145);
+      doc.setFontSize(7);
+      doc.setTextColor(...slate);
+      doc.setFont('helvetica', 'normal');
+      doc.text(dueDate, 10, 152);
+
+      // Status badge
+      doc.setFillColor(...cyan);
+      doc.roundedRect(9, 162, 38, 10, 2, 2, 'F');
+      doc.setFontSize(7);
+      doc.setTextColor(...navy);
+      doc.setFont('helvetica', 'bold');
+      doc.text('EN ATTENTE', 14, 168.5);
+
+      // Payment mode
+      doc.setFontSize(7);
+      doc.setTextColor(...cyan);
+      doc.setFont('helvetica', 'bold');
+      doc.text('PAIEMENT', 10, 184);
+      doc.setFontSize(7);
+      doc.setTextColor(...slate);
+      doc.setFont('helvetica', 'normal');
+      doc.text('A la livraison', 10, 191);
+
+      // Bottom sidebar decoration
+      doc.setFillColor(...navyMid);
+      doc.rect(0, 265, 55, 32, 'F');
+      doc.setFillColor(...cyan);
+      doc.rect(0, 293, 55, 4, 'F');
+      doc.setFontSize(6);
+      doc.setTextColor(...slate);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Merci de votre confiance', 10, 276);
+      doc.text('SOMATISME © 2025', 10, 282);
+
+      // =============================================
+      // === MAIN CONTENT AREA (right of sidebar) ===
+      // =============================================
+
+      // === HEADER TOP RIGHT ===
+      doc.setFontSize(28);
+      doc.setTextColor(...navyMid);
+      doc.setFont('helvetica', 'bold');
+      doc.text('FACTURE', 68, 28);
+
+      // Cyan underline
+      doc.setFillColor(...cyan);
+      doc.rect(68, 31, 42, 1.5, 'F');
+
+      // =============================================
+      // === CLIENT INFO BOX ===
+      // =============================================
+      doc.setFillColor(...white);
+      doc.roundedRect(65, 40, 135, 48, 3, 3, 'F');
+      doc.setDrawColor(...cyan);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(65, 40, 135, 48, 3, 3, 'S');
+
+      // Left cyan border accent
+      doc.setFillColor(...cyan);
+      doc.roundedRect(65, 40, 3, 48, 2, 2, 'F');
 
       doc.setFontSize(8);
-      doc.setTextColor(203, 213, 225);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Équipements • Régulation • Installation Électrique', 15, 37);
-      doc.text('+212 679 825 646  |  somatisme@gmail.com  |  www.somatisme.ma', 15, 43);
-
-      // === INVOICE TITLE BLOCK ===
-      doc.setFillColor(...lightGray);
-      doc.roundedRect(15, 65, 180, 28, 3, 3, 'F');
-
-      doc.setFontSize(22);
-      doc.setTextColor(...primaryColor);
+      doc.setTextColor(...navy);
       doc.setFont('helvetica', 'bold');
-      doc.text('FACTURE', 20, 78);
+      doc.text('FACTURÉ À', 73, 50);
 
-      doc.setFontSize(10);
-      doc.setTextColor(...mediumGray);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`N° ${invoiceNumber}`, 150, 73);
-      doc.text(`Date: ${date}`, 150, 80);
-      doc.text(`Échéance: ${dueDate}`, 150, 87);
-
-      // === CUSTOMER INFO ===
-      doc.setFontSize(10);
-      doc.setTextColor(...primaryColor);
+      doc.setFontSize(11);
+      doc.setTextColor(...navyMid);
       doc.setFont('helvetica', 'bold');
-      doc.text('INFORMATIONS CLIENT', 15, 110);
+      doc.text(orderForm.name, 73, 59);
 
-      doc.setFontSize(9);
-      doc.setTextColor(...darkGray);
+      doc.setFontSize(8.5);
+      doc.setTextColor(...slate);
       doc.setFont('helvetica', 'normal');
-      doc.text(`${orderForm.name}`, 15, 120);
-      doc.text(`${orderForm.email}`, 15, 127);
-      doc.text(`${orderForm.phone}`, 15, 134);
-      if (orderForm.company) doc.text(`${orderForm.company}`, 15, 141);
-      if (orderForm.address) doc.text(`${orderForm.address}`, 15, 148);
+      let clientY = 67;
+      if (orderForm.company) { doc.text(orderForm.company, 73, clientY); clientY += 7; }
+      doc.text(orderForm.email, 73, clientY); clientY += 7;
+      doc.text(orderForm.phone, 73, clientY);
+      if (orderForm.address) { clientY += 7; doc.text(orderForm.address, 73, clientY); }
 
+      // =============================================
       // === PRODUCTS TABLE ===
-      doc.setFontSize(10);
-      doc.setTextColor(...primaryColor);
+      // =============================================
+      const tableTop = 100;
+
+      // Table header
+      doc.setFillColor(...navy);
+      doc.roundedRect(65, tableTop, 135, 10, 2, 2, 'F');
+
+      doc.setFontSize(8);
+      doc.setTextColor(...white);
       doc.setFont('helvetica', 'bold');
-      doc.text('PRODUITS COMMANDÉS', 15, 165);
+      doc.text('#', 70, tableTop + 7);
+      doc.text('DÉSIGNATION', 80, tableTop + 7);
+      doc.text('PRIX UNITAIRE', 148, tableTop + 7);
+      doc.text('TOTAL', 182, tableTop + 7);
 
-      doc.setFillColor(...lightGray);
-      doc.rect(15, 170, 180, 8, 'F');
-
-      doc.setFontSize(9);
-      doc.setTextColor(...primaryColor);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Produit', 20, 175);
-      doc.text('Prix', 170, 175);
-
-      let yPos = 185;
+      // Table rows
+      let rowY = tableTop + 10;
       orderItems.forEach((item: any, idx: number) => {
-        doc.setTextColor(...darkGray);
+        const isEven = idx % 2 === 0;
+        doc.setFillColor(...(isEven ? white : slateXLight));
+        doc.rect(65, rowY, 135, 10, 'F');
+
+        doc.setFontSize(8);
+        doc.setTextColor(...navyMid);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${idx + 1}`, 70, rowY + 7);
+
+        doc.setTextColor(...navyLight);
         doc.setFont('helvetica', 'normal');
-        doc.text(`${idx + 1}. ${item.name}`, 20, yPos);
-        doc.text(`${item.price} MAD`, 170, yPos);
-        yPos += 10;
+        // Truncate long names
+        const name = item.name.length > 38 ? item.name.substring(0, 38) + '...' : item.name;
+        doc.text(name, 80, rowY + 7);
+
+        doc.setTextColor(...navyMid);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${item.price} MAD`, 148, rowY + 7);
+        doc.text(`${item.price} MAD`, 182, rowY + 7);
+
+        rowY += 10;
       });
 
-      // === TOTALS ===
-      yPos += 5;
-      doc.setDrawColor(...accentColor);
-      doc.line(15, yPos, 195, yPos);
+      // Bottom border for table
+      doc.setDrawColor(...slateLight);
+      doc.setLineWidth(0.3);
+      doc.line(65, rowY, 200, rowY);
 
-      yPos += 10;
-      doc.setFontSize(10);
-      doc.setTextColor(...darkGray);
+      // =============================================
+      // === TOTALS BOX ===
+      // =============================================
+      rowY += 8;
+
+      // Subtotal row
+      doc.setFontSize(8.5);
+      doc.setTextColor(...slate);
       doc.setFont('helvetica', 'normal');
-      doc.text('Sous-total:', 140, yPos);
-      doc.text(`${cartSubtotal} MAD`, 170, yPos);
+      doc.text('Sous-total', 148, rowY);
+      doc.setTextColor(...navyMid);
+      doc.text(`${cartSubtotal} MAD`, 182, rowY);
 
-      yPos += 8;
-      doc.text('Frais de livraison (10%):', 140, yPos);
-      doc.text(`${shippingFee.toFixed(2)} MAD`, 170, yPos);
+      rowY += 8;
+      doc.setTextColor(...slate);
+      doc.text('Frais de livraison (10%)', 148, rowY);
+      doc.setTextColor(...navyMid);
+      doc.text(`${shippingFee.toFixed(0)} MAD`, 182, rowY);
 
-      yPos += 10;
-      doc.setFillColor(...accentColor);
-      doc.rect(140, yPos - 5, 55, 10, 'F');
+      // TOTAL box
+      rowY += 6;
+      doc.setFillColor(...navy);
+      doc.roundedRect(140, rowY, 60, 14, 2, 2, 'F');
+      doc.setFillColor(...cyan);
+      doc.roundedRect(140, rowY, 3, 14, 1, 1, 'F');
 
-      doc.setFontSize(12);
-      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(9);
+      doc.setTextColor(...slate);
       doc.setFont('helvetica', 'bold');
-      doc.text('TOTAL:', 145, yPos + 2);
-      doc.text(`${cartTotal} MAD`, 170, yPos + 2);
+      doc.text('TOTAL', 148, rowY + 9.5);
 
-      // === FOOTER ===
+      doc.setFontSize(11);
+      doc.setTextColor(...cyan);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`${cartTotal} MAD`, 175, rowY + 9.5);
+
+      // =============================================
+      // === NOTES / TERMS ===
+      // =============================================
+      rowY += 24;
+      doc.setFillColor(...white);
+      doc.roundedRect(65, rowY, 135, 22, 2, 2, 'F');
+      doc.setDrawColor(...slateLight);
+      doc.setLineWidth(0.3);
+      doc.roundedRect(65, rowY, 135, 22, 2, 2, 'S');
+
+      doc.setFontSize(7.5);
+      doc.setTextColor(...cyan);
+      doc.setFont('helvetica', 'bold');
+      doc.text('CONDITIONS & NOTES', 70, rowY + 8);
+
       doc.setFontSize(7);
-      doc.setTextColor(203, 213, 225);
+      doc.setTextColor(...slate);
       doc.setFont('helvetica', 'normal');
-      doc.text('Équipements Industriels  |  +212 679 825 646  |  somatisme@gmail.com', 105, 286, { align: 'center' });
-
-      doc.setTextColor(...accentColor);
-      doc.setFont('helvetica', 'bold');
-      doc.text('www.somatisme.ma', 105, 291, { align: 'center' });
+      doc.text('• Paiement à la livraison — Commande confirmée sous 24h', 70, rowY + 15);
+      doc.text('• Pour toute question: info@somatisme.ma  |  +212 679 825 646', 70, rowY + 20);
 
       // Save PDF to downloads
       doc.save(`Facture_${invoiceNumber}_SOMATISME.pdf`);
