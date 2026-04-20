@@ -42,33 +42,27 @@ function logAudit(action: string, ip: string, details: any): void {
 
 const app = express();
 
-async function startServer() {
-  const server = createServer(app);
+// Military-grade security middleware
+app.use(securityHeaders);
+app.use(rateLimiter);
+app.use(ipAccessControl);
+app.use(pathProtection);
 
-  // Military-grade security middleware
-  app.use(securityHeaders);
-  app.use(rateLimiter);
-  app.use(ipAccessControl);
-  app.use(pathProtection);
+// Middleware
+app.use(express.json({ limit: "10kb" })); // Limit body size to prevent large payload attacks
 
-  // Middleware
-  app.use(express.json({ limit: "10kb" })); // Limit body size to prevent large payload attacks
+// Serve static files from dist/public in production
+const staticPath =
+  process.env.NODE_ENV === "production"
+    ? path.resolve(__dirname, "public")
+    : path.resolve(__dirname, "..", "dist", "public");
 
-  // Connect to MongoDB
-  try {
-    await connectToDatabase();
-    console.log("Database connected successfully");
-  } catch (error) {
-    console.error("Failed to connect to database:", error);
-  }
+app.use(express.static(staticPath));
 
-  // Serve static files from dist/public in production
-  const staticPath =
-    process.env.NODE_ENV === "production"
-      ? path.resolve(__dirname, "public")
-      : path.resolve(__dirname, "..", "dist", "public");
-
-  app.use(express.static(staticPath));
+// Initialize database connection asynchronously
+connectToDatabase().catch(error => {
+  console.error("Failed to connect to database:", error);
+});
 
   // API endpoint for contact form with military-grade security
   app.post("/api/contact", async (req, res) => {
@@ -222,22 +216,20 @@ async function startServer() {
     }
   });
 
-  // Handle client-side routing - serve index.html for all routes
-  app.get("*", (_req, res) => {
-    res.sendFile(path.join(staticPath, "index.html"));
-  });
+// Handle client-side routing - serve index.html for all routes
+app.get("*", (_req, res) => {
+  res.sendFile(path.join(staticPath, "index.html"));
+});
 
+// Start server only if not in Vercel environment
+if (process.env.VERCEL !== "1") {
   const port = process.env.PORT || 3000;
-
+  const server = createServer(app);
+  
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
-    console.log(`Security: Helmet enabled, Rate limiting active, MongoDB connected`);
+    console.log(`Security: Helmet enabled, Rate limiting active`);
   });
-}
-
-// Only start server if not in Vercel environment
-if (process.env.VERCEL !== "1") {
-  startServer().catch(console.error);
 }
 
 // Export app for Vercel
