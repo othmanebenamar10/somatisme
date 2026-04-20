@@ -2352,32 +2352,53 @@ export default function Products() {
         </div>
       </section>
 
-      {/* Search and Filters - Ultra Pro */}
+      {/* Search and Filters - RADICAL PREMIUM DESIGN */}
       <motion.section
         {...fadeInUp}
-        className="py-8 relative overflow-hidden"
+        className="py-12 relative overflow-hidden bg-gradient-to-b from-background to-primary/5"
       >
-        <div className="absolute inset-0 gradient-card opacity-30"></div>
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-[100px] opacity-50"></div>
+        <div className="absolute bottom-0 left-0 w-56 h-56 bg-secondary/10 rounded-full blur-[100px] opacity-50"></div>
+
         <div className="container relative z-10">
-          <div className="card-glass p-6">
-            <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+          <div className="bg-gradient-to-br from-card/80 to-card/40 border border-accent/20 rounded-3xl p-8 backdrop-blur-sm hover:border-accent/40 transition-all">
+            <div className="flex flex-col lg:flex-row gap-8 items-center justify-between">
+              {/* Search Bar - Premium */}
               <motion.div
                 {...fadeInLeft}
                 transition={{ delay: 0.1 }}
-                className="relative flex-1 max-w-md"
+                className="relative flex-1 w-full max-w-2xl group"
               >
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-accent h-5 w-5" />
-                <Input
-                  placeholder={language === 'ar' ? ' recherche de produit...' : 'Rechercher un produit...'}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="input-premium pl-12"
-                />
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-accent to-secondary rounded-2xl blur opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                
+                {/* Search input */}
+                <div className="relative">
+                  <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-accent h-6 w-6 group-hover:scale-110 transition-transform" />
+                  <Input
+                    placeholder={language === 'ar' ? 'ابحث عن منتج...' : 'Rechercher un produit...'}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-16 pr-6 py-4 bg-background/50 border-2 border-accent/30 rounded-2xl text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all text-lg font-medium"
+                  />
+                  {searchQuery && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-accent transition-colors"
+                    >
+                      ✕
+                    </motion.button>
+                  )}
+                </div>
               </motion.div>
+              {/* Category Filters - Premium */}
               <motion.div
                 {...fadeInUp}
                 transition={{ delay: 0.2 }}
-                className="flex gap-3 flex-wrap justify-center"
+                className="flex gap-3 flex-wrap justify-center lg:justify-start"
               >
                 {categories.map((category, index) => (
                   <motion.div
@@ -2385,42 +2406,47 @@ export default function Products() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 + index * 0.05 }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.08 }}
+                    whileTap={{ scale: 0.92 }}
                   >
-                    <Button
-                      variant={selectedCategory === category.id ? 'default' : 'outline'}
+                    <button
                       onClick={() => setSelectedCategory(category.id)}
+                      className={`px-6 py-3 rounded-xl font-bold uppercase tracking-wide text-sm transition-all duration-300 ${
+                        selectedCategory === category.id
+                          ? 'bg-gradient-to-r from-accent to-orange-500 text-white shadow-lg shadow-accent/50'
+                          : 'bg-background/50 border-2 border-accent/30 text-foreground hover:border-accent/60 hover:bg-accent/10'
+                      }`}
                     >
                       {language === 'ar' ? category.nameAr : category.name}
-                    </Button>
+                    </button>
                   </motion.div>
                 ))}
               </motion.div>
+
+              {/* Cart Button - Premium */}
               <motion.div
                 {...fadeInUp}
                 transition={{ delay: 0.5 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
               >
-                <Button
-                  variant="outline"
+                <button
                   onClick={() => setShowCart(!showCart)}
-                  className="relative"
+                  className="relative px-8 py-3 rounded-xl font-bold uppercase tracking-wide text-sm bg-gradient-to-r from-accent to-orange-500 text-white shadow-lg shadow-accent/50 hover:shadow-xl hover:shadow-accent/70 transition-all flex items-center gap-2"
                 >
-                  <ShoppingCart className="h-5 w-5 mr-2" />
+                  <ShoppingCart className="h-5 w-5" />
                   {language === 'ar' ? 'السلة' : 'Panier'}
                   {cart.length > 0 && (
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: 'spring', duration: 0.3 }}
-                      className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 bg-accent text-accent-foreground rounded-full"
+                      className="absolute -top-3 -right-3 h-7 w-7 flex items-center justify-center bg-secondary text-white rounded-full font-bold text-xs shadow-lg"
                     >
                       {cart.length}
                     </motion.div>
                   )}
-                </Button>
+                </button>
               </motion.div>
             </div>
           </div>
