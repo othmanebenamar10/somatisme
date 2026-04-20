@@ -1924,6 +1924,7 @@ export default function Products() {
   const [cart, setCart] = useState<Product[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [showOrderDialog, setShowOrderDialog] = useState(false);
+  const [cartStep, setCartStep] = useState<'summary' | 'form'>('summary'); // Step-by-step checkout
   const [orderForm, setOrderForm] = useState({
     name: '',
     email: '',
@@ -2692,141 +2693,187 @@ export default function Products() {
         </div>
       </section>
 
-      {/* Order Dialog */}
-      <Dialog open={showOrderDialog} onOpenChange={setShowOrderDialog}>
+      {/* Order Dialog - Step by Step */}
+      <Dialog open={showOrderDialog} onOpenChange={(open) => {
+        setShowOrderDialog(open);
+        if (!open) setCartStep('summary');
+      }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
           <DialogHeader className="bg-gradient-to-r from-cyan-500 to-cyan-600 -mx-6 -mt-6 px-6 py-4 rounded-t-lg">
             <DialogTitle className="text-2xl text-white font-bold">
-              {language === 'ar' ? 'إتمام الطلب' : 'Commander'}
+              {cartStep === 'summary' 
+                ? (language === 'ar' ? 'سلة التسوق' : 'Panier')
+                : (language === 'ar' ? 'إتمام الطلب' : 'Commander')
+              }
             </DialogTitle>
           </DialogHeader>
+
           <div className="space-y-4 mt-4">
-            {/* Order Summary Card */}
-            <div className="bg-gradient-to-br from-cyan-50 to-cyan-100/50 p-4 rounded-xl border border-cyan-200">
-              <h3 className="font-bold mb-3 text-primary flex items-center gap-2">
-                <div className="w-1 h-1 rounded-full bg-cyan-500"></div>
-                {language === 'ar' ? 'ملخص الطلب' : 'Récapitulatif de la commande'}
-              </h3>
-              {cart.map((item, index) => (
-                <div key={index} className="flex justify-between text-sm py-2 border-b border-cyan-200/50 last:border-0">
-                  <span className="text-foreground font-medium">{language === 'ar' ? item.nameAr : item.name}</span>
-                  <span className="text-cyan-600 font-bold">{item.price} MAD</span>
+            {/* STEP 1: CART SUMMARY */}
+            {cartStep === 'summary' && (
+              <>
+                {/* Products List */}
+                <div className="space-y-3">
+                  <h3 className="font-bold text-primary flex items-center gap-2">
+                    <div className="w-1 h-1 rounded-full bg-cyan-500"></div>
+                    {language === 'ar' ? 'المنتجات' : 'Produits'} ({cart.length})
+                  </h3>
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {cart.map((item, index) => (
+                      <div key={index} className="bg-gray-50 p-3 rounded-lg border border-gray-200 flex justify-between items-center">
+                        <div>
+                          <p className="font-medium text-sm">{language === 'ar' ? item.nameAr : item.name}</p>
+                          <p className="text-xs text-muted-foreground">{item.brand}</p>
+                        </div>
+                        <span className="font-bold text-cyan-600">{item.price} MAD</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
-              <div className="flex justify-between font-bold mt-3 pt-3 border-t-2 border-cyan-300">
-                <span className="text-primary">{language === 'ar' ? 'المجموع' : 'Total'}:</span>
-                <span className="text-lg bg-gradient-to-r from-cyan-500 to-cyan-600 bg-clip-text text-transparent">{cartTotal} MAD</span>
-              </div>
-            </div>
 
-            {/* Payment Method Selector */}
-            <div className="space-y-3">
-              <label className="block text-sm font-bold text-primary">
-                {language === 'ar' ? 'طريقة الدفع' : 'Mode de paiement'}
-              </label>
-              <div className="bg-gradient-to-br from-primary/5 to-cyan-500/5 p-4 rounded-xl border border-primary/20">
-                <p className="font-bold mb-2 text-primary text-sm">
-                  {language === 'ar' ? 'معلومات الدفع:' : 'Informations de paiement:'}
-                </p>
-                <ul className="text-xs text-foreground space-y-1.5">
-                  <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'الدفع عبر WhatsApp' : 'Paiement via WhatsApp'}</li>
-                  <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'فاتورة manuelle envoyée par email' : 'Facture manuelle envoyée par email'}</li>
-                  <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'Coordonner avec nous pour le rendez-vous' : 'Coordonner avec nous pour le rendez-vous'}</li>
-                </ul>
-              </div>
-            </div>
+                {/* Summary Card */}
+                <div className="bg-gradient-to-br from-cyan-50 to-cyan-100/50 p-4 rounded-xl border border-cyan-200 space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">{language === 'ar' ? 'الإجمالي الجزئي' : 'Sous-total'}:</span>
+                    <span className="font-bold">{cartTotal} MAD</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">{language === 'ar' ? 'الشحن' : 'Livraison'}:</span>
+                    <span className="font-bold text-cyan-600">Gratuit</span>
+                  </div>
+                  <div className="border-t-2 border-cyan-300 pt-2 flex justify-between">
+                    <span className="font-bold text-primary">{language === 'ar' ? 'المجموع' : 'Total'}:</span>
+                    <span className="text-lg bg-gradient-to-r from-cyan-500 to-cyan-600 bg-clip-text text-transparent font-bold">{cartTotal} MAD</span>
+                  </div>
+                </div>
 
-            {/* Form Fields */}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-primary mb-2">
-                  {language === 'ar' ? 'الاسم الكامل *' : 'Nom complet *'}
-                </label>
-                <Input
-                  value={orderForm.name}
-                  onChange={(e) => setOrderForm({ ...orderForm, name: e.target.value })}
-                  placeholder={language === 'ar' ? 'الاسم الكامل' : 'Nom complet'}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-primary mb-2">
-                  {language === 'ar' ? 'البريد الإلكتروني *' : 'Email *'}
-                </label>
-                <Input
-                  type="email"
-                  value={orderForm.email}
-                  onChange={(e) => setOrderForm({ ...orderForm, email: e.target.value })}
-                  placeholder={language === 'ar' ? 'البريد الإلكتروني' : 'Email'}
-                  className="border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500/20"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-primary mb-2">
-                  {language === 'ar' ? 'رقم الهاتف *' : 'Téléphone *'}
-                </label>
-                <Input
-                  type="tel"
-                  value={orderForm.phone}
-                  onChange={(e) => setOrderForm({ ...orderForm, phone: e.target.value })}
-                  placeholder={language === 'ar' ? 'رقم الهاتف' : 'Téléphone'}
-                  className="border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500/20"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-primary mb-2">
-                  {language === 'ar' ? 'الشركة' : 'Entreprise'}
-                </label>
-                <Input
-                  value={orderForm.company}
-                  onChange={(e) => setOrderForm({ ...orderForm, company: e.target.value })}
-                  placeholder={language === 'ar' ? 'اسم الشركة' : 'Nom de l\'entreprise'}
-                  className="border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500/20"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-primary mb-2">
-                  {language === 'ar' ? 'العنوان' : 'Adresse'}
-                </label>
-                <Input
-                  value={orderForm.address}
-                  onChange={(e) => setOrderForm({ ...orderForm, address: e.target.value })}
-                  placeholder={language === 'ar' ? 'العنوان' : 'Adresse'}
-                  className="border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500/20"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-primary mb-2">
-                  {language === 'ar' ? 'رسالة إضافية' : 'Message additionnel'}
-                </label>
-                <Textarea
-                  value={orderForm.message}
-                  onChange={(e) => setOrderForm({ ...orderForm, message: e.target.value })}
-                  placeholder={language === 'ar' ? 'أي معلومات إضافية...' : 'Toute information supplémentaire...'}
-                  rows={3}
-                />
-              </div>
-            </div>
+                {/* Payment Info */}
+                <div className="bg-gradient-to-br from-primary/5 to-cyan-500/5 p-4 rounded-xl border border-primary/20">
+                  <p className="font-bold mb-2 text-primary text-sm">
+                    {language === 'ar' ? 'معلومات الدفع:' : 'Informations de paiement:'}
+                  </p>
+                  <ul className="text-xs text-foreground space-y-1.5">
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'الدفع عبر WhatsApp' : 'Paiement via WhatsApp'}</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'فاتورة manuelle envoyée par email' : 'Facture manuelle envoyée par email'}</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'Coordonner avec nous pour le rendez-vous' : 'Coordonner avec nous pour le rendez-vous'}</li>
+                  </ul>
+                </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-6 border-t border-cyan-200">
-              <Button
-                onClick={() => setShowOrderDialog(false)}
-                className="flex-1 border-2 border-primary text-primary hover:bg-primary/5 font-bold"
-                variant="outline"
-              >
-                {language === 'ar' ? 'إلغاء' : 'Annuler'}
-              </Button>
-              <Button
-                onClick={handleOrderSubmit}
-                disabled={isSubmitting}
-                className="flex-1 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-bold shadow-lg shadow-cyan-500/30"
-              >
-                {isSubmitting
-                  ? (language === 'ar' ? 'جاري الإرسال...' : 'Envoi en cours...')
-                  : (language === 'ar' ? 'إرسال الطلب' : 'Envoyer la commande')
-                }
-              </Button>
-            </div>
+                {/* Navigation Buttons */}
+                <div className="flex gap-3 pt-6 border-t border-cyan-200">
+                  <Button
+                    onClick={() => setShowOrderDialog(false)}
+                    className="flex-1 border-2 border-primary text-primary hover:bg-primary/5 font-bold"
+                    variant="outline"
+                  >
+                    {language === 'ar' ? 'إلغاء' : 'Annuler'}
+                  </Button>
+                  <Button
+                    onClick={() => setCartStep('form')}
+                    className="flex-1 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-bold shadow-lg shadow-cyan-500/30"
+                  >
+                    {language === 'ar' ? 'التالي' : 'Suivant'} →
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {/* STEP 2: CUSTOMER FORM */}
+            {cartStep === 'form' && (
+              <>
+                {/* Form Fields */}
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-bold text-primary mb-2">
+                      {language === 'ar' ? 'الاسم الكامل *' : 'Nom complet *'}
+                    </label>
+                    <Input
+                      value={orderForm.name}
+                      onChange={(e) => setOrderForm({ ...orderForm, name: e.target.value })}
+                      placeholder={language === 'ar' ? 'الاسم الكامل' : 'Nom complet'}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-primary mb-2">
+                      {language === 'ar' ? 'البريد الإلكتروني *' : 'Email *'}
+                    </label>
+                    <Input
+                      type="email"
+                      value={orderForm.email}
+                      onChange={(e) => setOrderForm({ ...orderForm, email: e.target.value })}
+                      placeholder={language === 'ar' ? 'البريد الإلكتروني' : 'Email'}
+                      className="border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500/20"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-primary mb-2">
+                      {language === 'ar' ? 'رقم الهاتف *' : 'Téléphone *'}
+                    </label>
+                    <Input
+                      type="tel"
+                      value={orderForm.phone}
+                      onChange={(e) => setOrderForm({ ...orderForm, phone: e.target.value })}
+                      placeholder={language === 'ar' ? 'رقم الهاتف' : 'Téléphone'}
+                      className="border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500/20"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-primary mb-2">
+                      {language === 'ar' ? 'الشركة' : 'Entreprise'}
+                    </label>
+                    <Input
+                      value={orderForm.company}
+                      onChange={(e) => setOrderForm({ ...orderForm, company: e.target.value })}
+                      placeholder={language === 'ar' ? 'اسم الشركة' : 'Nom de l\'entreprise'}
+                      className="border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500/20"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-primary mb-2">
+                      {language === 'ar' ? 'العنوان' : 'Adresse'}
+                    </label>
+                    <Input
+                      value={orderForm.address}
+                      onChange={(e) => setOrderForm({ ...orderForm, address: e.target.value })}
+                      placeholder={language === 'ar' ? 'العنوان' : 'Adresse'}
+                      className="border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500/20"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-primary mb-2">
+                      {language === 'ar' ? 'رسالة إضافية' : 'Message additionnel'}
+                    </label>
+                    <Textarea
+                      value={orderForm.message}
+                      onChange={(e) => setOrderForm({ ...orderForm, message: e.target.value })}
+                      placeholder={language === 'ar' ? 'أي معلومات إضافية...' : 'Toute information supplémentaire...'}
+                      rows={3}
+                    />
+                  </div>
+                </div>
+
+                {/* Navigation Buttons */}
+                <div className="flex gap-3 pt-6 border-t border-cyan-200">
+                  <Button
+                    onClick={() => setCartStep('summary')}
+                    className="flex-1 border-2 border-primary text-primary hover:bg-primary/5 font-bold"
+                    variant="outline"
+                  >
+                    ← {language === 'ar' ? 'السابق' : 'Précédent'}
+                  </Button>
+                  <Button
+                    onClick={handleOrderSubmit}
+                    disabled={isSubmitting}
+                    className="flex-1 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-bold shadow-lg shadow-cyan-500/30"
+                  >
+                    {isSubmitting
+                      ? (language === 'ar' ? 'جاري الإرسال...' : 'Envoi en cours...')
+                      : (language === 'ar' ? 'إرسال الطلب' : 'Envoyer la commande')
+                    }
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>
