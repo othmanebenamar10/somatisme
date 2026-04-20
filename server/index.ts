@@ -186,15 +186,25 @@ async function startServer() {
 
   // API endpoint for sending order confirmation emails
   app.post("/api/send-order-email", async (req, res) => {
+    console.log("[ORDER] Received order request");
     try {
-      const { orderForm, orderItems, cartTotal, pdfBase64 } = req.body;
+      const { orderForm, orderItems, cartTotal } = req.body;
+
+      console.log("[ORDER] Order data:", { 
+        hasOrderForm: !!orderForm, 
+        hasOrderItems: !!orderItems, 
+        hasCartTotal: !!cartTotal,
+        itemsCount: orderItems?.length,
+        total: cartTotal
+      });
 
       if (!orderForm || !orderForm.email || !orderItems || !cartTotal) {
+        console.error("[ORDER] Missing required fields");
         return res.status(400).json({ error: 'Missing required order information' });
       }
 
       // Order received - WhatsApp notification will be sent from client side
-      console.log("[ORDER] Order received:", { email: orderForm.email, total: cartTotal, items: orderItems.length });
+      console.log("[ORDER] Order received successfully:", { email: orderForm.email, total: cartTotal, items: orderItems.length });
       auditLogger("ORDER_RECEIVED", { email: orderForm.email, total: cartTotal, items: orderItems.length });
 
       // Return success - WhatsApp notification is sent from client side
