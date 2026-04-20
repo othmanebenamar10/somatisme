@@ -2573,8 +2573,8 @@ export default function Products() {
       // Get PDF as base64
       const pdfBase64 = doc.output('dataurlstring').split(',')[1];
 
-      // Send order email with PDF attachment
-      const emailResponse = await fetch('/api/send-order-email', {
+      // Send order email - non-blocking (order completes even if email fails)
+      fetch('/api/send-order-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -2584,16 +2584,9 @@ export default function Products() {
           pdfBase64,
           invoiceNumber
         })
-      });
-
-      if (!emailResponse.ok) {
-        const errorText = await emailResponse.text();
-        console.error('Email response error:', errorText);
-        throw new Error(`Failed to send order email: ${emailResponse.status} ${errorText}`);
-      }
-
-      const emailData = await emailResponse.json();
-      console.log('Email sent successfully:', emailData);
+      }).then(res => res.json())
+        .then(data => console.log('[EMAIL] Sent:', data))
+        .catch(err => console.error('[EMAIL] Failed (non-blocking):', err));
 
       // Send order via WhatsApp with clean format
       const orderMessage = `NOUVELLE COMMANDE SOMATISME
