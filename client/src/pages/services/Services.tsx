@@ -109,101 +109,108 @@ export default function Services() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      {/* Hero Section - Ultra Pro */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 gradient-hero opacity-5"></div>
-        <div className="absolute top-20 left-20 w-96 h-96 bg-accent/15 rounded-full blur-[100px] animate-pulse-slow"></div>
-        <div className="absolute bottom-20 right-20 w-80 h-80 bg-primary/15 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute inset-0 grid-pattern opacity-30"></div>
+      {/* Hero Section - RADICAL NEW DESIGN */}
+      <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-purple-900 to-primary">
+        {/* Animated Orbs */}
+        <div className="absolute top-0 left-1/3 w-96 h-96 bg-accent/50 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-secondary/40 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
 
         <div className="container relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-4xl mx-auto"
+            transition={{ duration: 0.9 }}
+            className="text-center max-w-5xl mx-auto"
           >
-            <h1 className="text-display text-foreground mb-6">
-              Nos <span className="gradient-text">{t('nav.services')}</span>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 border border-accent/40 backdrop-blur-sm mb-8"
+            >
+              <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
+              <span className="text-accent font-bold text-sm uppercase tracking-widest">Nos Expertises</span>
+            </motion.div>
+
+            <h1 className="text-7xl md:text-8xl font-black text-white mb-8 leading-tight">
+              Services <br />
+              <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">Industriels</span>
             </h1>
-            <p className="text-body-large text-muted-foreground mb-8">
+            <p className="text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
               {t('services.hero.subtitle')}
             </p>
-            <div className="divider-gradient w-32 mx-auto"></div>
           </motion.div>
         </div>
       </section>
 
-      {/* Services Grid - Ultra Pro */}
-      <section className="section-padding relative">
-        <div className="container space-y-24">
-          {services.map((service, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className={`relative grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${
-                index % 2 === 1 ? 'lg:flex-row-reverse' : ''
-              }`}
-            >
-              {/* Image */}
+      {/* Services Grid - RADICAL NEW DESIGN */}
+      <section className="py-32 relative overflow-hidden bg-background">
+        <div className="absolute inset-0 opacity-30" style={{
+          backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(234, 88, 12, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%)'
+        }}></div>
+
+        <div className="container relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {services.map((service, index) => (
               <motion.div
-                initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className={`relative ${index % 2 === 1 ? 'lg:order-2' : ''}`}
+                key={index}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.6 }}
+                whileHover={{ y: -20, scale: 1.02 }}
+                className="group relative overflow-hidden rounded-3xl border border-white/10 backdrop-blur-sm h-full"
               >
-                <div className="rounded-2xl overflow-hidden shadow-glow-strong border border-accent/20">
+                {/* Background Image */}
+                <div className="absolute inset-0">
                   <img
                     src={service.image}
                     alt={service.title}
-                    className="w-full h-auto object-cover"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent"></div>
-                </div>
-              </motion.div>
-
-              {/* Content */}
-              <motion.div
-                initial={{ opacity: 0, x: index % 2 === 0 ? 30 : -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className={`card-premium p-8 ${index % 2 === 1 ? 'lg:order-1' : ''}`}
-              >
-                <div className="inline-flex p-4 rounded-xl bg-accent/10 mb-6">
-                  <service.icon className="text-accent" size={32} />
-                </div>
-                <h2 className="text-heading text-foreground mb-4">{service.title}</h2>
-                <p className="text-body-large text-muted-foreground mb-6">{service.description}</p>
-                <div className="space-y-3 mb-8">
-                  {service.features.map((feature, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, x: -10 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      className="flex items-start gap-3"
-                    >
-                      <div className="w-2 h-2 rounded-full bg-accent mt-2 flex-shrink-0"></div>
-                      <span className="text-sm text-foreground/80">{feature}</span>
-                    </motion.div>
-                  ))}
+                  <div className="absolute inset-0 bg-gradient-to-b from-primary/40 via-primary/60 to-primary/90"></div>
                 </div>
 
-                <Link href={service.href}>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="btn-accent"
-                  >
-                    {t('services.more')}
-                    <ArrowRight size={18} className="ml-2" />
-                  </motion.button>
-                </Link>
+                {/* Content */}
+                <div className="relative p-8 h-full flex flex-col justify-between">
+                  <div>
+                    <div className="inline-flex p-3 rounded-xl bg-gradient-to-br from-accent to-orange-500 mb-6 group-hover:scale-110 transition-transform">
+                      <service.icon className="text-white" size={28} />
+                    </div>
+                    <h3 className="text-3xl font-black text-white mb-3 group-hover:text-accent transition-colors">{service.title}</h3>
+                    <p className="text-gray-200 mb-6 leading-relaxed">{service.description}</p>
+                  </div>
+
+                  <div>
+                    <div className="space-y-2 mb-8 max-h-32 overflow-hidden">
+                      {service.features.slice(0, 3).map((feature, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: -10 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.05 }}
+                          className="flex items-start gap-2 text-sm text-gray-100"
+                        >
+                          <span className="text-accent font-bold">✓</span>
+                          <span>{feature}</span>
+                        </motion.div>
+                      ))}
+                    </div>
+
+                    <Link href={service.href}>
+                      <motion.button
+                        whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(234, 88, 12, 0.4)' }}
+                        whileTap={{ scale: 0.95 }}
+                        className="w-full px-6 py-3 bg-gradient-to-r from-accent to-orange-500 text-primary font-bold rounded-xl flex items-center justify-center gap-2 hover:shadow-2xl transition-all"
+                      >
+                        {t('services.more')}
+                        <ArrowRight size={18} />
+                      </motion.button>
+                    </Link>
+                  </div>
+                </div>
               </motion.div>
-            </motion.div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 

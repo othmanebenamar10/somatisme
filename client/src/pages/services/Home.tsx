@@ -70,83 +70,95 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      {/* Hero Section - Ultra Pro Design */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden">
-        {/* Background Effects */}
-        <div className="absolute inset-0 gradient-hero opacity-5"></div>
-        <div className="absolute top-20 left-10 w-96 h-96 bg-accent/20 rounded-full blur-[100px] animate-pulse-slow"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-primary/20 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute inset-0 grid-pattern opacity-50"></div>
+      {/* Hero Section - RADICAL NEW DESIGN 2026 */}
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-primary via-purple-900 to-primary">
+        {/* Animated Background Orbs */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-accent/40 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-secondary/30 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
+        <div className="absolute top-1/2 right-0 w-72 h-72 bg-accent/20 rounded-full blur-[100px] animate-pulse" style={{ animation: 'float 12s ease-in-out infinite 4s' }}></div>
+
+        {/* Grid Pattern Overlay */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: 'linear-gradient(0deg, transparent 24%, rgba(255,255,255,.05) 25%, rgba(255,255,255,.05) 26%, transparent 27%, transparent 74%, rgba(255,255,255,.05) 75%, rgba(255,255,255,.05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255,255,255,.05) 25%, rgba(255,255,255,.05) 26%, transparent 27%, transparent 74%, rgba(255,255,255,.05) 75%, rgba(255,255,255,.05) 76%, transparent 77%, transparent)',
+          backgroundSize: '50px 50px'
+        }}></div>
 
         <div className="container relative z-10 py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            {/* Left Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            {/* Left Content - NEW STYLE */}
             <motion.div
-              initial={fadeInLeft.initial}
-              animate={fadeInLeft.animate}
-              transition={fadeInLeft.transition}
-              className="space-y-8"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: 'easeOut' }}
+              className="space-y-10"
             >
+              {/* Badge */}
               <motion.div
-                initial={fadeInUp.initial}
-                animate={fadeInUp.animate}
-                transition={{ ...fadeInUp.transition, delay: 0.1 }}
-                className="badge-premium"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 border border-accent/40 backdrop-blur-sm"
               >
-                <span className="font-semibold tracking-wide uppercase">{t('home.hero.badge')}</span>
+                <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
+                <span className="text-accent font-bold text-sm uppercase tracking-widest">{t('home.hero.badge')}</span>
               </motion.div>
 
+              {/* Main Title */}
               <motion.h1
-                initial={fadeInUp.initial}
-                animate={fadeInUp.animate}
-                transition={{ ...fadeInUp.transition, delay: 0.2 }}
-                className="text-display text-foreground"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+                className="text-6xl md:text-7xl lg:text-8xl font-black text-white leading-tight"
               >
                 {t('home.hero.title')}
-                <span className="gradient-text">{t('home.hero.title.accent')}</span>
+                <br />
+                <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">{t('home.hero.title.accent')}</span>
               </motion.h1>
 
+              {/* Description */}
               <motion.p
-                initial={fadeInUp.initial}
-                animate={fadeInUp.animate}
-                transition={{ ...fadeInUp.transition, delay: 0.3 }}
-                className="text-body-large text-muted-foreground max-w-xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.8 }}
+                className="text-xl text-gray-200 max-w-2xl leading-relaxed"
               >
                 {t('home.hero.desc')}
               </motion.p>
 
+              {/* CTA Buttons */}
               <motion.div
-                initial={fadeInUp.initial}
-                animate={fadeInUp.animate}
-                transition={{ ...fadeInUp.transition, delay: 0.4 }}
-                className="flex flex-col sm:flex-row gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="flex flex-col sm:flex-row gap-6 pt-4"
               >
                 <Link href="/contact">
                   <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="btn-accent"
+                    whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(234, 88, 12, 0.4)' }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-8 py-4 bg-gradient-to-r from-accent to-orange-500 text-primary font-bold rounded-xl flex items-center gap-2 shadow-lg hover:shadow-2xl transition-all"
                   >
                     {t('home.hero.cta.quote')}
-                    <ArrowRight size={18} className="ml-2" />
+                    <ArrowRight size={20} />
                   </motion.button>
                 </Link>
                 <Link href="/services">
                   <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="btn-outline"
+                    whileHover={{ scale: 1.05, borderColor: 'rgba(234, 88, 12, 0.8)' }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-8 py-4 border-2 border-accent/50 text-white font-bold rounded-xl hover:bg-accent/10 transition-all"
                   >
                     {t('home.hero.cta.discover')}
                   </motion.button>
                 </Link>
               </motion.div>
 
+              {/* Stats Row */}
               <motion.div
-                initial={fadeInUp.initial}
-                animate={fadeInUp.animate}
-                transition={{ ...fadeInUp.transition, delay: 0.5 }}
-                className="flex gap-8 pt-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.8 }}
+                className="flex gap-12 pt-8 border-t border-white/10"
               >
                 {[
                   { value: '50+', label: t('home.hero.stats.projects') },
@@ -155,90 +167,95 @@ export default function Home() {
                 ].map((stat, index) => (
                   <motion.div
                     key={index}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                    className="card-glass px-6 py-4"
+                    whileHover={{ y: -5 }}
+                    className="group"
                   >
-                    <p className="text-3xl font-bold gradient-text mb-1">{stat.value}</p>
-                    <p className="text-sm text-muted-foreground">{stat.label}</p>
+                    <p className="text-4xl font-black bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent mb-2">{stat.value}</p>
+                    <p className="text-sm text-gray-300 group-hover:text-accent transition-colors">{stat.label}</p>
                   </motion.div>
                 ))}
               </motion.div>
             </motion.div>
 
-            {/* Right Image */}
+            {/* Right Visual - NEW STYLE */}
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              initial={{ opacity: 0, scale: 0.9, x: 40 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ delay: 0.3, duration: 0.9 }}
               className="relative"
             >
-              <div className="relative rounded-2xl overflow-hidden shadow-glow-strong">
+              {/* Glowing Background Shape */}
+              <div className="absolute -inset-8 bg-gradient-to-r from-accent/20 via-secondary/20 to-accent/20 rounded-3xl blur-3xl opacity-50"></div>
+
+              {/* Main Image */}
+              <div className="relative rounded-3xl overflow-hidden border-2 border-accent/30 backdrop-blur-sm">
                 <img
                   src="/somatisme.png"
                   alt="Automatisme industriel"
                   className="w-full h-auto object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/50 via-transparent to-transparent"></div>
               </div>
 
-              {/* Floating Card */}
+              {/* Floating Stats Cards */}
               <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="absolute -bottom-6 -left-6 card-dark p-5 max-w-xs"
+                animate={{ y: [0, -15, 0] }}
+                transition={{ duration: 5, repeat: Infinity }}
+                className="absolute -bottom-8 -left-8 bg-gradient-to-br from-accent/90 to-orange-600 p-6 rounded-2xl max-w-xs shadow-2xl"
               >
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
-                    <Zap size={20} className="text-accent" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                    <Zap size={24} className="text-white" />
                   </div>
-                  <p className="text-sm font-semibold text-white">{t('home.hero.card.title')}</p>
+                  <p className="text-sm font-bold text-white">{t('home.hero.card.title')}</p>
                 </div>
-                <p className="text-xs text-gray-300">{t('home.hero.card.desc')}</p>
+                <p className="text-xs text-white/80">{t('home.hero.card.desc')}</p>
               </motion.div>
+
+              {/* Corner Accent */}
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                className="absolute -top-4 -right-4 w-32 h-32 border-2 border-accent/30 rounded-full"
+              ></motion.div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Partners Ticker Section - Ultra Pro */}
-      <section className="py-20 overflow-hidden relative">
-        <div className="absolute inset-0 gradient-card opacity-30"></div>
-        <div className="container mb-10 relative z-10">
+      {/* Partners Ticker Section - RADICAL NEW DESIGN */}
+      <section className="py-24 overflow-hidden relative bg-gradient-to-r from-primary/50 via-secondary/30 to-primary/50">
+        <div className="absolute inset-0 opacity-20" style={{
+          backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(234, 88, 12, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.3) 0%, transparent 50%)'
+        }}></div>
+
+        <div className="container mb-16 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <h2 className="text-heading text-foreground mb-3">{t('about.partners.title')}</h2>
-            <div className="divider-gradient w-24 mx-auto mb-3"></div>
-            <p className="text-muted-foreground">{t('about.partners.subtitle')}</p>
+            <h2 className="text-5xl font-black text-white mb-4">{t('about.partners.title')}</h2>
+            <p className="text-xl text-gray-200 max-w-2xl mx-auto">{t('about.partners.subtitle')}</p>
           </motion.div>
         </div>
-        <div className="relative flex">
+
+        <div className="relative flex overflow-hidden">
           <motion.div
-            animate={{
-              x: ["0%", "-50%"],
-            }}
-            transition={{
-              x: {
-                repeat: Infinity,
-                repeatType: "loop",
-                duration: 30,
-                ease: "linear",
-              },
-            }}
-            className="flex flex-none gap-32 pr-32 items-center"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+            className="flex flex-none gap-24 pr-24 items-center"
           >
             {[...partnersData, ...partnersData].map((partner, index) => (
               <motion.div
                 key={index}
-                whileHover={{ scale: 1.1 }}
-                className="flex items-center gap-2 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
+                whileHover={{ scale: 1.15, filter: 'drop-shadow(0 0 20px rgba(234, 88, 12, 0.6))' }}
+                className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-all duration-300"
               >
                 <img
                   src={partner.logoUrl}
                   alt={partner.name}
-                  className="h-20 w-auto object-contain max-w-[200px]"
+                  className="h-24 w-auto object-contain max-w-[220px] filter brightness-0 invert"
                   onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${partner.name}&background=random`; }}
                 />
               </motion.div>
@@ -247,28 +264,31 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Services Overview Section - Ultra Pro */}
-      <section className="section-padding section-gradient relative overflow-hidden">
-        <div className="absolute inset-0 dot-pattern opacity-30"></div>
+      {/* Services Overview Section - RADICAL NEW DESIGN */}
+      <section className="py-32 relative overflow-hidden bg-background">
+        <div className="absolute inset-0 opacity-30" style={{
+          backgroundImage: 'linear-gradient(45deg, transparent 30%, rgba(234, 88, 12, 0.1) 50%, transparent 70%), linear-gradient(-45deg, transparent 30%, rgba(168, 85, 247, 0.1) 50%, transparent 70%)',
+          backgroundSize: '100px 100px'
+        }}></div>
+
         <div className="container relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            transition={{ duration: 0.8 }}
+            className="text-center mb-20"
           >
-            <h2 className="text-heading text-foreground mb-4">{t('home.expertise.title')}</h2>
-            <p className="text-body-large text-muted-foreground max-w-2xl mx-auto">
+            <h2 className="text-6xl md:text-7xl font-black text-foreground mb-6">{t('home.expertise.title')}</h2>
+            <p className="text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               {t('home.expertise.subtitle')}
             </p>
           </motion.div>
 
           <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
           >
             {[
               {
@@ -276,43 +296,61 @@ export default function Home() {
                 title: t('home.expertise.automation.title'),
                 description: t('home.expertise.automation.desc'),
                 href: '/services/automation',
+                color: 'from-accent to-orange-500'
               },
               {
                 icon: Zap,
                 title: t('home.expertise.regulation.title'),
                 description: t('home.expertise.regulation.desc'),
                 href: '/services/regulation',
+                color: 'from-secondary to-purple-500'
               },
               {
                 icon: Shield,
                 title: t('home.expertise.electrical.title'),
                 description: t('home.expertise.electrical.desc'),
                 href: '/services/electrical',
+                color: 'from-blue-500 to-cyan-500'
               },
               {
                 icon: Wrench,
                 title: t('home.expertise.maintenance.title'),
                 description: t('home.expertise.maintenance.desc'),
                 href: '/services/maintenance',
+                color: 'from-green-500 to-emerald-500'
               },
             ].map((service, index) => (
               <motion.div
                 key={index}
-                variants={fadeInUp}
-                whileHover={{ y: -10 }}
-                className="card-premium p-8 group cursor-pointer"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.6 }}
+                whileHover={{ y: -15, scale: 1.02 }}
+                className="group relative overflow-hidden rounded-2xl border border-white/10 backdrop-blur-sm cursor-pointer"
               >
-                <div className="mb-6 inline-flex p-4 rounded-xl bg-accent/10 group-hover:bg-accent/20 transition-all duration-300">
-                  <service.icon className="text-accent" size={28} />
+                {/* Gradient Background */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
+
+                {/* Content */}
+                <div className="relative p-8 h-full flex flex-col">
+                  <div className={`mb-6 inline-flex p-4 rounded-xl bg-gradient-to-br ${service.color} w-fit`}>
+                    <service.icon className="text-white" size={32} />
+                  </div>
+                  <h3 className="text-2xl font-bold text-foreground mb-3 group-hover:text-accent transition-colors">{service.title}</h3>
+                  <p className="text-muted-foreground mb-6 flex-grow">{service.description}</p>
+                  <Link href={service.href}>
+                    <motion.a
+                      whileHover={{ x: 5 }}
+                      className="inline-flex items-center gap-2 font-bold text-accent group-hover:gap-3 transition-all"
+                    >
+                      {t('services.more')}
+                      <ArrowRight size={18} />
+                    </motion.a>
+                  </Link>
                 </div>
-                <h3 className="text-subheading text-foreground mb-3">{service.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4">{service.description}</p>
-                <Link href={service.href}>
-                  <a className="inline-flex items-center gap-2 text-accent font-semibold hover:gap-3 transition-all">
-                    {t('services.more')}
-                    <ArrowRight size={16} />
-                  </a>
-                </Link>
+
+                {/* Border Gradient */}
+                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none`} style={{ padding: '1px' }}></div>
               </motion.div>
             ))}
           </motion.div>
