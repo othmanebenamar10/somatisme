@@ -269,28 +269,35 @@ export default function Projects() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      {/* Hero Section */}
-      <section className="py-20 md:py-32 bg-gradient-to-b from-muted/50 to-background">
-        <div className="container">
+      {/* Hero Section - Ultra Pro */}
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <div className="absolute inset-0 gradient-hero opacity-5"></div>
+        <div className="absolute top-20 right-20 w-96 h-96 bg-accent/15 rounded-full blur-[100px] animate-pulse-slow"></div>
+        <div className="absolute bottom-20 left-20 w-80 h-80 bg-primary/15 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute inset-0 grid-pattern opacity-30"></div>
+
+        <div className="container relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center max-w-3xl mx-auto"
+            className="text-center max-w-4xl mx-auto"
           >
             <h1 className="text-display text-foreground mb-6">
-              {t('projects.hero.title').split(' ')[0]} <span className="text-accent">{t('projects.hero.title').split(' ')[1]}</span>
+              <span className="gradient-text">{t('projects.hero.title')}</span>
             </h1>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-body-large text-muted-foreground mb-8">
               {t('projects.hero.subtitle')}
             </p>
+            <div className="divider-gradient w-32 mx-auto"></div>
           </motion.div>
         </div>
       </section>
 
-      {/* Projects Grid */}
-      <section className="py-20 md:py-32">
-        <div className="container">
+      {/* Projects Grid - Ultra Pro */}
+      <section className="section-padding section-gradient relative overflow-hidden">
+        <div className="absolute inset-0 dot-pattern opacity-20"></div>
+        <div className="container relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {projects.map((project, index) => (
               <motion.div
@@ -298,42 +305,47 @@ export default function Projects() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="group bg-card border border-border rounded-lg overflow-hidden hover:border-accent transition-all duration-300 hover:shadow-lg"
+                whileHover={{ y: -10 }}
+                className="card-premium overflow-hidden group"
               >
                 {/* Image */}
-                <div className="relative h-64 overflow-hidden">
+                <div className="relative h-64 overflow-hidden rounded-t-2xl">
                   <img
                     src={project.image}
                     alt={project.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent"></div>
                 </div>
 
                 {/* Content */}
                 <div className="p-6">
-                  <span className="inline-block px-3 py-1 bg-accent/10 text-accent text-xs font-semibold rounded-full mb-3">
+                  <span className="badge-premium text-xs">
                     {project.category}
                   </span>
-                  <h3 className="text-subheading text-foreground mb-2">{project.title}</h3>
-                  <p className="text-muted-foreground text-sm mb-4">{project.description}</p>
-                  
-                  <div className="space-y-3 mb-6 pt-4 border-t border-border/50">
-                    <div className="flex items-center gap-2 text-xs font-medium text-foreground">
-                      <Settings size={14} className="text-accent" />
-                      <span>{project.tech}</span>
+                  <h3 className="text-subheading text-foreground mb-2 mt-3">{project.title}</h3>
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{project.description}</p>
+
+                  <div className="space-y-2 mb-6 pt-4 border-t border-border/50">
+                    <div className="flex items-start gap-2 text-xs font-medium text-foreground">
+                      <Settings size={14} className="text-accent mt-0.5 flex-shrink-0" />
+                      <span className="line-clamp-1">{project.tech}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs font-medium text-foreground">
-                      <CheckCircle2 size={14} className="text-accent" />
-                      <span>{project.result}</span>
+                    <div className="flex items-start gap-2 text-xs font-medium text-foreground">
+                      <CheckCircle2 size={14} className="text-accent mt-0.5 flex-shrink-0" />
+                      <span className="line-clamp-1">{project.result}</span>
                     </div>
                   </div>
 
                   <Link href="/contact">
-                    <a className="inline-flex items-center gap-2 text-accent font-semibold hover:gap-3 transition-all">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="btn-accent w-full"
+                    >
                       {t('services.more')}
-                      <ArrowRight size={16} />
-                    </a>
+                      <ArrowRight size={16} className="ml-2" />
+                    </motion.button>
                   </Link>
                 </div>
               </motion.div>
@@ -342,13 +354,18 @@ export default function Projects() {
         </div>
       </section>
 
-      {/* Project Execution Process Section */}
-      <section className="py-24 bg-background border-y border-border">
-        <div className="container">
-          <div className="text-center mb-16">
-            <h2 className="text-heading text-foreground mb-4">{t('projects.process.title')}</h2>
-            <p className="text-muted-foreground">{t('projects.process.subtitle')}</p>
-          </div>
+      {/* Project Execution Process Section - Ultra Pro */}
+      <section className="section-padding section-dark relative overflow-hidden">
+        <div className="absolute inset-0 dot-pattern opacity-20"></div>
+        <div className="container relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-heading text-white mb-4">{t('projects.process.title')}</h2>
+            <p className="text-body-large text-gray-300">{t('projects.process.subtitle')}</p>
+          </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               { icon: Settings, step: "01", title: t('projects.process.step1.title'), desc: t('projects.process.step1.desc') },
@@ -356,14 +373,21 @@ export default function Projects() {
               { icon: Factory, step: "03", title: t('projects.process.step3.title'), desc: t('projects.process.step3.desc') },
               { icon: Droplets, step: "04", title: t('projects.process.step4.title'), desc: t('projects.process.step4.desc') }
             ].map((item, i) => (
-              <div key={i} className="relative p-8 bg-card border border-border rounded-3xl group hover:border-accent transition-all duration-300">
-                <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center text-accent mb-6 group-hover:bg-accent group-hover:text-white transition-colors">
-                  <item.icon size={24} />
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ y: -5 }}
+                className="card-premium p-8 group relative"
+              >
+                <div className="w-14 h-14 bg-accent/10 rounded-xl flex items-center justify-center text-accent mb-6 group-hover:bg-accent group-hover:text-white transition-all">
+                  <item.icon size={28} />
                 </div>
                 <h3 className="text-xl font-bold mb-3">{item.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-                <span className="absolute top-8 right-8 text-4xl font-black text-muted/10">{item.step}</span>
-              </div>
+                <span className="absolute top-8 right-8 text-5xl font-black text-accent/10">{item.step}</span>
+              </motion.div>
             ))}
           </div>
         </div>

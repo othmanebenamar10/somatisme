@@ -27,110 +27,139 @@ export default function About() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      {/* Hero Section */}
-      <section className="py-20 md:py-32 bg-gradient-to-b from-muted/50 to-background">
-        <div className="container">
+      {/* Hero Section - Ultra Pro */}
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <div className="absolute inset-0 gradient-hero opacity-5"></div>
+        <div className="absolute top-20 right-20 w-96 h-96 bg-accent/15 rounded-full blur-[100px] animate-pulse-slow"></div>
+        <div className="absolute bottom-20 left-20 w-80 h-80 bg-primary/15 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute inset-0 grid-pattern opacity-30"></div>
+
+        <div className="container relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center max-w-3xl mx-auto"
+            className="text-center max-w-4xl mx-auto"
           >
             <h1 className="text-display text-foreground mb-6">
               {t('nav.about')}
             </h1>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-body-large text-muted-foreground mb-8">
               {t('about.hero.subtitle')}
             </p>
+            <div className="divider-gradient w-32 mx-auto"></div>
           </motion.div>
         </div>
       </section>
 
-      {/* Secteurs d'activité */}
-      <section className="py-20 bg-background">
-        <div className="container">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="mb-12"
+      {/* Secteurs d'activité - Ultra Pro */}
+      <section className="section-padding relative overflow-hidden">
+        <div className="absolute inset-0 gradient-card opacity-30"></div>
+        <div className="container relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-center mb-12"
           >
             <h2 className="text-heading text-foreground mb-4">{t('about.sectors.title')}</h2>
-            <p className="text-muted-foreground">{t('about.sectors.subtitle')}</p>
+            <p className="text-body-large text-muted-foreground">{t('about.sectors.subtitle')}</p>
           </motion.div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {[
               "agro", "auto", "chimie", "ciment",
               "medical", "metallurgie", "micro", "pharmacie",
               "plasturgie", "energie", "siderurgie", "sante", "eau"
             ].map((sector, i) => (
-              <motion.div 
+              <motion.div
                 key={i}
-                whileHover={{ x: 5 }}
-                className="flex items-center gap-3 p-4 bg-muted/20 rounded-lg border border-border/50"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.03 }}
+                whileHover={{ x: 5, scale: 1.02 }}
+                className="card-glass px-4 py-3 flex items-center gap-3"
               >
                 <CheckCircle2 className="text-accent w-5 h-5" />
-                <span className="font-medium">{t(`sector.${sector}`)}</span>
+                <span className="font-medium text-foreground">{t(`sector.${sector}`)}</span>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Croissance et Finance */}
-      <section className="py-20 md:py-32">
-        <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      {/* Croissance et Finance - Ultra Pro */}
+      <section className="section-padding section-dark relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-20 right-20 w-64 h-64 bg-accent/10 rounded-full blur-[80px]"></div>
+          <div className="absolute bottom-20 left-20 w-80 h-80 bg-primary/20 rounded-full blur-[100px]"></div>
+        </div>
+        <div className="container relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
             >
-              <div className="inline-block p-3 bg-accent/10 rounded-full mb-6 text-accent">
+              <div className="inline-flex p-4 rounded-xl bg-accent/10 mb-6 text-accent">
                 <TrendingUp size={32} />
               </div>
-              <h2 className="text-heading text-foreground mb-6">{t('about.growth.title')}</h2>
-              <p className="text-lg text-muted-foreground mb-8">
+              <h2 className="text-heading text-white mb-6">{t('about.growth.title')}</h2>
+              <p className="text-body-large text-gray-300 mb-8">
                 {t('about.growth.desc')}
               </p>
-              
-              <div className="bg-primary/5 border-l-4 border-accent p-6 rounded-r-lg">
-                <div className="flex items-center gap-4 mb-3 text-primary font-bold">
+
+              <div className="card-glass p-6 border-l-4 border-accent">
+                <div className="flex items-center gap-4 mb-3 text-white font-bold">
                   <ShieldCheck className="text-accent" />
                   <span>{t('about.finance.title')}</span>
                 </div>
-                <p className="text-muted-foreground italic">
+                <p className="text-gray-300 italic">
                   "{t('about.finance.desc')}"
                 </p>
               </div>
             </motion.div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="aspect-square bg-muted rounded-2xl overflow-hidden relative group">
+            <div className="grid grid-cols-2 gap-6">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                className="aspect-square rounded-2xl overflow-hidden relative group"
+              >
                 <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80" alt="Industrie" className="object-cover w-full h-full grayscale group-hover:grayscale-0 transition-all" />
-              </div>
-              <div className="aspect-square bg-accent rounded-2xl flex flex-col justify-center p-6 text-accent-foreground">
-                <span className="text-4xl font-bold">15+</span>
-                <span className="text-sm opacity-80">Ans de stabilité</span>
-              </div>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 }}
+                className="aspect-square card-dark rounded-2xl flex flex-col justify-center p-6"
+              >
+                <span className="text-5xl font-bold gradient-text">15+</span>
+                <span className="text-sm text-gray-400 mt-2">Ans de stabilite</span>
+              </motion.div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Infrastructure Section */}
-      <section className="py-20 md:py-32 bg-background">
-        <div className="container">
-          <div className="text-center mb-16">
+      {/* Infrastructure Section - Ultra Pro */}
+      <section className="section-padding relative overflow-hidden">
+        <div className="absolute inset-0 dot-pattern opacity-20"></div>
+        <div className="container relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-center mb-16"
+          >
             <h2 className="text-heading text-foreground mb-4">{t('about.infra.title')}</h2>
-            <p className="text-muted-foreground">{t('about.infra.subtitle')}</p>
-          </div>
+            <p className="text-body-large text-muted-foreground">{t('about.infra.subtitle')}</p>
+          </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              className="p-10 bg-card border border-border rounded-3xl hover:border-accent/40 transition-colors group"
+              whileHover={{ y: -5 }}
+              className="card-premium p-10 group"
             >
-              <div className="w-14 h-14 bg-accent/10 rounded-xl flex items-center justify-center text-accent mb-6 group-hover:bg-accent group-hover:text-white transition-all">
+              <div className="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center text-accent mb-6 group-hover:bg-accent group-hover:text-white transition-all">
                 <Settings size={28} />
               </div>
               <h3 className="text-2xl font-bold mb-4">{t('about.infra.be.title')}</h3>
@@ -141,9 +170,10 @@ export default function About() {
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              className="p-10 bg-card border border-border rounded-3xl hover:border-accent/40 transition-colors group"
+              whileHover={{ y: -5 }}
+              className="card-premium p-10 group"
             >
-              <div className="w-14 h-14 bg-accent/10 rounded-xl flex items-center justify-center text-accent mb-6 group-hover:bg-accent group-hover:text-white transition-all">
+              <div className="w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center text-accent mb-6 group-hover:bg-accent group-hover:text-white transition-all">
                 <Factory size={28} />
               </div>
               <h3 className="text-2xl font-bold mb-4">{t('about.infra.atelier.title')}</h3>
@@ -155,16 +185,17 @@ export default function About() {
         </div>
       </section>
 
-      {/* Culture d'entreprise */}
-      <section className="py-20 md:py-32 bg-muted/30">
-        <div className="container">
+      {/* Culture d'entreprise - Ultra Pro */}
+      <section className="section-padding section-gradient relative overflow-hidden">
+        <div className="absolute inset-0 dot-pattern opacity-30"></div>
+        <div className="container relative z-10">
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             className="text-center mb-16"
           >
             <h2 className="text-heading text-foreground mb-4">{t('about.culture.title')}</h2>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-body-large text-muted-foreground max-w-3xl mx-auto">
               {t('about.culture.subtitle')}
             </p>
           </motion.div>
@@ -178,7 +209,11 @@ export default function About() {
             ].map((item, index) => (
               <motion.div
                 key={index}
-                className="bg-card p-8 rounded-xl border border-border hover:shadow-xl transition-shadow"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -10 }}
+                className="card-premium p-8"
               >
                 <item.icon className="text-accent mb-4" size={32} />
                 <h3 className="text-subheading mb-3">{t(`about.culture.${item.key}.title`)}</h3>
@@ -189,13 +224,17 @@ export default function About() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 md:py-32 bg-primary text-primary-foreground">
-        <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+      {/* Stats Section - Ultra Pro */}
+      <section className="section-padding section-dark relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-10 left-10 w-64 h-64 bg-accent/15 rounded-full blur-[80px] animate-pulse-slow"></div>
+          <div className="absolute bottom-10 right-10 w-80 h-80 bg-primary/20 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
+        </div>
+        <div className="container relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { number: '15+', label: 'Années d\'expérience' },
-              { number: '50+', label: 'Projets réalisés' },
+              { number: '15+', label: 'Annees d\'experience' },
+              { number: '50+', label: 'Projets realises' },
               { number: '100%', label: 'Clients satisfaits' },
               { number: '24/7', label: 'Support technique' },
             ].map((stat, index) => (
@@ -204,25 +243,28 @@ export default function About() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
+                className="card-glass p-6"
               >
-                <p className="text-4xl md:text-5xl font-bold mb-2">{stat.number}</p>
-                <p className="text-primary-foreground/80">{stat.label}</p>
+                <p className="text-4xl md:text-5xl font-bold gradient-text mb-2">{stat.number}</p>
+                <p className="text-gray-400">{stat.label}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Partners Section */}
-      <section className="py-20 bg-background border-y border-border/50">
-        <div className="container">
+      {/* Partners Section - Ultra Pro */}
+      <section className="section-padding relative overflow-hidden">
+        <div className="absolute inset-0 gradient-card opacity-30"></div>
+        <div className="container relative z-10">
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             className="text-center mb-16"
           >
             <h2 className="text-heading text-foreground mb-4">{t('about.partners.title')}</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <div className="divider-gradient w-24 mx-auto mb-4"></div>
+            <p className="text-body-large text-muted-foreground max-w-2xl mx-auto">
               {t('about.partners.subtitle')}
             </p>
           </motion.div>
@@ -234,17 +276,18 @@ export default function About() {
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="group p-8 bg-card rounded-2xl border border-border hover:border-accent/50 transition-all hover:shadow-xl flex flex-col items-center text-center"
+                whileHover={{ y: -10 }}
+                className="card-premium p-8 group text-center"
               >
-                <div className="w-24 h-24 bg-muted rounded-2xl flex items-center justify-center mb-6 group-hover:bg-accent/10 transition-all duration-500 border border-transparent group-hover:border-accent/20 p-4">
-                  <img 
-                    src={partner.logoUrl} 
-                    alt={partner.name} 
-                    className="max-h-full max-w-full object-contain grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all" 
+                <div className="w-24 h-24 mx-auto bg-muted rounded-2xl flex items-center justify-center mb-6 group-hover:bg-accent/10 transition-all duration-500 border border-transparent group-hover:border-accent/20 p-4">
+                  <img
+                    src={partner.logoUrl}
+                    alt={partner.name}
+                    className="max-h-full max-w-full object-contain grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all"
                     onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${partner.name}&background=random`; }}
                   />
                 </div>
-                
+
                 <div className="mb-4">
                   <h3 className="text-lg font-bold text-foreground group-hover:text-accent transition-colors">
                     {partner.name}
@@ -264,22 +307,30 @@ export default function About() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 md:py-32">
-        <div className="container text-center">
+      {/* CTA Section - Ultra Pro */}
+      <section className="section-padding relative overflow-hidden">
+        <div className="absolute inset-0 gradient-hero opacity-10"></div>
+        <div className="absolute top-10 left-10 w-64 h-64 bg-accent/20 rounded-full blur-[80px] animate-pulse-slow"></div>
+        <div className="absolute bottom-10 right-10 w-80 h-80 bg-primary/20 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
+
+        <div className="container relative z-10 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-heading text-foreground mb-6">
+            <h2 className="text-display text-foreground mb-6">
               {t('cta.ready')}
             </h2>
             <Link href="/contact">
-              <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="btn-accent text-lg px-10 py-5"
+              >
                 {t('cta.contact')}
-                <ArrowRight size={18} />
-              </Button>
+                <ArrowRight size={20} className="ml-2" />
+              </motion.button>
             </Link>
           </motion.div>
         </div>

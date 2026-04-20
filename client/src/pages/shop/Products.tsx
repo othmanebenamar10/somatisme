@@ -1976,157 +1976,258 @@ export default function Products() {
     const invoiceNumber = `INV-${Date.now()}`;
     const date = new Date().toLocaleDateString('fr-FR');
     const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR');
-    
-    // Header - Modern gradient-like effect
-    doc.setFillColor(30, 58, 138);
-    doc.rect(0, 0, 210, 50, 'F');
-    
-    // Company name
-    doc.setFontSize(32);
+
+    // ULTRA PRO INVOICE DESIGN
+    // Ultra pro brand colors
+    const primaryColor: [number, number, number] = [15, 23, 42]; // Deep navy
+    const accentColor: [number, number, number] = [234, 88, 12]; // Premium orange
+    const lightGray: [number, number, number] = [241, 245, 249];
+    const mediumGray: [number, number, number] = [100, 116, 139];
+    const darkGray: [number, number, number] = [30, 41, 59];
+
+    // === HEADER with gradient effect (layered bands) ===
+    doc.setFillColor(...primaryColor);
+    doc.rect(0, 0, 210, 55, 'F');
+
+    // Accent line on top
+    doc.setFillColor(...accentColor);
+    doc.rect(0, 0, 210, 3, 'F');
+
+    // Decorative accent shape
+    doc.setFillColor(...accentColor);
+    doc.circle(195, 28, 25, 'F');
+    doc.setFillColor(...primaryColor);
+    doc.circle(195, 28, 20, 'F');
+
+    // Company name - Large & Bold
+    doc.setFontSize(28);
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.text('SOMATISME', 20, 25);
-    
-    doc.setFontSize(12);
-    doc.setTextColor(200, 200, 200);
+    doc.text('SOMATISME', 15, 25);
+
+    // Tagline
+    doc.setFontSize(9);
+    doc.setTextColor(203, 213, 225);
     doc.setFont('helvetica', 'normal');
-    doc.text('Équipements Industriels', 20, 35);
-    doc.text('Solutions d\'automatisation & régulation', 20, 42);
-    
-    // Invoice info on the right
-    doc.setFontSize(10);
-    doc.setTextColor(255, 255, 255);
-    doc.text('FACTURE', 170, 20, { align: 'right' });
+    doc.text('SOLUTIONS D\'AUTOMATISATION INDUSTRIELLE', 15, 33);
+
     doc.setFontSize(8);
-    doc.text(`#${invoiceNumber}`, 170, 27, { align: 'right' });
-    doc.text(`Date: ${date}`, 170, 34, { align: 'right' });
-    doc.text(`Échéance: ${dueDate}`, 170, 41, { align: 'right' });
-    
-    // Status badge - Modern design
-    doc.setFillColor(239, 68, 68);
-    doc.roundedRect(130, 55, 65, 14, 4, 4, 'F');
-    doc.setFontSize(9);
+    doc.setTextColor(148, 163, 184);
+    doc.text('Equipements - Regulation - Installation Electrique', 15, 40);
+    doc.text('+212 679 825 646  |  contact@somatisme.ma  |  www.somatisme.ma', 15, 46);
+
+    // === INVOICE TITLE BLOCK ===
+    doc.setFillColor(...lightGray);
+    doc.roundedRect(15, 65, 180, 28, 3, 3, 'F');
+
+    doc.setFontSize(22);
+    doc.setTextColor(...primaryColor);
+    doc.setFont('helvetica', 'bold');
+    doc.text('FACTURE', 20, 78);
+
+    // Accent badge
+    doc.setFillColor(...accentColor);
+    doc.roundedRect(20, 82, 30, 7, 2, 2, 'F');
+    doc.setFontSize(8);
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.text('STATUT: À PAYER', 162.5, 63, { align: 'center' });
-    
-    // Bill to section
-    doc.setFontSize(11);
-    doc.setTextColor(30, 58, 138);
-    doc.setFont('helvetica', 'bold');
-    doc.text('FACTURÉ À', 15, 80);
-    
-    doc.setFontSize(9);
-    doc.setTextColor(60, 60, 60);
+    doc.text('A PAYER', 35, 87, { align: 'center' });
+
+    // Invoice meta info (right side)
+    doc.setFontSize(8);
+    doc.setTextColor(...mediumGray);
     doc.setFont('helvetica', 'normal');
-    doc.text(orderInfo.name, 15, 88);
+    doc.text('N FACTURE', 130, 72);
+    doc.setTextColor(...darkGray);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.text(invoiceNumber, 130, 78);
+
+    doc.setFontSize(8);
+    doc.setTextColor(...mediumGray);
+    doc.setFont('helvetica', 'normal');
+    doc.text('DATE', 130, 84);
+    doc.setTextColor(...darkGray);
+    doc.setFont('helvetica', 'bold');
+    doc.text(date, 145, 84);
+
+    doc.text('ECHEANCE', 165, 84);
+    doc.setFont('helvetica', 'normal');
+    doc.text(dueDate, 165, 89);
+
+    // === FROM / TO BLOCKS ===
+    // Facture a
+    doc.setFontSize(8);
+    doc.setTextColor(...accentColor);
+    doc.setFont('helvetica', 'bold');
+    doc.text('FACTURE A', 15, 108);
+
+    doc.setFillColor(...accentColor);
+    doc.rect(15, 110, 25, 0.8, 'F');
+
+    doc.setFontSize(11);
+    doc.setTextColor(...darkGray);
+    doc.setFont('helvetica', 'bold');
+    doc.text(orderInfo.name || '-', 15, 118);
+
+    doc.setFontSize(8);
+    doc.setTextColor(...mediumGray);
+    doc.setFont('helvetica', 'normal');
+    let yInfo = 124;
     if (orderInfo.company) {
-      doc.text(orderInfo.company, 15, 95);
-      doc.text(orderInfo.address || '', 15, 102);
-    } else {
-      doc.text(orderInfo.address || '', 15, 95);
+      doc.text(orderInfo.company, 15, yInfo);
+      yInfo += 5;
     }
-    doc.text(orderInfo.email, 15, orderInfo.company ? 109 : 102);
-    doc.text(orderInfo.phone, 15, orderInfo.company ? 116 : 109);
-    
-    // Ship to section
-    doc.setFontSize(11);
-    doc.setTextColor(30, 58, 138);
+    if (orderInfo.address) {
+      doc.text(orderInfo.address, 15, yInfo);
+      yInfo += 5;
+    }
+    if (orderInfo.email) {
+      doc.text(orderInfo.email, 15, yInfo);
+      yInfo += 5;
+    }
+    if (orderInfo.phone) {
+      doc.text(orderInfo.phone, 15, yInfo);
+    }
+
+    // De
+    doc.setFontSize(8);
+    doc.setTextColor(...accentColor);
     doc.setFont('helvetica', 'bold');
-    doc.text('LIVRÉ À', 120, 80);
-    
-    doc.setFontSize(9);
-    doc.setTextColor(60, 60, 60);
+    doc.text('DE', 120, 108);
+
+    doc.setFillColor(...accentColor);
+    doc.rect(120, 110, 15, 0.8, 'F');
+
+    doc.setFontSize(11);
+    doc.setTextColor(...darkGray);
+    doc.setFont('helvetica', 'bold');
+    doc.text('SOMATISME', 120, 118);
+
+    doc.setFontSize(8);
+    doc.setTextColor(...mediumGray);
     doc.setFont('helvetica', 'normal');
-    doc.text('SOMATISME', 120, 88);
-    doc.text('Équipements Industriels', 120, 95);
-    doc.text('Maroc', 120, 102);
-    doc.text('+212 679 825 646', 120, 109);
-    doc.text('contact@somatisme.ma', 120, 116);
-    
-    // Products table header
-    doc.setFillColor(30, 58, 138);
-    doc.rect(15, 130, 180, 12, 'F');
-    
-    doc.setFontSize(9);
+    doc.text('Equipements Industriels', 120, 124);
+    doc.text('Mohammedia, Maroc', 120, 129);
+    doc.text('+212 679 825 646', 120, 134);
+    doc.text('contact@somatisme.ma', 120, 139);
+
+    // === PRODUCTS TABLE ===
+    const tableY = 155;
+    doc.setFillColor(...primaryColor);
+    doc.roundedRect(15, tableY, 180, 10, 1, 1, 'F');
+
+    doc.setFontSize(8);
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.text('#', 20, 137);
-    doc.text('DESCRIPTION', 35, 137);
-    doc.text('QUANTITÉ', 130, 137);
-    doc.text('PRIX UNITAIRE', 155, 137);
-    doc.text('TOTAL', 185, 137);
-    
+    doc.text('#', 20, tableY + 6.5);
+    doc.text('DESCRIPTION', 30, tableY + 6.5);
+    doc.text('QTE', 130, tableY + 6.5, { align: 'center' });
+    doc.text('PRIX U.', 155, tableY + 6.5, { align: 'center' });
+    doc.text('TOTAL', 188, tableY + 6.5, { align: 'right' });
+
     // Products table rows
-    let y = 145;
+    let y = tableY + 10;
     doc.setFontSize(9);
-    doc.setTextColor(60, 60, 60);
     doc.setFont('helvetica', 'normal');
-    
+
     orderItems.forEach((item, index) => {
       if (index % 2 === 0) {
-        doc.setFillColor(248, 250, 252);
-        doc.rect(15, y - 5, 180, 12, 'F');
+        doc.setFillColor(...lightGray);
+        doc.rect(15, y, 180, 10, 'F');
       }
-      
-      doc.text(`${index + 1}`, 20, y);
-      doc.text(item.name.substring(0, 50) + (item.name.length > 50 ? '...' : ''), 35, y);
-      doc.text('1', 130, y);
-      doc.text(`${item.price} MAD`, 155, y);
-      doc.text(`${item.price} MAD`, 185, y);
-      y += 12;
+
+      doc.setTextColor(...mediumGray);
+      doc.setFontSize(8);
+      doc.text(`${String(index + 1).padStart(2, '0')}`, 20, y + 6.5);
+
+      doc.setTextColor(...darkGray);
+      doc.setFont('helvetica', 'normal');
+      const itemName = item.name.substring(0, 55) + (item.name.length > 55 ? '...' : '');
+      doc.text(itemName, 30, y + 6.5);
+
+      doc.text('1', 130, y + 6.5, { align: 'center' });
+      doc.text(`${item.price} MAD`, 155, y + 6.5, { align: 'center' });
+      doc.setFont('helvetica', 'bold');
+      doc.text(`${item.price} MAD`, 188, y + 6.5, { align: 'right' });
+      doc.setFont('helvetica', 'normal');
+      y += 10;
     });
-    
-    // Summary section
-    y += 5;
-    doc.setFillColor(248, 250, 252);
-    doc.rect(120, y, 75, 50, 'F');
-    
-    doc.setFontSize(9);
-    doc.setTextColor(60, 60, 60);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Sous-total:', 125, y + 10);
-    doc.text(`${total} MAD`, 185, y + 10, { align: 'right' });
-    
-    doc.text('TVA (0%):', 125, y + 20);
-    doc.text('0.00 MAD', 185, y + 20, { align: 'right' });
-    
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(30, 58, 138);
-    doc.text('TOTAL:', 125, y + 35);
-    doc.setFontSize(14);
-    doc.text(`${total} MAD`, 185, y + 35, { align: 'right' });
-    
-    // Notes and terms
-    y += 60;
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(30, 58, 138);
-    doc.text('NOTES & CONDITIONS', 15, y);
-    
+
+    // === SUMMARY BLOCK ===
+    y += 8;
+
+    // Left: Notes
     doc.setFontSize(8);
+    doc.setTextColor(...accentColor);
+    doc.setFont('helvetica', 'bold');
+    doc.text('NOTES & CONDITIONS', 15, y);
+    doc.setFillColor(...accentColor);
+    doc.rect(15, y + 2, 35, 0.6, 'F');
+
+    doc.setFontSize(7.5);
+    doc.setTextColor(...mediumGray);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(80, 80, 80);
-    doc.text('Merci pour votre commande. Le paiement est dû à la livraison.', 15, y + 8);
-    doc.text('Délai de livraison selon disponibilité du stock.', 15, y + 15);
-    doc.text('Garantie selon le type de produit.', 15, y + 22);
-    doc.text('Pour toute question, contactez-nous au +212 679 825 646', 15, y + 29);
-    
-    // Footer - Modern design
-    doc.setFillColor(30, 58, 138);
+    doc.text('Merci pour votre commande.', 15, y + 9);
+    doc.text('Le paiement est du a la livraison.', 15, y + 14);
+    doc.text('Delai de livraison selon disponibilite.', 15, y + 19);
+    doc.text('Garantie selon le type de produit.', 15, y + 24);
+    doc.text('Contact: +212 679 825 646', 15, y + 29);
+
+    // Right: Totals card
+    doc.setFillColor(...lightGray);
+    doc.roundedRect(115, y - 3, 80, 42, 3, 3, 'F');
+
+    doc.setFontSize(8);
+    doc.setTextColor(...mediumGray);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Sous-total', 120, y + 5);
+    doc.setTextColor(...darkGray);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${total} MAD`, 190, y + 5, { align: 'right' });
+
+    doc.setTextColor(...mediumGray);
+    doc.setFont('helvetica', 'normal');
+    doc.text('TVA (0%)', 120, y + 12);
+    doc.setTextColor(...darkGray);
+    doc.setFont('helvetica', 'bold');
+    doc.text('0.00 MAD', 190, y + 12, { align: 'right' });
+
+    // Divider
+    doc.setDrawColor(...mediumGray);
+    doc.setLineWidth(0.2);
+    doc.line(120, y + 17, 190, y + 17);
+
+    // Total row - premium
+    doc.setFillColor(...primaryColor);
+    doc.roundedRect(118, y + 22, 75, 14, 2, 2, 'F');
+    doc.setFontSize(10);
+    doc.setTextColor(...accentColor);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TOTAL', 123, y + 31);
+    doc.setFontSize(13);
+    doc.setTextColor(255, 255, 255);
+    doc.text(`${total} MAD`, 190, y + 31, { align: 'right' });
+
+    // === FOOTER ===
+    doc.setFillColor(...primaryColor);
     doc.rect(0, 275, 210, 22, 'F');
-    
+    doc.setFillColor(...accentColor);
+    doc.rect(0, 275, 210, 1.5, 'F');
+
     doc.setFontSize(9);
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.text('SOMATISME', 105, 283, { align: 'center' });
-    
-    doc.setFontSize(8);
+    doc.text('SOMATISME', 105, 284, { align: 'center' });
+
+    doc.setFontSize(7);
+    doc.setTextColor(203, 213, 225);
     doc.setFont('helvetica', 'normal');
-    doc.text('Équipements Industriels | +212 679 825 646 | contact@somatisme.ma', 105, 290, { align: 'center' });
-    doc.text('www.somatisme.ma', 105, 295, { align: 'center' });
-    
+    doc.text('Equipements Industriels  |  +212 679 825 646  |  contact@somatisme.ma', 105, 289, { align: 'center' });
+    doc.setTextColor(...accentColor);
+    doc.setFont('helvetica', 'bold');
+    doc.text('www.somatisme.ma', 105, 294, { align: 'center' });
+
     // Save the PDF
     doc.save(`Facture_${invoiceNumber}.pdf`);
   };
@@ -2172,75 +2273,98 @@ export default function Products() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      
-      {/* Search and Filters */}
+
+      {/* Hero Header */}
+      <section className="relative py-16 overflow-hidden">
+        <div className="absolute inset-0 gradient-hero opacity-5"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-[80px]"></div>
+        <div className="container relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
+          >
+            <h1 className="text-display text-foreground mb-4">
+              {language === 'ar' ? 'Products' : 'Nos Produits'}
+            </h1>
+            <p className="text-body-large text-muted-foreground">
+              {language === 'ar' ? 'Products description' : 'Équipements industriels de qualité professionnelle'}
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Search and Filters - Ultra Pro */}
       <motion.section
         {...fadeInUp}
-        className="py-12 bg-muted/30 border-y border-border"
+        className="py-8 relative overflow-hidden"
       >
-        <div className="container">
-          <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
-            <motion.div
-              {...fadeInLeft}
-              transition={{ delay: 0.1 }}
-              className="relative flex-1 max-w-md"
-            >
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-              <Input
-                placeholder={language === 'ar' ? 'بحث عن منتج...' : 'Rechercher un produit...'}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12"
-              />
-            </motion.div>
-            <motion.div
-              {...fadeInUp}
-              transition={{ delay: 0.2 }}
-              className="flex gap-2 flex-wrap"
-            >
-              {categories.map((category, index) => (
-                <motion.div
-                  key={category.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + index * 0.05 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button
-                    variant={selectedCategory === category.id ? 'default' : 'outline'}
-                    onClick={() => setSelectedCategory(category.id)}
-                  >
-                    {language === 'ar' ? category.nameAr : category.name}
-                  </Button>
-                </motion.div>
-              ))}
-            </motion.div>
-            <motion.div
-              {...fadeInUp}
-              transition={{ delay: 0.5 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="outline"
-                onClick={() => setShowCart(!showCart)}
-                className="relative"
+        <div className="absolute inset-0 gradient-card opacity-30"></div>
+        <div className="container relative z-10">
+          <div className="card-glass p-6">
+            <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+              <motion.div
+                {...fadeInLeft}
+                transition={{ delay: 0.1 }}
+                className="relative flex-1 max-w-md"
               >
-                <ShoppingCart className="h-5 w-5 mr-2" />
-                {language === 'ar' ? 'السلة' : 'Panier'}
-                {cart.length > 0 && (
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-accent h-5 w-5" />
+                <Input
+                  placeholder={language === 'ar' ? ' recherche de produit...' : 'Rechercher un produit...'}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="input-premium pl-12"
+                />
+              </motion.div>
+              <motion.div
+                {...fadeInUp}
+                transition={{ delay: 0.2 }}
+                className="flex gap-3 flex-wrap justify-center"
+              >
+                {categories.map((category, index) => (
                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: 'spring', duration: 0.3 }}
-                    className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 bg-accent text-accent-foreground rounded-full"
+                    key={category.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 + index * 0.05 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    {cart.length}
+                    <Button
+                      variant={selectedCategory === category.id ? 'default' : 'outline'}
+                      onClick={() => setSelectedCategory(category.id)}
+                    >
+                      {language === 'ar' ? category.nameAr : category.name}
+                    </Button>
                   </motion.div>
-                )}
-              </Button>
-            </motion.div>
+                ))}
+              </motion.div>
+              <motion.div
+                {...fadeInUp}
+                transition={{ delay: 0.5 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCart(!showCart)}
+                  className="relative"
+                >
+                  <ShoppingCart className="h-5 w-5 mr-2" />
+                  {language === 'ar' ? 'السلة' : 'Panier'}
+                  {cart.length > 0 && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: 'spring', duration: 0.3 }}
+                      className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 bg-accent text-accent-foreground rounded-full"
+                    >
+                      {cart.length}
+                    </motion.div>
+                  )}
+                </Button>
+              </motion.div>
+            </div>
           </div>
         </div>
       </motion.section>
@@ -2293,52 +2417,64 @@ export default function Products() {
         </motion.div>
       )}
 
-      {/* Products Grid */}
-      <section className="py-20 bg-background">
-        <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {/* Products Grid - Ultra Pro */}
+      <section className="section-padding section-gradient relative overflow-hidden">
+        <div className="absolute inset-0 dot-pattern opacity-20"></div>
+        <div className="container relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredProducts.map((product, index) => (
               <motion.div
                 key={product.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group bg-card border border-border rounded-lg p-6 hover:border-accent transition-all duration-300 hover:shadow-lg"
+                whileHover={{ y: -10 }}
+                className="card-premium p-6 group"
               >
-                <div className="aspect-square overflow-hidden bg-muted rounded-lg mb-4">
+                <div className="aspect-square overflow-hidden rounded-xl mb-5 relative">
                   <img
                     src={product.image}
                     alt={language === 'ar' ? product.nameAr : product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
+                  <div className="absolute top-3 left-3">
+                    <span className="badge-premium text-xs">
+                      {language === 'ar' ? product.categoryAr : product.category}
+                    </span>
+                  </div>
                 </div>
-                <Badge variant="secondary" className="mb-3 text-xs">
-                  {language === 'ar' ? product.categoryAr : product.category}
-                </Badge>
                 <h3 className="text-subheading text-foreground mb-2 line-clamp-2">
                   {language === 'ar' ? product.nameAr : product.name}
                 </h3>
-                <p className="text-sm text-muted-foreground mb-3">{product.brand}</p>
+                <p className="text-sm text-muted-foreground mb-2">{product.brand}</p>
                 <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                   {language === 'ar' ? product.descriptionAr : product.description}
                 </p>
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-lg font-bold text-primary">{product.price} MAD</p>
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-2xl font-bold gradient-text">{product.price} MAD</p>
+                  {product.stock > 0 && (
+                    <span className="text-xs text-green-600 font-medium">En stock</span>
+                  )}
                 </div>
-                <Button
-                  size="sm"
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => addToCart(product)}
                   disabled={product.stock === 0}
-                  className="w-full"
+                  className={`w-full py-3 rounded-xl font-semibold transition-all ${
+                    product.stock === 0
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'btn-accent'
+                  }`}
                 >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  {product.stock === 0 
-                    ? (language === 'ar' ? 'نفدت الكمية' : 'Rupture')
-                    : (language === 'ar' ? 'أضف' : 'Ajouter')
+                  <ShoppingCart className="h-4 w-4 mr-2 inline" />
+                  {product.stock === 0
+                    ? (language === 'ar' ? 'Rupture de stock' : 'Rupture')
+                    : (language === 'ar' ? 'Ajouter' : 'Ajouter au panier')
                   }
-                </Button>
-                <p className="text-xs text-muted-foreground mt-2 text-center">
-                  {language === 'ar' ? `الكمية: ${product.stock}` : `Stock: ${product.stock}`}
+                </motion.button>
+                <p className="text-xs text-muted-foreground mt-3 text-center">
+                  {language === 'ar' ? `Quantite: ${product.stock}` : `Stock disponible: ${product.stock}`}
                 </p>
               </motion.div>
             ))}
@@ -2346,9 +2482,15 @@ export default function Products() {
 
           {filteredProducts.length === 0 && (
             <div className="text-center py-16">
-              <p className="text-muted-foreground">
-                {language === 'ar' ? 'لا توجد منتجات مطابقة' : 'Aucun produit trouvé'}
-              </p>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="card-glass p-12 max-w-md mx-auto"
+              >
+                <p className="text-muted-foreground text-lg">
+                  {language === 'ar' ? 'Aucun produit trouve' : 'Aucun produit trouve'}
+                </p>
+              </motion.div>
             </div>
           )}
         </div>

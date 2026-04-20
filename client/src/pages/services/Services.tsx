@@ -108,131 +108,175 @@ export default function Services() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      {/* Hero Section */}
-      <section className="py-20 md:py-32 bg-gradient-to-b from-muted/50 to-background">
-        <div className="container">
+
+      {/* Hero Section - Ultra Pro */}
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <div className="absolute inset-0 gradient-hero opacity-5"></div>
+        <div className="absolute top-20 left-20 w-96 h-96 bg-accent/15 rounded-full blur-[100px] animate-pulse-slow"></div>
+        <div className="absolute bottom-20 right-20 w-80 h-80 bg-primary/15 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute inset-0 grid-pattern opacity-30"></div>
+
+        <div className="container relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center max-w-3xl mx-auto"
+            className="text-center max-w-4xl mx-auto"
           >
             <h1 className="text-display text-foreground mb-6">
-              Nos <span className="text-accent">{t('nav.services')}</span>
+              Nos <span className="gradient-text">{t('nav.services')}</span>
             </h1>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-body-large text-muted-foreground mb-8">
               {t('services.hero.subtitle')}
             </p>
+            <div className="divider-gradient w-32 mx-auto"></div>
           </motion.div>
         </div>
       </section>
 
-      {/* Services Grid */}
-      <section className="py-20 md:py-32">
-        <div className="container space-y-20">
+      {/* Services Grid - Ultra Pro */}
+      <section className="section-padding relative">
+        <div className="container space-y-24">
           {services.map((service, index) => (
-            <div
+            <motion.div
               key={index}
-              className={`relative group grid grid-cols-1 md:grid-cols-2 gap-12 items-center p-8 rounded-2xl transition-all duration-500 hover:bg-muted/50 border border-transparent hover:border-border/50 ${
-                index % 2 === 1 ? 'md:grid-cols-2 md:auto-cols-auto' : ''
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className={`relative grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${
+                index % 2 === 1 ? 'lg:flex-row-reverse' : ''
               }`}
             >
               {/* Image */}
-              <motion.div 
-                initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+              <motion.div
+                initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                className={`relative ${index % 2 === 1 ? 'md:order-2' : ''}`}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className={`relative ${index % 2 === 1 ? 'lg:order-2' : ''}`}
               >
-                <div className="rounded-xl overflow-hidden shadow-2xl border border-border">
+                <div className="rounded-2xl overflow-hidden shadow-glow-strong border border-accent/20">
                   <img
                     src={service.image}
                     alt={service.title}
                     className="w-full h-auto object-cover"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent"></div>
                 </div>
               </motion.div>
 
               {/* Content */}
-              <motion.div 
-                initial={{ opacity: 0, x: index % 2 === 0 ? 20 : -20 }}
+              <motion.div
+                initial={{ opacity: 0, x: index % 2 === 0 ? 30 : -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                className={index % 2 === 1 ? 'md:order-1' : ''}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className={`card-premium p-8 ${index % 2 === 1 ? 'lg:order-1' : ''}`}
               >
-                <div className="inline-block p-3 bg-accent/10 rounded-lg mb-4">
-                  <service.icon className="text-accent" size={28} />
+                <div className="inline-flex p-4 rounded-xl bg-accent/10 mb-6">
+                  <service.icon className="text-accent" size={32} />
                 </div>
                 <h2 className="text-heading text-foreground mb-4">{service.title}</h2>
-                <p className="text-muted-foreground mb-6">{service.description}</p>
+                <p className="text-body-large text-muted-foreground mb-6">{service.description}</p>
                 <div className="space-y-3 mb-8">
                   {service.features.map((feature, i) => (
-                    <div key={i} className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-accent mt-2 flex-shrink-0 shadow-[0_0_8px_oklch(var(--accent))]"></div>
-                      <span className="text-sm text-foreground/90">{feature}</span>
-                    </div>
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="flex items-start gap-3"
+                    >
+                      <div className="w-2 h-2 rounded-full bg-accent mt-2 flex-shrink-0"></div>
+                      <span className="text-sm text-foreground/80">{feature}</span>
+                    </motion.div>
                   ))}
                 </div>
 
                 <Link href={service.href}>
-                  <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="btn-accent"
+                  >
                     {t('services.more')}
-                    <ArrowRight size={18} />
-                  </Button>
+                    <ArrowRight size={18} className="ml-2" />
+                  </motion.button>
                 </Link>
               </motion.div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
 
-      {/* Quality Standards Section */}
-      <section className="py-20 bg-muted/20 border-y border-border">
-        <div className="container">
+      {/* Quality Standards Section - Ultra Pro */}
+      <section className="section-padding section-dark relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-20 right-20 w-64 h-64 bg-accent/10 rounded-full blur-[80px]"></div>
+          <div className="absolute bottom-20 left-20 w-80 h-80 bg-primary/20 rounded-full blur-[100px]"></div>
+        </div>
+        <div className="container relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }}>
-              <h2 className="text-heading mb-6">{t('services.quality.title')}</h2>
-              <p className="text-lg text-muted-foreground mb-8">
+              <h2 className="text-heading text-white mb-6">{t('services.quality.title')}</h2>
+              <p className="text-body-large text-gray-300 mb-8">
                 {t('services.quality.desc')}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {['item1', 'item2', 'item3', 'item4'].map((item) => (
-                  <div key={item} className="flex gap-3">
-                    <Shield className="text-accent shrink-0" size={20} />
-                    <p className="text-sm font-medium text-foreground">{t(`services.quality.${item}`)}</p>
-                  </div>
+                {['item1', 'item2', 'item3', 'item4'].map((item, i) => (
+                  <motion.div
+                    key={item}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="card-glass px-4 py-3"
+                  >
+                    <div className="flex gap-3 items-center">
+                      <Shield className="text-accent shrink-0" size={20} />
+                      <p className="text-sm font-medium text-white">{t(`services.quality.${item}`)}</p>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }} 
-              whileInView={{ opacity: 1, scale: 1 }}
-              className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-background"
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              className="relative"
             >
-              <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80" alt="Qualité" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-primary/10 mix-blend-multiply"></div>
+              <div className="rounded-2xl overflow-hidden shadow-glow-strong border border-accent/20">
+                <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80" alt="Qualité" className="w-full h-full object-cover" />
+              </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 md:py-32 bg-primary text-primary-foreground">
-        <div className="container text-center">
+      {/* CTA Section - Ultra Pro */}
+      <section className="section-padding relative overflow-hidden">
+        <div className="absolute inset-0 gradient-hero opacity-10"></div>
+        <div className="absolute top-10 left-10 w-64 h-64 bg-accent/20 rounded-full blur-[80px] animate-pulse-slow"></div>
+        <div className="absolute bottom-10 right-10 w-80 h-80 bg-primary/20 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
+
+        <div className="container relative z-10 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-heading text-primary-foreground mb-6">
+            <h2 className="text-display text-foreground mb-6">
               {t('services.cta.title')}
             </h2>
-            <p className="text-lg opacity-90 max-w-2xl mx-auto mb-8">
+            <p className="text-body-large text-muted-foreground max-w-2xl mx-auto mb-10">
               {t('services.cta.desc')}
             </p>
             <Link href="/contact">
-              <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="btn-accent text-lg px-10 py-5"
+              >
                 {t('cta.contact')}
-                <ArrowRight size={18} />
-              </Button>
+                <ArrowRight size={20} className="ml-2" />
+              </motion.button>
             </Link>
           </motion.div>
         </div>

@@ -1,3 +1,5 @@
+import { FileText, Globe, Mail, Phone, MapPin } from 'lucide-react';
+
 interface InvoiceItem {
   name: string;
   description: string;

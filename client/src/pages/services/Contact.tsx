@@ -96,38 +96,47 @@ export default function Contact() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      {/* Hero Section */}
-      <section className="py-20 md:py-32 bg-gradient-to-b from-muted/50 to-background">
-        <div className="container">
+      {/* Hero Section - Ultra Pro */}
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <div className="absolute inset-0 gradient-hero opacity-5"></div>
+        <div className="absolute top-20 right-20 w-96 h-96 bg-accent/15 rounded-full blur-[100px] animate-pulse-slow"></div>
+        <div className="absolute bottom-20 left-20 w-80 h-80 bg-primary/15 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute inset-0 grid-pattern opacity-30"></div>
+
+        <div className="container relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center max-w-3xl mx-auto"
+            className="text-center max-w-4xl mx-auto"
           >
             <h1 className="text-display text-foreground mb-6">
-              {t('contact.hero.title').split(' ')[0]} <span className="text-accent">{t('contact.hero.title').split(' ')[1]}</span>
+              <span className="gradient-text">{t('contact.hero.title')}</span>
             </h1>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-body-large text-muted-foreground mb-8">
               {t('contact.hero.subtitle')}
             </p>
+            <div className="divider-gradient w-32 mx-auto"></div>
           </motion.div>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section className="py-20 md:py-32">
-        <div className="container">
+      {/* Contact Section - Ultra Pro */}
+      <section className="section-padding relative overflow-hidden">
+        <div className="absolute inset-0 gradient-card opacity-30"></div>
+        <div className="container relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Contact Info */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
-              className="space-y-8"
+              className="space-y-6"
             >
-              <div>
-                <h3 className="text-subheading text-foreground mb-6">{t('contact.info.title')}</h3>
+              <div className="card-premium p-6 mb-8">
+                <h3 className="text-subheading text-foreground mb-2">{t('contact.info.title')}</h3>
+                <div className="divider-gradient w-16 mb-4"></div>
+                <p className="text-sm text-muted-foreground">Notre equipe est a votre disposition pour repondre a toutes vos questions.</p>
               </div>
 
               {[
@@ -156,14 +165,15 @@ export default function Contact() {
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="flex items-start gap-4 p-4 rounded-lg hover:bg-muted transition-colors"
+                  whileHover={{ x: 5 }}
+                  className="card-glass p-4 flex items-start gap-4 group"
                 >
-                  <div className="p-3 bg-accent/10 rounded-lg">
-                    <item.icon className="text-accent" size={24} />
+                  <div className="p-3 bg-accent/10 rounded-xl group-hover:bg-accent group-hover:text-white transition-all">
+                    <item.icon className="text-accent group-hover:text-white" size={24} />
                   </div>
                   <div>
                     <p className="font-semibold text-foreground">{item.title}</p>
-                    <p className="text-muted-foreground">{item.value}</p>
+                    <p className="text-sm text-muted-foreground">{item.value}</p>
                   </div>
                 </motion.a>
               ))}
@@ -175,13 +185,15 @@ export default function Contact() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               onSubmit={handleSubmit}
-              className="lg:col-span-2 bg-card/50 backdrop-blur-sm border border-border rounded-3xl p-8 md:p-10 shadow-xl relative overflow-hidden"
+              className="lg:col-span-2 card-premium p-8 md:p-10 relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 blur-3xl -mr-16 -mt-16"></div>
-              
+              <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 blur-3xl -mr-32 -mt-32"></div>
+
               <div className="flex items-center gap-3 mb-10 pb-4 border-b border-border/50">
-                <ClipboardCheck className="text-accent" size={24} />
-                <h3 className="text-xl font-bold text-foreground">Détails de la demande</h3>
+                <div className="p-2 bg-accent/10 rounded-lg">
+                  <ClipboardCheck className="text-accent" size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-foreground">Details de la demande</h3>
               </div>
 
               {/* Anti-spam Honeypot (Invisible) */}
@@ -335,10 +347,18 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* FAQ Section to fill space and add value */}
-      <section className="py-20 bg-muted/30">
-        <div className="container max-w-4xl">
-          <h2 className="text-heading text-center mb-12">{t('contact.faq.title')}</h2>
+      {/* FAQ Section - Ultra Pro */}
+      <section className="section-padding relative overflow-hidden">
+        <div className="absolute inset-0 dot-pattern opacity-20"></div>
+        <div className="container max-w-4xl relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-heading text-foreground mb-4">{t('contact.faq.title')}</h2>
+            <div className="divider-gradient w-24 mx-auto"></div>
+          </motion.div>
           <div className="space-y-6">
             {[
               { q: t('contact.faq.q1'), a: t('contact.faq.a1') },
@@ -346,17 +366,19 @@ export default function Contact() {
               { q: t('contact.faq.q3'), a: t('contact.faq.a3') },
               { q: t('contact.faq.q4'), a: t('contact.faq.a4') }
             ].map((item, i) => (
-              <motion.div 
+              <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                className="p-6 bg-card border border-border rounded-xl"
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ y: -3 }}
+                className="card-premium p-6"
               >
-                <h4 className="font-bold text-foreground mb-2 flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-accent"></div>
+                <h4 className="font-bold text-foreground mb-2 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent text-sm">{i + 1}</div>
                   {item.q}
                 </h4>
-                <p className="text-sm text-muted-foreground pl-4 border-l border-border/50 ml-0.5">{item.a}</p>
+                <p className="text-sm text-muted-foreground pl-11">{item.a}</p>
               </motion.div>
             ))}
           </div>
