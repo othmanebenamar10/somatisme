@@ -297,10 +297,10 @@ export default function About() {
               >
                 <div className="w-24 h-24 mx-auto bg-muted rounded-2xl flex items-center justify-center mb-6 group-hover:bg-accent/10 transition-all duration-500 border border-transparent group-hover:border-accent/20 p-4">
                   <img
-                    src={partner.logoUrl}
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(partner.name)}&background=ea580c&color=fff&bold=true&size=200`}
                     alt={partner.name}
-                    className="max-h-full max-w-full object-contain grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all"
-                    onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${partner.name}&background=random`; }}
+                    className="max-h-full max-w-full object-contain grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all rounded-lg"
+                    title={partner.name}
                   />
                 </div>
 
