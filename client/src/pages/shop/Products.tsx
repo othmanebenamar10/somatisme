@@ -1934,6 +1934,24 @@ export default function Products() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const fadeInUp = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.6 },
+  };
+
+  const fadeInLeft = {
+    initial: { opacity: 0, x: -30 },
+    animate: { opacity: 1, x: 0 },
+    transition: { duration: 0.7 },
+  };
+
+  const scaleIn = {
+    initial: { opacity: 0, scale: 0.95 },
+    animate: { opacity: 1, scale: 1 },
+    transition: { duration: 0.5 },
+  };
+
   const filteredProducts = products.filter((product) => {
     const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
     const matchesSearch = searchQuery === '' || 
@@ -2156,10 +2174,17 @@ export default function Products() {
       <Header />
       
       {/* Search and Filters */}
-      <section className="py-12 bg-muted/30 border-y border-border">
+      <motion.section
+        {...fadeInUp}
+        className="py-12 bg-muted/30 border-y border-border"
+      >
         <div className="container">
           <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
-            <div className="relative flex-1 max-w-md">
+            <motion.div
+              {...fadeInLeft}
+              transition={{ delay: 0.1 }}
+              className="relative flex-1 max-w-md"
+            >
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
               <Input
                 placeholder={language === 'ar' ? 'بحث عن منتج...' : 'Rechercher un produit...'}
@@ -2167,34 +2192,58 @@ export default function Products() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-12"
               />
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              {categories.map((category) => (
-                <Button
-                  key={category.id}
-                  variant={selectedCategory === category.id ? 'default' : 'outline'}
-                  onClick={() => setSelectedCategory(category.id)}
-                >
-                  {language === 'ar' ? category.nameAr : category.name}
-                </Button>
-              ))}
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => setShowCart(!showCart)}
-              className="relative"
+            </motion.div>
+            <motion.div
+              {...fadeInUp}
+              transition={{ delay: 0.2 }}
+              className="flex gap-2 flex-wrap"
             >
-              <ShoppingCart className="h-5 w-5 mr-2" />
-              {language === 'ar' ? 'السلة' : 'Panier'}
-              {cart.length > 0 && (
-                <Badge className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 bg-accent text-accent-foreground">
-                  {cart.length}
-                </Badge>
-              )}
-            </Button>
+              {categories.map((category, index) => (
+                <motion.div
+                  key={category.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + index * 0.05 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    variant={selectedCategory === category.id ? 'default' : 'outline'}
+                    onClick={() => setSelectedCategory(category.id)}
+                  >
+                    {language === 'ar' ? category.nameAr : category.name}
+                  </Button>
+                </motion.div>
+              ))}
+            </motion.div>
+            <motion.div
+              {...fadeInUp}
+              transition={{ delay: 0.5 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button
+                variant="outline"
+                onClick={() => setShowCart(!showCart)}
+                className="relative"
+              >
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                {language === 'ar' ? 'السلة' : 'Panier'}
+                {cart.length > 0 && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', duration: 0.3 }}
+                    className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 bg-accent text-accent-foreground rounded-full"
+                  >
+                    {cart.length}
+                  </motion.div>
+                )}
+              </Button>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Cart Sidebar */}
       {showCart && (
