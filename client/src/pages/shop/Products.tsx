@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { ShoppingCart, Filter, Search, Star, Check, X } from 'lucide-react';
+import { ShoppingCart, Filter, Search, Star, Check, X, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { loadStripe } from '@stripe/stripe-js';
+import jsPDF from 'jspdf';
 
 interface Product {
   id: string;
@@ -1952,6 +1953,74 @@ export default function Products() {
 
   const cartTotal = cart.reduce((sum, item) => sum + item.price, 0);
 
+  const generateInvoice = (orderItems: any[], orderInfo: any, total: number) => {
+    const doc = new jsPDF();
+    const invoiceNumber = `INV-${Date.now()}`;
+    const date = new Date().toLocaleDateString('fr-FR');
+
+    // Header
+    doc.setFontSize(20);
+    doc.setTextColor(0, 102, 204);
+    doc.text('SOMATISME', 20, 20);
+    
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text('Facture / Invoice', 20, 30);
+    
+    // Invoice details
+    doc.setFontSize(10);
+    doc.text(`Numéro: ${invoiceNumber}`, 20, 45);
+    doc.text(`Date: ${date}`, 20, 52);
+    doc.text('Statut: À PAYER', 20, 59);
+    
+    // Customer info
+    doc.setFontSize(12);
+    doc.setTextColor(0, 102, 204);
+    doc.text('Informations Client:', 20, 75);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Nom: ${orderInfo.name}`, 20, 85);
+    doc.text(`Email: ${orderInfo.email}`, 20, 92);
+    doc.text(`Téléphone: ${orderInfo.phone}`, 20, 99);
+    if (orderInfo.company) doc.text(`Entreprise: ${orderInfo.company}`, 20, 106);
+    if (orderInfo.address) doc.text(`Adresse: ${orderInfo.address}`, 20, 113);
+    
+    // Products table
+    doc.setFontSize(12);
+    doc.setTextColor(0, 102, 204);
+    doc.text('Produits Commandés:', 20, 130);
+    
+    let y = 140;
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    
+    orderItems.forEach((item, index) => {
+      doc.text(`${index + 1}. ${item.name}`, 20, y);
+      doc.text(`${item.price} MAD`, 150, y);
+      y += 10;
+    });
+    
+    // Total
+    y += 10;
+    doc.setFontSize(12);
+    doc.setTextColor(0, 102, 204);
+    doc.text('Total:', 20, y);
+    
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`${total} MAD`, 50, y);
+    
+    // Footer
+    doc.setFontSize(8);
+    doc.setTextColor(128, 128, 128);
+    doc.text('Somatisme - Équipements Industriels', 20, 280);
+    doc.text('Contact: +212 679 825 646', 20, 285);
+    
+    // Save the PDF
+    doc.save(`Facture_${invoiceNumber}.pdf`);
+  };
+
   const handleOrderSubmit = async () => {
     if (!orderForm.name || !orderForm.email || !orderForm.phone) {
       toast.error('Veuillez remplir tous les champs requis');
@@ -1968,13 +2037,16 @@ export default function Products() {
         quantity: 1
       }));
 
+      // Generate invoice
+      generateInvoice(orderItems, orderForm, cartTotal);
+
       // Send order via WhatsApp
       const orderMessage = `NOUVELLE COMMANDE - PAIEMENT WHATSAPP\n\nNom: ${orderForm.name}\nEmail: ${orderForm.email}\nTéléphone: ${orderForm.phone}\nEntreprise: ${orderForm.company}\nAdresse: ${orderForm.address}\n\nProduits commandés:\n${orderItems.map(item => `- ${item.name}: ${item.price} MAD`).join('\n')}\n\nTotal: ${cartTotal} MAD\n\nMessage: ${orderForm.message}`;
       
       const whatsappUrl = `https://wa.me/212679825646?text=${encodeURIComponent(orderMessage)}`;
       window.open(whatsappUrl, '_blank');
       
-      toast.success('Commande envoyée avec succès');
+      toast.success('Commande envoyée avec succès. Facture téléchargée.');
       setCart([]);
       setShowOrderDialog(false);
       setShowCart(false);
