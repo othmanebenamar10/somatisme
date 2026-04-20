@@ -25,18 +25,36 @@ export default function Home() {
   });
 
   const fadeInUp = {
-    initial: { opacity: 0, y: 20 },
+    initial: { opacity: 0, y: 30 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6 },
+    transition: { duration: 0.7 },
+  };
+
+  const fadeInLeft = {
+    initial: { opacity: 0, x: -40 },
+    animate: { opacity: 1, x: 0 },
+    transition: { duration: 0.8 },
+  };
+
+  const fadeInRight = {
+    initial: { opacity: 0, x: 40 },
+    animate: { opacity: 1, x: 0 },
+    transition: { duration: 0.8 },
   };
 
   const staggerContainer = {
     animate: {
       transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
+        staggerChildren: 0.15,
+        delayChildren: 0.3,
       },
     },
+  };
+
+  const scaleIn = {
+    initial: { opacity: 0, scale: 0.95 },
+    animate: { opacity: 1, scale: 1 },
+    transition: { duration: 0.6 },
   };
 
   const partnersData = [
@@ -53,57 +71,82 @@ export default function Home() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative py-20 md:py-32 overflow-hidden">
+      <section className="relative py-24 md:py-36 overflow-hidden">
         <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Left Content */}
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="space-y-6"
+              initial={fadeInLeft.initial}
+              animate={fadeInLeft.animate}
+              transition={fadeInLeft.transition}
+              className="space-y-8"
             >
-              <div className="inline-block px-4 py-2 bg-accent/10 rounded-lg border border-accent/30">
-                <span className="text-accent font-semibold text-sm">{t('home.hero.badge')}</span>
-              </div>
+              <motion.div
+                initial={fadeInUp.initial}
+                animate={fadeInUp.animate}
+                transition={{ ...fadeInUp.transition, delay: 0.1 }}
+                className="inline-block px-5 py-2.5 bg-accent/10 rounded-lg border border-accent/30"
+              >
+                <span className="text-accent font-semibold text-sm tracking-wide uppercase">{t('home.hero.badge')}</span>
+              </motion.div>
 
-              <h1 className="text-display text-foreground">
+              <motion.h1
+                initial={fadeInUp.initial}
+                animate={fadeInUp.animate}
+                transition={{ ...fadeInUp.transition, delay: 0.2 }}
+                className="text-display text-foreground"
+              >
                 {t('home.hero.title')}
                 <span className="text-accent">{t('home.hero.title.accent')}</span>
-              </h1>
+              </motion.h1>
 
-              <p className="text-lg text-muted-foreground max-w-lg">
+              <motion.p
+                initial={fadeInUp.initial}
+                animate={fadeInUp.animate}
+                transition={{ ...fadeInUp.transition, delay: 0.3 }}
+                className="text-body-large text-muted-foreground max-w-xl"
+              >
                 {t('home.hero.desc')}
-              </p>
+              </motion.p>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <motion.div
+                initial={fadeInUp.initial}
+                animate={fadeInUp.animate}
+                transition={{ ...fadeInUp.transition, delay: 0.4 }}
+                className="flex flex-col sm:flex-row gap-4"
+              >
                 <Link href="/contact">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2">
+                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 shadow-lg shadow-accent/20 transition-all hover:shadow-xl hover:shadow-accent/30">
                     {t('home.hero.cta.quote')}
                     <ArrowRight size={18} />
                   </Button>
                 </Link>
                 <Link href="/services">
-                  <Button size="lg" variant="outline">
+                  <Button size="lg" variant="outline" className="transition-all hover:border-accent hover:text-accent">
                     {t('home.hero.cta.discover')}
                   </Button>
                 </Link>
-              </div>
+              </motion.div>
 
-              <div className="flex gap-8 pt-8">
-                <div>
-                  <p className="text-2xl font-bold text-primary">50+</p>
+              <motion.div
+                initial={fadeInUp.initial}
+                animate={fadeInUp.animate}
+                transition={{ ...fadeInUp.transition, delay: 0.5 }}
+                className="flex gap-12 pt-8 border-t border-border/50"
+              >
+                <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+                  <p className="text-3xl font-bold text-primary mb-1">50+</p>
                   <p className="text-sm text-muted-foreground">{t('home.hero.stats.projects')}</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-primary">15+</p>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+                  <p className="text-3xl font-bold text-primary mb-1">15+</p>
                   <p className="text-sm text-muted-foreground">{t('home.hero.stats.experience')}</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-primary">100%</p>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+                  <p className="text-3xl font-bold text-primary mb-1">100%</p>
                   <p className="text-sm text-muted-foreground">{t('home.hero.stats.satisfaction')}</p>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             </motion.div>
 
             {/* Right Image */}
