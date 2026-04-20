@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import { Resend } from "resend";
 import { connectToDatabase } from "./db";
 import ContactSubmission from "./models/ContactSubmission";
 import {
@@ -111,64 +112,53 @@ async function startServer() {
         return res.status(403).json({ error: "Submission flagged as spam" });
       }
 
-      // Configure email transporter
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST || "smtp.gmail.com",
-        port: parseInt(process.env.SMTP_PORT || "587"),
-        secure: false,
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
+      // Initialize Resend
+      const resend = new Resend(process.env.RESEND_API_KEY);
 
       // Email content
-      const mailOptions = {
-        from: process.env.EMAIL_FROM || `"SOMATISME" <${process.env.SMTP_USER}>`,
-        to: process.env.EMAIL_TO || "info@somatisme.ma",
-        subject: `Nouvelle demande de contact: ${subject}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">Nouvelle demande de contact</h2>
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Nom:</strong></td>
-                <td style="padding: 10px; border-bottom: 1px solid #eee;">${name}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Email:</strong></td>
-                <td style="padding: 10px; border-bottom: 1px solid #eee;">${email}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Téléphone:</strong></td>
-                <td style="padding: 10px; border-bottom: 1px solid #eee;">${phone || "Non renseigné"}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Entreprise:</strong></td>
-                <td style="padding: 10px; border-bottom: 1px solid #eee;">${company || "Non renseigné"}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Sujet:</strong></td>
-                <td style="padding: 10px; border-bottom: 1px solid #eee;">${subject}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>IP:</strong></td>
-                <td style="padding: 10px; border-bottom: 1px solid #eee;">${ip}</td>
-              </tr>
-            </table>
-            <div style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 5px;">
-              <strong style="color: #333;">Message:</strong>
-              <p style="color: #666; white-space: pre-wrap; margin-top: 10px;">${message}</p>
-            </div>
-            <p style="margin-top: 20px; color: #999; font-size: 12px;">Cet email a été envoyé depuis le formulaire de contact du site SOMATISME.</p>
+      const htmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">Nouvelle demande de contact</h2>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Nom:</strong></td>
+              <td style="padding: 10px; border-bottom: 1px solid #eee;">${name}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Email:</strong></td>
+              <td style="padding: 10px; border-bottom: 1px solid #eee;">${email}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Téléphone:</strong></td>
+              <td style="padding: 10px; border-bottom: 1px solid #eee;">${phone || "Non renseigné"}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Entreprise:</strong></td>
+              <td style="padding: 10px; border-bottom: 1px solid #eee;">${company || "Non renseigné"}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Sujet:</strong></td>
+              <td style="padding: 10px; border-bottom: 1px solid #eee;">${subject}</td>
+            </tr>
+          </table>
+          <div style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 5px;">
+            <strong style="color: #333;">Message:</strong>
+            <p style="color: #666; white-space: pre-wrap; margin-top: 10px;">${message}</p>
           </div>
-        `,
-      };
+          <p style="margin-top: 20px; color: #999; font-size: 12px;">Cet email a été envoyé depuis le formulaire de contact du site SOMATISME.</p>
+        </div>
+      `;
 
-      // Send email
+      // Send email via Resend
       try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log("[EMAIL] Contact form email sent successfully:", info.messageId);
+        const result = await resend.emails.send({
+          from: "SOMATISME <onboarding@resend.dev>",
+          to: process.env.EMAIL_TO || "info@somatisme.ma",
+          subject: `Nouvelle demande de contact: ${subject}`,
+          html: htmlContent,
+        });
+
+        console.log("[EMAIL] Contact form email sent successfully via Resend:", result.id);
         auditLogger("EMAIL_SENT", { ip, userAgent, email });
 
         // Update submission status
@@ -177,11 +167,8 @@ async function startServer() {
 
         res.json({ success: true, message: "Email sent successfully" });
       } catch (emailError) {
-        console.error("[EMAIL] SMTP Error:", {
+        console.error("[EMAIL] Resend Error:", {
           message: (emailError as Error).message,
-          code: (emailError as any).code,
-          command: (emailError as any).command,
-          responseCode: (emailError as any).responseCode,
         });
         throw emailError;
       }
