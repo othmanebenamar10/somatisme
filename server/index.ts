@@ -294,26 +294,36 @@ async function startServer() {
       `;
 
       // Send customer email via Resend
-      await resend.emails.send({
-        from: "SOMATISME <onboarding@resend.dev>",
-        to: orderForm.email,
-        subject: 'Confirmation de votre commande SOMATISME',
-        html: customerHtml,
-      });
+      try {
+        const customerResult = await resend.emails.send({
+          from: "SOMATISME <onboarding@resend.dev>",
+          to: orderForm.email,
+          subject: 'Confirmation de votre commande SOMATISME',
+          html: customerHtml,
+        });
+        console.log("[EMAIL] Customer order email sent:", customerResult);
 
-      // Send admin email via Resend
-      await resend.emails.send({
-        from: "SOMATISME <onboarding@resend.dev>",
-        to: process.env.EMAIL_TO || "info@somatisme.ma",
-        subject: `NOUVELLE COMMANDE - ${orderForm.name}`,
-        html: adminHtml,
-      });
-      
-      auditLogger("ORDER_EMAIL_SENT", { email: orderForm.email, total: cartTotal });
+        // Send admin email via Resend
+        const adminResult = await resend.emails.send({
+          from: "SOMATISME <onboarding@resend.dev>",
+          to: process.env.EMAIL_TO || "info@somatisme.ma",
+          subject: `NOUVELLE COMMANDE - ${orderForm.name}`,
+          html: adminHtml,
+        });
+        console.log("[EMAIL] Admin order email sent:", adminResult);
+        
+        auditLogger("ORDER_EMAIL_SENT", { email: orderForm.email, total: cartTotal });
 
-      res.json({ success: true, message: "Order emails sent successfully" });
+        res.json({ success: true, message: "Order emails sent successfully" });
+      } catch (emailError) {
+        console.error("[EMAIL] Order email error:", {
+          message: (emailError as Error).message,
+          error: emailError,
+        });
+        throw emailError;
+      }
     } catch (error) {
-      console.error("Error sending order email:", error);
+      console.error("[ERROR] Error sending order email:", error);
       auditLogger("ORDER_EMAIL_ERROR", { error: (error as Error).message });
       res.status(500).json({ error: "Failed to send order email" });
     }
