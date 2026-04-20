@@ -484,7 +484,7 @@ export default function Contact() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`flex-1 bg-gradient-to-r from-accent to-orange-500 hover:from-accent/90 hover:to-orange-600 text-white gap-2 h-14 rounded-xl text-lg font-bold shadow-lg shadow-accent/20 group overflow-hidden relative uppercase tracking-wide ${currentStep > 1 ? '' : 'w-full'}`}
+                  className={`flex-1 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white gap-2 h-14 rounded-xl text-lg font-bold shadow-lg shadow-cyan-500/20 group overflow-hidden relative uppercase tracking-wide ${currentStep > 1 ? '' : 'w-full'}`}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
                     {isSubmitting ? 'Envoi...' : (

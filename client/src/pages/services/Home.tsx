@@ -297,28 +297,28 @@ export default function Home() {
                 title: t('home.expertise.automation.title'),
                 description: t('home.expertise.automation.desc'),
                 href: '/services/automation',
-                color: 'from-accent to-orange-500'
+                color: 'from-cyan-500 to-cyan-600'
               },
               {
                 icon: Zap,
                 title: t('home.expertise.regulation.title'),
                 description: t('home.expertise.regulation.desc'),
                 href: '/services/regulation',
-                color: 'from-secondary to-purple-500'
+                color: 'from-cyan-400 to-cyan-500'
               },
               {
                 icon: Shield,
                 title: t('home.expertise.electrical.title'),
                 description: t('home.expertise.electrical.desc'),
                 href: '/services/electrical',
-                color: 'from-blue-500 to-cyan-500'
+                color: 'from-cyan-500 to-cyan-600'
               },
               {
                 icon: Wrench,
                 title: t('home.expertise.maintenance.title'),
                 description: t('home.expertise.maintenance.desc'),
                 href: '/services/maintenance',
-                color: 'from-green-500 to-emerald-500'
+                color: 'from-cyan-400 to-cyan-500'
               },
             ].map((service, index) => (
               <motion.div

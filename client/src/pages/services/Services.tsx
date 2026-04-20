@@ -109,11 +109,11 @@ export default function Services() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      {/* Hero Section - RADICAL NEW DESIGN */}
-      <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-purple-900 to-primary">
+      {/* Hero Section - INDUSTRIAL PROFESSIONAL DESIGN */}
+      <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-slate-800 to-primary">
         {/* Animated Orbs */}
-        <div className="absolute top-0 left-1/3 w-96 h-96 bg-accent/50 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-secondary/40 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
+        <div className="absolute top-0 left-1/3 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
 
         <div className="container relative z-10">
           <motion.div
@@ -143,10 +143,10 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Services Grid - RADICAL NEW DESIGN */}
+      {/* Services Grid - INDUSTRIAL PROFESSIONAL DESIGN */}
       <section className="py-32 relative overflow-hidden bg-background">
         <div className="absolute inset-0 opacity-30" style={{
-          backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(234, 88, 12, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%)'
+          backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(6, 182, 212, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(45, 55, 72, 0.15) 0%, transparent 50%)'
         }}></div>
 
         <div className="container relative z-10">
@@ -173,7 +173,7 @@ export default function Services() {
                 {/* Content */}
                 <div className="relative p-8 h-full flex flex-col justify-between">
                   <div>
-                    <div className="inline-flex p-3 rounded-xl bg-gradient-to-br from-accent to-orange-500 mb-6 group-hover:scale-110 transition-transform">
+                    <div className="inline-flex p-3 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 mb-6 group-hover:scale-110 transition-transform">
                       <service.icon className="text-white" size={28} />
                     </div>
                     <h3 className="text-3xl font-black text-white mb-3 group-hover:text-accent transition-colors">{service.title}</h3>
@@ -198,9 +198,9 @@ export default function Services() {
 
                     <Link href={service.href}>
                       <motion.button
-                        whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(234, 88, 12, 0.4)' }}
+                        whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(6, 182, 212, 0.4)' }}
                         whileTap={{ scale: 0.95 }}
-                        className="w-full px-6 py-3 bg-gradient-to-r from-accent to-orange-500 text-primary font-bold rounded-xl flex items-center justify-center gap-2 hover:shadow-2xl transition-all"
+                        className="w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:shadow-2xl transition-all"
                       >
                         {t('services.more')}
                         <ArrowRight size={18} />

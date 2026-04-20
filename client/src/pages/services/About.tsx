@@ -92,7 +92,7 @@ export default function About() {
                 className="group relative overflow-hidden rounded-2xl border border-white/10 backdrop-blur-sm p-6 bg-gradient-to-br from-primary/10 to-secondary/10 hover:from-accent/20 hover:to-secondary/20 transition-all"
               >
                 <div className="flex flex-col items-center text-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <CheckCircle2 className="text-white w-6 h-6" />
                   </div>
                   <span className="font-bold text-foreground group-hover:text-accent transition-colors">{t(`sector.${sector}`)}</span>
