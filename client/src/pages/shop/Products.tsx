@@ -2217,99 +2217,99 @@ export default function Products() {
         </div>
       </section>
 
-          {/* Search and Filters */}
-          <section className="py-12 bg-muted/30 border-y border-border">
-            <div className="container">
-              <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
-                <div className="relative flex-1 max-w-md">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-                  <Input
-                    placeholder={language === 'ar' ? 'بحث عن منتج...' : 'Rechercher un produit...'}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-12"
-                  />
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  {categories.map((category) => (
-                    <Button
-                      key={category.id}
-                      variant={selectedCategory === category.id ? 'default' : 'outline'}
-                      onClick={() => setSelectedCategory(category.id)}
-                    >
-                      {language === 'ar' ? category.nameAr : category.name}
-                    </Button>
-                  ))}
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowCart(!showCart)}
-                  className="relative"
-                >
-                  <ShoppingCart className="h-5 w-5 mr-2" />
-                  {language === 'ar' ? 'السلة' : 'Panier'}
-                  {cart.length > 0 && (
-                    <Badge className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 bg-accent text-accent-foreground">
-                      {cart.length}
-                    </Badge>
-                  )}
-                </Button>
-              </div>
+      {/* Search and Filters */}
+      <section className="py-12 bg-muted/30 border-y border-border">
+        <div className="container">
+          <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <Input
+                placeholder={language === 'ar' ? 'بحث عن منتج...' : 'Rechercher un produit...'}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-12"
+              />
             </div>
-          </section>
-
-          {/* Cart Sidebar */}
-          {showCart && (
-            <motion.div
-              initial={{ opacity: 0, x: 300 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 300 }}
-              className="fixed right-0 top-0 h-full w-80 bg-card border-l shadow-lg z-50 p-4 overflow-y-auto"
+            <div className="flex gap-2 flex-wrap">
+              {categories.map((category) => (
+                <Button
+                  key={category.id}
+                  variant={selectedCategory === category.id ? 'default' : 'outline'}
+                  onClick={() => setSelectedCategory(category.id)}
+                >
+                  {language === 'ar' ? category.nameAr : category.name}
+                </Button>
+              ))}
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => setShowCart(!showCart)}
+              className="relative"
             >
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold">
-                  {language === 'ar' ? 'سلة التسوق' : 'Panier'}
-                </h3>
-                <Button variant="ghost" size="sm" onClick={() => setShowCart(false)}>
-                  ✕
+              <ShoppingCart className="h-5 w-5 mr-2" />
+              {language === 'ar' ? 'السلة' : 'Panier'}
+              {cart.length > 0 && (
+                <Badge className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 bg-accent text-accent-foreground">
+                  {cart.length}
+                </Badge>
+              )}
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Cart Sidebar */}
+      {showCart && (
+        <motion.div
+          initial={{ opacity: 0, x: 300 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 300 }}
+          className="fixed right-0 top-0 h-full w-80 bg-card border-l shadow-lg z-50 p-4 overflow-y-auto"
+        >
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-bold">
+              {language === 'ar' ? 'سلة التسوق' : 'Panier'}
+            </h3>
+            <Button variant="ghost" size="sm" onClick={() => setShowCart(false)}>
+              ✕
+            </Button>
+          </div>
+          {cart.length === 0 ? (
+            <p className="text-muted-foreground text-center py-8">
+              {language === 'ar' ? 'السلة فارغة' : 'Panier vide'}
+            </p>
+          ) : (
+            <>
+              {cart.map((item, index) => (
+                <div key={index} className="flex items-center gap-2 mb-4 pb-4 border-b">
+                  <img src={item.image} alt={language === 'ar' ? item.nameAr : item.name} className="w-16 h-16 object-cover rounded" />
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{language === 'ar' ? item.nameAr : item.name}</p>
+                    <p className="text-sm text-muted-foreground">{item.price} MAD</p>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => removeFromCart(index)}>
+                    ✕
+                  </Button>
+                </div>
+              ))}
+              <div className="border-t pt-4 mt-4">
+                <div className="flex justify-between mb-4">
+                  <span className="font-bold">{language === 'ar' ? 'المجموع' : 'Total'}:</span>
+                  <span className="font-bold">{cartTotal} MAD</span>
+                </div>
+                <Button className="w-full" onClick={() => setShowOrderDialog(true)}>
+                  {language === 'ar' ? 'إتمام الطلب' : 'Commander'}
                 </Button>
               </div>
-              {cart.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">
-                  {language === 'ar' ? 'السلة فارغة' : 'Panier vide'}
-                </p>
-              ) : (
-                <>
-                  {cart.map((item, index) => (
-                    <div key={index} className="flex items-center gap-2 mb-4 pb-4 border-b">
-                      <img src={item.image} alt={language === 'ar' ? item.nameAr : item.name} className="w-16 h-16 object-cover rounded" />
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{language === 'ar' ? item.nameAr : item.name}</p>
-                        <p className="text-sm text-muted-foreground">{item.price} MAD</p>
-                      </div>
-                      <Button variant="ghost" size="sm" onClick={() => removeFromCart(index)}>
-                        ✕
-                      </Button>
-                    </div>
-                  ))}
-                  <div className="border-t pt-4 mt-4">
-                    <div className="flex justify-between mb-4">
-                      <span className="font-bold">{language === 'ar' ? 'المجموع' : 'Total'}:</span>
-                      <span className="font-bold">{cartTotal} MAD</span>
-                    </div>
-                    <Button className="w-full" onClick={() => setShowOrderDialog(true)}>
-                      {language === 'ar' ? 'إتمام الطلب' : 'Commander'}
-                    </Button>
-                  </div>
-                </>
-              )}
-            </motion.div>
+            </>
           )}
+        </motion.div>
+      )}
 
-          {/* Products Grid */}
-          <section className="py-20 bg-background">
-            <div className="container">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {/* Products Grid */}
+      <section className="py-20 bg-background">
+        <div className="container">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product, index) => (
               <motion.div
                 key={product.id}
@@ -2355,17 +2355,17 @@ export default function Products() {
                 </p>
               </motion.div>
             ))}
-              </div>
+          </div>
 
-              {filteredProducts.length === 0 && (
-                <div className="text-center py-16">
-                  <p className="text-muted-foreground">
-                    {language === 'ar' ? 'لا توجد منتجات مطابقة' : 'Aucun produit trouvé'}
-                  </p>
-                </div>
-              )}
+          {filteredProducts.length === 0 && (
+            <div className="text-center py-16">
+              <p className="text-muted-foreground">
+                {language === 'ar' ? 'لا توجد منتجات مطابقة' : 'Aucun produit trouvé'}
+              </p>
             </div>
-          </section>
+          )}
+        </div>
+      </section>
 
       {/* Order Dialog */}
       <Dialog open={showOrderDialog} onOpenChange={setShowOrderDialog}>
