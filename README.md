@@ -1,29 +1,45 @@
-# SOMATISME - Site Web Industriel Premium
+# SOMATISME - Site Web Industriel Premium 🏭
 
 Site web d'entreprise moderne, sécurisé et premium pour **SOMATISME**, spécialisée en automatisme industriel, régulation, installation électrique et maintenance industrielle.
+
+## ✨ Dernières Améliorations (Avril 2026)
+
+- 🎨 **Redesign Industriel Complet** : Palette Navy Blue (#1e3a5f) + Cyan (#06b6d4) + Gris (#2d3748)
+- 🛒 **Système de Commande 2 Étapes** : Panier → Formulaire client
+- 💰 **Frais de Livraison Dynamiques** : 10% du sous-total
+- 📄 **Génération PDF Facture** : Factures professionnelles avec détails complets
+- 📱 **Message WhatsApp Optimisé** : Format simple et lisible
+- 🔘 **Boutons Améliorés** : Centrage parfait, styles uniformes, ombres cyan
+- 📧 **SMTP Configuré** : Prêt pour Gmail/Outlook avec nodemailer
+- ⚡ **Performance Optimisée** : Build Vite optimisé, code splitting
 
 ## 🎯 Caractéristiques Principales
 
 ### Design & UX
-- **Design Premium Minimaliste** : Esthétique industrielle moderne avec géométrie épurée
-- **Palette de Couleurs Professionnelle** : Bleu profond, gris acier, cyan et orange
+- **Design Industriel Professionnel** : Palette Navy Blue + Cyan + Gris
+- **Cohérence Visuelle 100%** : Toutes les 15+ pages unifiées
 - **Animations Fluides** : Framer Motion pour des transitions élégantes
 - **Responsive Design** : Parfaitement adapté mobile, tablette et desktop
 - **Typographie Sophistiquée** : Poppins (titres) + Inter (corps)
 
 ### Fonctionnalités
-- ✅ **9 Pages Complètes** : Accueil, À propos, Services (4 pages détaillées), Projets, Contact
-- ✅ **Formulaire de Contact** : Envoi d'emails via Resend API avec validation
+- ✅ **15+ Pages Complètes** : Accueil, À propos, Services (4 pages), Projets, Contact, Produits, etc.
+- ✅ **Système de Panier** : Ajout/suppression de produits, calcul dynamique
+- ✅ **Formulaire de Commande** : 2 étapes avec validation complète
+- ✅ **Génération de Facture PDF** : Avec logo, détails, frais de livraison
+- ✅ **Intégration WhatsApp** : Envoi de commandes via WhatsApp
+- ✅ **Formulaire de Contact** : Avec SMTP nodemailer
 - ✅ **SEO Avancé** : Meta tags, sitemap.xml, robots.txt, structured data
-- ✅ **Multilingue** : Support FR/EN/ES avec sélecteur de langue
+- ✅ **Multilingue** : Support FR/AR avec sélecteur de langue
 - ✅ **Navigation Responsive** : Menu mobile intégré
 
 ### Performance & Sécurité
-- ⚡ **Optimisé Lighthouse** : Architecture légère et performante
+- ⚡ **Optimisé Vercel** : Build rapide, déploiement automatique
 - 🔒 **OWASP Top 10** : Headers de sécurité complets (CSP, HSTS, X-Frame-Options, etc.)
-- 🚀 **Vercel Edge Runtime** : API route pour le formulaire de contact
+- 🚀 **SMTP Nodemailer** : Envoi d'emails sécurisé via Gmail/Outlook
 - 📱 **Mobile-First** : Conception mobile d'abord
 - 🎨 **Accessibilité** : Contraste optimal, navigation au clavier
+- 💾 **MongoDB** : Base de données pour les soumissions de contact
 
 ## 📁 Structure du Projet
 
@@ -93,13 +109,14 @@ pnpm preview
 
 ## 🎨 Design System
 
-### Couleurs Officielles
+### Couleurs Officielles (Design Industriel)
 | Couleur | Hex | Usage |
 |---------|-----|-------|
-| Bleu Profond | #0F172A | Fond principal, titres |
-| Gris Acier | #64748B | Texte secondaire |
-| Blanc | #FFFFFF | Fond clair, contraste |
-| Cyan Premium | #06B6D4 | Accents, CTA, boutons d'action |
+| Navy Blue | #1e3a5f | Fond principal, titres, sections sombres |
+| Cyan | #06b6d4 | Accents, CTA, boutons d'action, ombres |
+| Gris Foncé | #2d3748 | Texte secondaire, bordures |
+| Blanc | #FFFFFF | Fond clair, texte principal |
+| Gris Moyen | #6b7280 | Texte muted, placeholders |
 
 ### Typographie
 - **Display (H1)** : Poppins Bold 700
@@ -234,6 +251,8 @@ Pour les questions ou problèmes :
 
 ---
 
-**Dernière mise à jour** : 18 Avril 2026
-**Version** : 1.0.0
+**Dernière mise à jour** : 20 Avril 2026
+**Version** : 1.1.0
 **Status** : Production Ready ✅
+**Déploiement** : https://somatisme.vercel.app
+**Repository** : https://github.com/othmanebenamar10/somatisme
