@@ -44,15 +44,15 @@ export default function About() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 border border-accent/40 backdrop-blur-sm mb-8"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/20 border border-cyan-400/40 backdrop-blur-sm mb-8"
             >
-              <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
-              <span className="text-accent font-bold text-sm uppercase tracking-widest">Notre Histoire</span>
+              <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
+              <span className="text-cyan-400 font-bold text-sm uppercase tracking-widest">Notre Histoire</span>
             </motion.div>
 
             <h1 className="text-7xl md:text-8xl font-black text-white mb-8 leading-tight">
               À Propos de <br />
-              <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">SOMATISME</span>
+              <span className="bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-400 bg-clip-text text-transparent">SOMATISME</span>
             </h1>
             <p className="text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
               {t('about.hero.subtitle')}
@@ -61,10 +61,10 @@ export default function About() {
         </div>
       </section>
 
-      {/* Secteurs d'activité - RADICAL NEW DESIGN */}
+      {/* Secteurs d'activité - INDUSTRIAL PROFESSIONAL DESIGN */}
       <section className="py-32 relative overflow-hidden bg-background">
         <div className="absolute inset-0 opacity-30" style={{
-          backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(234, 88, 12, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%)'
+          backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(6, 182, 212, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(45, 55, 72, 0.15) 0%, transparent 50%)'
         }}></div>
 
         <div className="container relative z-10">
