@@ -113,6 +113,11 @@ async function startServer() {
       }
 
       // Initialize Resend
+      if (!process.env.RESEND_API_KEY) {
+        console.error("[EMAIL] RESEND_API_KEY not configured");
+        return res.status(500).json({ error: 'Email service not configured - missing RESEND_API_KEY' });
+      }
+
       const resend = new Resend(process.env.RESEND_API_KEY);
 
       // Email content
@@ -158,7 +163,7 @@ async function startServer() {
           html: htmlContent,
         });
 
-        console.log("[EMAIL] Contact form email sent successfully via Resend:", result.id);
+        console.log("[EMAIL] Contact form email sent successfully via Resend");
         auditLogger("EMAIL_SENT", { ip, userAgent, email });
 
         // Update submission status
@@ -186,6 +191,12 @@ async function startServer() {
 
       if (!orderForm || !orderForm.email || !orderItems || !cartTotal) {
         return res.status(400).json({ error: 'Missing required order information' });
+      }
+
+      // Validate Resend API key
+      if (!process.env.RESEND_API_KEY) {
+        console.error("[EMAIL] RESEND_API_KEY not configured for order email");
+        return res.status(500).json({ error: 'Email service not configured - missing RESEND_API_KEY' });
       }
 
       // Initialize Resend
