@@ -253,9 +253,10 @@ export default function Home() {
                 className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-all duration-300"
               >
                 <img
-                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(partner.name)}&background=ea580c&color=fff&bold=true&size=200`}
+                  src={partner.logoUrl}
                   alt={partner.name}
-                  className="h-24 w-24 object-contain rounded-lg"
+                  className="h-24 w-auto object-contain max-w-[220px]"
+                  onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(partner.name)}&background=ea580c&color=fff&bold=true&size=200`; }}
                   title={partner.name}
                 />
               </motion.div>
