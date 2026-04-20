@@ -1986,14 +1986,9 @@ export default function Products() {
     const randomHash = Math.random().toString(36).substring(2, 15);
     const invoiceNumber = `INV-${timestamp}-${randomHash.toUpperCase()}`;
     
-    // SECURITY: Add timestamp and validation hash
+    // Invoice dates
     const date = new Date().toLocaleDateString('fr-FR');
-    const time = new Date().toLocaleTimeString('fr-FR');
     const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR');
-    
-    // SECURITY: Create validation checksum
-    const validationData = `${invoiceNumber}${date}${total}${orderInfo.email}`;
-    const checksum = validationData.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0).toString(16).toUpperCase();
 
     // INDUSTRIAL PROFESSIONAL DESIGN - Navy Blue + Cyan
     const primaryColor: [number, number, number] = [30, 58, 95]; // Bleu Marine
@@ -2043,12 +2038,6 @@ export default function Products() {
     doc.text('Équipements • Régulation • Installation Électrique', 15, 37);
     doc.text('+212 679 825 646  |  somatisme@gmail.com  |  www.somatisme.ma', 15, 43);
     
-    // SECURITY: Add security watermark
-    doc.setFontSize(7);
-    doc.setTextColor(148, 163, 184);
-    doc.setFont('helvetica', 'italic');
-    doc.text(`Sécurisé • Checksum: ${checksum}`, 15, 50);
-
     // === INVOICE TITLE BLOCK ===
     doc.setFillColor(...lightGray);
     doc.roundedRect(15, 65, 180, 28, 3, 3, 'F');
@@ -2268,16 +2257,6 @@ export default function Products() {
     doc.setFont('helvetica', 'bold');
     doc.text('www.somatisme.ma', 105, 291, { align: 'center' });
 
-    // SECURITY: Add security badge and validation info
-    doc.setFontSize(6);
-    doc.setTextColor(148, 163, 184);
-    doc.setFont('helvetica', 'italic');
-    doc.text(`🔒 Facture Sécurisée | Validation: ${checksum} | ${time}`, 105, 296, { align: 'center' });
-    
-    // SECURITY: Add document integrity notice
-    doc.setFontSize(5.5);
-    doc.setTextColor(100, 116, 139);
-    doc.text('Ce document est protégé par un système de validation cryptographique. Toute modification non autorisée sera détectée.', 105, 299.5, { align: 'center' });
 
     // Save the PDF with secure filename
     doc.save(`Facture_${invoiceNumber}_${timestamp}.pdf`);
