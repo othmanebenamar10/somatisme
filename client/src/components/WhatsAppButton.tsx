@@ -8,11 +8,8 @@ export default function WhatsAppButton() {
   const [location] = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsVisible(window.scrollY > 300);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Show button immediately on page load
+    setIsVisible(true);
   }, []);
 
   const phoneNumber = '212679825646'; // User's WhatsApp number
