@@ -589,7 +589,7 @@ export default function Contact() {
             <Button
               onClick={handleTermsAccept}
               disabled={!termsAccepted}
-              className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+              className="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-accent-foreground"
             >
               {t('contact.terms.submit')}
             </Button>

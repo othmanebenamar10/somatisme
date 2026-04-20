@@ -137,7 +137,7 @@ export default function Realisation() {
           <div className="container text-center">
             <h2 className="text-heading mb-8">{t('service.realisation.cta.title')}</h2>
             <Link href="/contact">
-              <Button size="lg" className="bg-accent hover:bg-accent/90 gap-2">
+              <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 gap-2">
                 {t('service.realisation.cta.btn')}
                 <ArrowRight size={18} />
               </Button>

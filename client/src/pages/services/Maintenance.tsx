@@ -33,7 +33,7 @@ export default function Maintenance() {
               {t('service.maintenance.hero')}
             </p>
             <Link href="/contact">
-              <Button size="lg" className="bg-accent hover:bg-accent/90 gap-2">
+              <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 gap-2">
                 {t('service.conseil.btn')}
                 <ArrowRight size={18} />
               </Button>
@@ -141,7 +141,7 @@ export default function Maintenance() {
               Besoin de maintenance industrielle ?
             </h2>
             <Link href="/contact">
-              <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2">
+              <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-accent-foreground gap-2">
                 Nous contacter
                 <ArrowRight size={18} />
               </Button>

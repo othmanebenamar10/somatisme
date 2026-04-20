@@ -106,7 +106,7 @@ export default function Conseil() {
               <div className="relative z-10">
                 <h2 className="text-heading mb-8">{t('service.conseil.cta')}</h2>
                 <Link href="/contact">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-primary-foreground font-bold px-10 h-14 rounded-full gap-2">
+                  <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-primary-foreground font-bold px-10 h-14 rounded-full gap-2">
                     {t('service.conseil.btn')}
                     <ArrowRight size={18} />
                   </Button>

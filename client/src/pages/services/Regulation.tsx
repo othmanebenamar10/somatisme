@@ -31,7 +31,7 @@ export default function Regulation() {
               Solutions de mesure et de contrôle de précision pour vos processus critiques, garantissant une performance optimale et une conformité aux normes.
             </p>
             <Link href="/contact">
-              <Button size="lg" className="bg-accent hover:bg-accent/90 gap-2">
+              <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 gap-2">
                 Demander un devis
                 <ArrowRight size={18} />
               </Button>
@@ -136,7 +136,7 @@ export default function Regulation() {
               Besoin de solutions de régulation ?
             </h2>
             <Link href="/contact">
-              <Button size="lg" className="bg-accent hover:bg-accent/90 text-primary gap-2">
+              <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-primary gap-2">
                 Nous contacter
                 <ArrowRight size={18} />
               </Button>

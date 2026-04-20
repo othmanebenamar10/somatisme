@@ -34,7 +34,7 @@ export default function Electrical() {
               Solutions électriques sécurisées, conformes aux normes et optimisées pour la performance de vos installations.
             </p>
             <Link href="/contact">
-              <Button size="lg" className="bg-accent hover:bg-accent/90 gap-2">
+              <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 gap-2">
                 Demander un devis
                 <ArrowRight size={18} />
               </Button>
@@ -177,7 +177,7 @@ export default function Electrical() {
               Besoin d'une installation électrique ?
             </h2>
             <Link href="/contact">
-              <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2">
+              <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-accent-foreground gap-2">
                 Nous contacter
                 <ArrowRight size={18} />
               </Button>
