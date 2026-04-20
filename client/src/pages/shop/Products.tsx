@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { ShoppingCart, Filter, Search, Star, Check, X, Download } from 'lucide-react';
+import { ShoppingCart, Filter, Search, Star, Check, X, Download, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -2457,52 +2457,141 @@ export default function Products() {
         </div>
       </motion.section>
 
-      {/* Cart Sidebar */}
+      {/* Cart Sidebar - PREMIUM DESIGN */}
       {showCart && (
-        <motion.div
-          initial={{ opacity: 0, x: 300 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 300 }}
-          className="fixed right-0 top-0 h-full w-80 bg-card border-l shadow-lg z-50 p-4 overflow-y-auto"
-        >
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold">
-              {language === 'ar' ? 'سلة التسوق' : 'Panier'}
-            </h3>
-            <Button variant="ghost" size="sm" onClick={() => setShowCart(false)}>
-              ✕
-            </Button>
-          </div>
-          {cart.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">
-              {language === 'ar' ? 'السلة فارغة' : 'Panier vide'}
-            </p>
-          ) : (
-            <>
-              {cart.map((item, index) => (
-                <div key={index} className="flex items-center gap-2 mb-4 pb-4 border-b">
-                  <img src={item.image} alt={language === 'ar' ? item.nameAr : item.name} className="w-16 h-16 object-cover rounded" />
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">{language === 'ar' ? item.nameAr : item.name}</p>
-                    <p className="text-sm text-muted-foreground">{item.price} MAD</p>
-                  </div>
-                  <Button variant="ghost" size="sm" onClick={() => removeFromCart(index)}>
-                    ✕
-                  </Button>
-                </div>
-              ))}
-              <div className="border-t pt-4 mt-4">
-                <div className="flex justify-between mb-4">
-                  <span className="font-bold">{language === 'ar' ? 'المجموع' : 'Total'}:</span>
-                  <span className="font-bold">{cartTotal} MAD</span>
-                </div>
-                <Button className="w-full" onClick={() => setShowOrderDialog(true)}>
-                  {language === 'ar' ? 'إتمام الطلب' : 'Commander'}
-                </Button>
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowCart(false)}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+          />
+
+          {/* Cart Panel */}
+          <motion.div
+            initial={{ opacity: 0, x: 400 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 400 }}
+            transition={{ duration: 0.3 }}
+            className="fixed right-0 top-0 h-full w-96 bg-gradient-to-b from-card to-card/80 border-l border-accent/20 shadow-2xl z-50 flex flex-col overflow-hidden"
+          >
+            {/* Header */}
+            <div className="bg-gradient-to-r from-accent to-orange-500 text-white p-6 flex justify-between items-center">
+              <div>
+                <h3 className="text-2xl font-black">
+                  {language === 'ar' ? 'سلة التسوق' : 'Panier'}
+                </h3>
+                <p className="text-xs text-white/70 mt-1">
+                  {cart.length} {cart.length === 1 ? 'article' : 'articles'}
+                </p>
               </div>
-            </>
-          )}
-        </motion.div>
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setShowCart(false)}
+                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+              >
+                <X size={24} />
+              </motion.button>
+            </div>
+
+            {/* Items Container */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {cart.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-center">
+                  <ShoppingCart size={48} className="text-muted-foreground/30 mb-4" />
+                  <p className="text-muted-foreground font-medium">
+                    {language === 'ar' ? 'السلة فارغة' : 'Panier vide'}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {language === 'ar' ? 'أضف منتجات لبدء التسوق' : 'Ajoutez des produits pour commencer'}
+                  </p>
+                </div>
+              ) : (
+                cart.map((item, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="bg-background/50 rounded-xl p-4 border border-border/50 hover:border-accent/30 transition-all group"
+                  >
+                    <div className="flex gap-3">
+                      <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                        <img
+                          src={item.image}
+                          alt={language === 'ar' ? item.nameAr : item.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-sm truncate">
+                          {language === 'ar' ? item.nameAr : item.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {item.brand}
+                        </p>
+                        <p className="text-accent font-bold text-sm mt-2">
+                          {item.price} MAD
+                        </p>
+                      </div>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => removeFromCart(index)}
+                        className="p-2 hover:bg-destructive/10 text-destructive rounded-lg transition-colors flex-shrink-0"
+                      >
+                        <X size={18} />
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </div>
+
+            {/* Footer */}
+            {cart.length > 0 && (
+              <div className="border-t border-border/50 bg-background/50 p-6 space-y-4">
+                {/* Summary */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      {language === 'ar' ? 'المجموع الجزئي' : 'Sous-total'}:
+                    </span>
+                    <span className="font-bold">{cartTotal} MAD</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      {language === 'ar' ? 'الشحن' : 'Livraison'}:
+                    </span>
+                    <span className="font-bold text-accent">Gratuit</span>
+                  </div>
+                  <div className="border-t border-border pt-2 flex justify-between">
+                    <span className="font-bold">
+                      {language === 'ar' ? 'المجموع' : 'Total'}:
+                    </span>
+                    <span className="text-lg font-black bg-gradient-to-r from-accent to-orange-500 bg-clip-text text-transparent">
+                      {cartTotal} MAD
+                    </span>
+                  </div>
+                </div>
+
+                {/* Checkout Button */}
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowOrderDialog(true)}
+                  className="w-full px-6 py-4 bg-gradient-to-r from-accent to-orange-500 text-white font-bold rounded-xl shadow-lg shadow-accent/30 hover:shadow-xl hover:shadow-accent/50 transition-all flex items-center justify-center gap-2 uppercase tracking-wide"
+                >
+                  {language === 'ar' ? 'إتمام الطلب' : 'Procéder au paiement'}
+                  <ArrowRight size={18} />
+                </motion.button>
+              </div>
+            )}
+          </motion.div>
+        </>
       )}
 
       {/* Products Grid - Ultra Pro */}
