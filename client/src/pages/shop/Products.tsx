@@ -2421,8 +2421,13 @@ export default function Products() {
       });
 
       if (!emailResponse.ok) {
-        throw new Error('Failed to send order email');
+        const errorText = await emailResponse.text();
+        console.error('Email response error:', errorText);
+        throw new Error(`Failed to send order email: ${emailResponse.status} ${errorText}`);
       }
+
+      const emailData = await emailResponse.json();
+      console.log('Email sent successfully:', emailData);
 
       // Send order via WhatsApp with clean format
       const orderMessage = `NOUVELLE COMMANDE SOMATISME
