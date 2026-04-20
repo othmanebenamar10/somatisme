@@ -2274,21 +2274,35 @@ export default function Products() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      {/* Hero Header */}
-      <section className="relative py-16 overflow-hidden">
-        <div className="absolute inset-0 gradient-hero opacity-5"></div>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-[80px]"></div>
+      {/* Hero Header - RADICAL NEW DESIGN */}
+      <section className="relative min-h-[60vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-purple-900 to-primary">
+        {/* Animated Orbs */}
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-accent/50 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
+        <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-secondary/40 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
+
         <div className="container relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center"
+            transition={{ duration: 0.9 }}
+            className="text-center max-w-5xl mx-auto"
           >
-            <h1 className="text-display text-foreground mb-4">
-              {language === 'ar' ? 'Products' : 'Nos Produits'}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 border border-accent/40 backdrop-blur-sm mb-8"
+            >
+              <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
+              <span className="text-accent font-bold text-sm uppercase tracking-widest">{language === 'ar' ? 'منتجاتنا' : 'Nos Produits'}</span>
+            </motion.div>
+
+            <h1 className="text-7xl md:text-8xl font-black text-white mb-8 leading-tight">
+              {language === 'ar' ? 'المنتجات' : 'Équipements'} <br />
+              <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">{language === 'ar' ? 'الصناعية' : 'Industriels'}</span>
             </h1>
-            <p className="text-body-large text-muted-foreground">
-              {language === 'ar' ? 'Products description' : 'Équipements industriels de qualité professionnelle'}
+            <p className="text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
+              {language === 'ar' ? 'أفضل المعدات الصناعية' : 'Équipements industriels de qualité professionnelle'}
             </p>
           </motion.div>
         </div>

@@ -16,11 +16,9 @@ export default function Header() {
         {/* Logo */}
         <Link href="/">
           <a className="flex items-center hover:opacity-80 transition-opacity">
-            <img 
-              src="/logo.png" 
-              alt="SOMATISME" 
-              className="h-10 md:h-12 w-auto object-contain"
-            />
+            <span className="text-2xl md:text-3xl font-black bg-gradient-to-r from-accent to-orange-500 bg-clip-text text-transparent">
+              SOMATISME
+            </span>
           </a>
         </Link>
 
