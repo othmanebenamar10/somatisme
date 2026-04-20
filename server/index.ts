@@ -188,131 +188,115 @@ async function startServer() {
         return res.status(400).json({ error: 'Missing required order information' });
       }
 
-      // Configure email transporter
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST || "smtp.gmail.com",
-        port: parseInt(process.env.SMTP_PORT || "587"),
-        secure: false,
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
+      // Initialize Resend
+      const resend = new Resend(process.env.RESEND_API_KEY);
 
-      // Email to customer
-      const customerEmail = {
-        from: process.env.EMAIL_FROM || `"SOMATISME" <${process.env.SMTP_USER}>`,
-        to: orderForm.email,
-        subject: 'Confirmation de votre commande SOMATISME',
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f5f5f5;">
-            <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-              <h1 style="color: #1e3a5f; margin-bottom: 20px;">Confirmation de Commande</h1>
-              
-              <p style="color: #333; font-size: 16px;">Bonjour <strong>${orderForm.name}</strong>,</p>
-              
-              <p style="color: #666; margin: 20px 0;">Merci pour votre commande ! Voici les détails :</p>
-              
-              <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #06b6d4; margin: 20px 0;">
-                <h3 style="color: #1e3a5f; margin-top: 0;">Détails de la commande :</h3>
-                ${orderItems.map((item: any, idx: number) => `
-                  <p style="color: #333; margin: 8px 0;">
-                    <strong>${idx + 1}. ${item.name}</strong><br>
-                    Prix: <span style="color: #06b6d4; font-weight: bold;">${item.price} MAD</span>
-                  </p>
-                `).join('')}
-                
-                <hr style="border: none; border-top: 1px solid #ddd; margin: 15px 0;">
-                
-                <p style="color: #333; font-size: 18px; margin: 10px 0;">
-                  <strong>Total :</strong> <span style="color: #06b6d4; font-size: 20px;">${cartTotal} MAD</span>
-                </p>
-              </div>
-              
-              <div style="background: #f0f9ff; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                <h3 style="color: #1e3a5f; margin-top: 0;">Informations de livraison :</h3>
-                <p style="color: #333; margin: 5px 0;"><strong>Nom :</strong> ${orderForm.name}</p>
-                <p style="color: #333; margin: 5px 0;"><strong>Email :</strong> ${orderForm.email}</p>
-                <p style="color: #333; margin: 5px 0;"><strong>Téléphone :</strong> ${orderForm.phone}</p>
-                ${orderForm.company ? `<p style="color: #333; margin: 5px 0;"><strong>Entreprise :</strong> ${orderForm.company}</p>` : ''}
-                ${orderForm.address ? `<p style="color: #333; margin: 5px 0;"><strong>Adresse :</strong> ${orderForm.address}</p>` : ''}
-              </div>
-              
-              <p style="color: #666; margin: 20px 0;">
-                ✅ Votre facture PDF est attachée à cet email.<br>
-                ⏳ Nous confirmerons votre commande dans les 24 heures.<br>
-                💳 Paiement à la livraison.
-              </p>
-              
-              <p style="color: #999; font-size: 12px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
-                Cet email a été envoyé depuis le système de commande SOMATISME.<br>
-                Pour toute question, contactez-nous à info@somatisme.ma
-              </p>
-            </div>
-          </div>
-        `,
-        attachments: pdfBase64 ? [{
-          filename: 'Facture_SOMATISME.pdf',
-          content: Buffer.from(pdfBase64, 'base64'),
-          contentType: 'application/pdf'
-        }] : []
-      };
-
-      // Email to admin
-      const adminEmail = {
-        from: process.env.EMAIL_FROM || `"SOMATISME" <${process.env.SMTP_USER}>`,
-        to: process.env.EMAIL_TO || "info@somatisme.ma",
-        subject: `NOUVELLE COMMANDE - ${orderForm.name}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h1 style="color: #1e3a5f;">🔔 NOUVELLE COMMANDE</h1>
+      // Customer email HTML
+      const customerHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f5f5f5;">
+          <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h1 style="color: #1e3a5f; margin-bottom: 20px;">Confirmation de Commande</h1>
             
-            <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0;">
-              <h2 style="color: #856404; margin-top: 0;">Informations Client</h2>
-              <p style="color: #333;"><strong>Nom :</strong> ${orderForm.name}</p>
-              <p style="color: #333;"><strong>Email :</strong> ${orderForm.email}</p>
-              <p style="color: #333;"><strong>Téléphone :</strong> ${orderForm.phone}</p>
-              ${orderForm.company ? `<p style="color: #333;"><strong>Entreprise :</strong> ${orderForm.company}</p>` : ''}
-              ${orderForm.address ? `<p style="color: #333;"><strong>Adresse :</strong> ${orderForm.address}</p>` : ''}
-            </div>
+            <p style="color: #333; font-size: 16px;">Bonjour <strong>${orderForm.name}</strong>,</p>
             
-            <div style="background: #e7f3ff; padding: 15px; border-radius: 5px; margin: 20px 0;">
-              <h2 style="color: #004085; margin-top: 0;">Produits Commandés</h2>
+            <p style="color: #666; margin: 20px 0;">Merci pour votre commande ! Voici les détails :</p>
+            
+            <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #06b6d4; margin: 20px 0;">
+              <h3 style="color: #1e3a5f; margin-top: 0;">Détails de la commande :</h3>
               ${orderItems.map((item: any, idx: number) => `
                 <p style="color: #333; margin: 8px 0;">
-                  <strong>${idx + 1}. ${item.name}</strong> - ${item.price} MAD
+                  <strong>${idx + 1}. ${item.name}</strong><br>
+                  Prix: <span style="color: #06b6d4; font-weight: bold;">${item.price} MAD</span>
                 </p>
               `).join('')}
               
               <hr style="border: none; border-top: 1px solid #ddd; margin: 15px 0;">
               
-              <p style="color: #333; font-size: 18px;">
+              <p style="color: #333; font-size: 18px; margin: 10px 0;">
                 <strong>Total :</strong> <span style="color: #06b6d4; font-size: 20px;">${cartTotal} MAD</span>
               </p>
             </div>
             
-            ${orderForm.message ? `
-              <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                <h3 style="color: #333;">Message du client :</h3>
-                <p style="color: #666; white-space: pre-wrap;">${orderForm.message}</p>
-              </div>
-            ` : ''}
+            <div style="background: #f0f9ff; padding: 15px; border-radius: 5px; margin: 20px 0;">
+              <h3 style="color: #1e3a5f; margin-top: 0;">Informations de livraison :</h3>
+              <p style="color: #333; margin: 5px 0;"><strong>Nom :</strong> ${orderForm.name}</p>
+              <p style="color: #333; margin: 5px 0;"><strong>Email :</strong> ${orderForm.email}</p>
+              <p style="color: #333; margin: 5px 0;"><strong>Téléphone :</strong> ${orderForm.phone}</p>
+              ${orderForm.company ? `<p style="color: #333; margin: 5px 0;"><strong>Entreprise :</strong> ${orderForm.company}</p>` : ''}
+              ${orderForm.address ? `<p style="color: #333; margin: 5px 0;"><strong>Adresse :</strong> ${orderForm.address}</p>` : ''}
+            </div>
             
-            <p style="color: #666; margin-top: 20px;">
-              ⏳ Veuillez contacter le client dans les 24 heures pour confirmer la commande.
+            <p style="color: #666; margin: 20px 0;">
+              ✅ Votre facture PDF est attachée à cet email.<br>
+              ⏳ Nous confirmerons votre commande dans les 24 heures.<br>
+              💳 Paiement à la livraison.
+            </p>
+            
+            <p style="color: #999; font-size: 12px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+              Cet email a été envoyé depuis le système de commande SOMATISME.<br>
+              Pour toute question, contactez-nous à info@somatisme.ma
             </p>
           </div>
-        `,
-        attachments: pdfBase64 ? [{
-          filename: 'Facture_SOMATISME.pdf',
-          content: Buffer.from(pdfBase64, 'base64'),
-          contentType: 'application/pdf'
-        }] : []
-      };
+        </div>
+      `;
 
-      // Send both emails
-      await transporter.sendMail(customerEmail);
-      await transporter.sendMail(adminEmail);
+      // Admin email HTML
+      const adminHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #1e3a5f;">🔔 NOUVELLE COMMANDE</h1>
+          
+          <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <h2 style="color: #856404; margin-top: 0;">Informations Client</h2>
+            <p style="color: #333;"><strong>Nom :</strong> ${orderForm.name}</p>
+            <p style="color: #333;"><strong>Email :</strong> ${orderForm.email}</p>
+            <p style="color: #333;"><strong>Téléphone :</strong> ${orderForm.phone}</p>
+            ${orderForm.company ? `<p style="color: #333;"><strong>Entreprise :</strong> ${orderForm.company}</p>` : ''}
+            ${orderForm.address ? `<p style="color: #333;"><strong>Adresse :</strong> ${orderForm.address}</p>` : ''}
+          </div>
+          
+          <div style="background: #e7f3ff; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <h2 style="color: #004085; margin-top: 0;">Produits Commandés</h2>
+            ${orderItems.map((item: any, idx: number) => `
+              <p style="color: #333; margin: 8px 0;">
+                <strong>${idx + 1}. ${item.name}</strong> - ${item.price} MAD
+              </p>
+            `).join('')}
+            
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 15px 0;">
+            
+            <p style="color: #333; font-size: 18px;">
+              <strong>Total :</strong> <span style="color: #06b6d4; font-size: 20px;">${cartTotal} MAD</span>
+            </p>
+          </div>
+          
+          ${orderForm.message ? `
+            <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0;">
+              <h3 style="color: #333;">Message du client :</h3>
+              <p style="color: #666; white-space: pre-wrap;">${orderForm.message}</p>
+            </div>
+          ` : ''}
+          
+          <p style="color: #666; margin-top: 20px;">
+            ⏳ Veuillez contacter le client dans les 24 heures pour confirmer la commande.
+          </p>
+        </div>
+      `;
+
+      // Send customer email via Resend
+      await resend.emails.send({
+        from: "SOMATISME <onboarding@resend.dev>",
+        to: orderForm.email,
+        subject: 'Confirmation de votre commande SOMATISME',
+        html: customerHtml,
+      });
+
+      // Send admin email via Resend
+      await resend.emails.send({
+        from: "SOMATISME <onboarding@resend.dev>",
+        to: process.env.EMAIL_TO || "info@somatisme.ma",
+        subject: `NOUVELLE COMMANDE - ${orderForm.name}`,
+        html: adminHtml,
+      });
       
       auditLogger("ORDER_EMAIL_SENT", { email: orderForm.email, total: cartTotal });
 
