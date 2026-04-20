@@ -27,45 +27,57 @@ export default function About() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      {/* Hero Section - Ultra Pro */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 gradient-hero opacity-5"></div>
-        <div className="absolute top-20 right-20 w-96 h-96 bg-accent/15 rounded-full blur-[100px] animate-pulse-slow"></div>
-        <div className="absolute bottom-20 left-20 w-80 h-80 bg-primary/15 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute inset-0 grid-pattern opacity-30"></div>
+      {/* Hero Section - RADICAL NEW DESIGN */}
+      <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-purple-900 to-primary">
+        {/* Animated Orbs */}
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-accent/50 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
+        <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-secondary/40 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
 
         <div className="container relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-4xl mx-auto"
+            transition={{ duration: 0.9 }}
+            className="text-center max-w-5xl mx-auto"
           >
-            <h1 className="text-display text-foreground mb-6">
-              {t('nav.about')}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 border border-accent/40 backdrop-blur-sm mb-8"
+            >
+              <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
+              <span className="text-accent font-bold text-sm uppercase tracking-widest">Notre Histoire</span>
+            </motion.div>
+
+            <h1 className="text-7xl md:text-8xl font-black text-white mb-8 leading-tight">
+              À Propos de <br />
+              <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">SOMATISME</span>
             </h1>
-            <p className="text-body-large text-muted-foreground mb-8">
+            <p className="text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
               {t('about.hero.subtitle')}
             </p>
-            <div className="divider-gradient w-32 mx-auto"></div>
           </motion.div>
         </div>
       </section>
 
-      {/* Secteurs d'activité - Ultra Pro */}
-      <section className="section-padding relative overflow-hidden">
-        <div className="absolute inset-0 gradient-card opacity-30"></div>
+      {/* Secteurs d'activité - RADICAL NEW DESIGN */}
+      <section className="py-32 relative overflow-hidden bg-background">
+        <div className="absolute inset-0 opacity-30" style={{
+          backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(234, 88, 12, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%)'
+        }}></div>
+
         <div className="container relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="text-center mb-12"
+            className="text-center mb-20"
           >
-            <h2 className="text-heading text-foreground mb-4">{t('about.sectors.title')}</h2>
-            <p className="text-body-large text-muted-foreground">{t('about.sectors.subtitle')}</p>
+            <h2 className="text-6xl md:text-7xl font-black text-foreground mb-6">{t('about.sectors.title')}</h2>
+            <p className="text-2xl text-muted-foreground max-w-3xl mx-auto">{t('about.sectors.subtitle')}</p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {[
               "agro", "auto", "chimie", "ciment",
               "medical", "metallurgie", "micro", "pharmacie",
@@ -73,14 +85,18 @@ export default function About() {
             ].map((sector, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03 }}
-                whileHover={{ x: 5, scale: 1.02 }}
-                className="card-glass px-4 py-3 flex items-center gap-3"
+                transition={{ delay: i * 0.05 }}
+                whileHover={{ y: -10, scale: 1.05 }}
+                className="group relative overflow-hidden rounded-2xl border border-white/10 backdrop-blur-sm p-6 bg-gradient-to-br from-primary/10 to-secondary/10 hover:from-accent/20 hover:to-secondary/20 transition-all"
               >
-                <CheckCircle2 className="text-accent w-5 h-5" />
-                <span className="font-medium text-foreground">{t(`sector.${sector}`)}</span>
+                <div className="flex flex-col items-center text-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <CheckCircle2 className="text-white w-6 h-6" />
+                  </div>
+                  <span className="font-bold text-foreground group-hover:text-accent transition-colors">{t(`sector.${sector}`)}</span>
+                </div>
               </motion.div>
             ))}
           </div>
