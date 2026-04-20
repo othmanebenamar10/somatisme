@@ -1992,15 +1992,15 @@ export default function Products() {
     const validationData = `${invoiceNumber}${date}${total}${orderInfo.email}`;
     const checksum = validationData.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0).toString(16).toUpperCase();
 
-    // RADICAL DESIGN - Vibrant colors
-    const primaryColor: [number, number, number] = [31, 26, 61]; // Violet Profond
-    const accentColor: [number, number, number] = [234, 88, 12]; // Orange Vif
-    const secondaryColor: [number, number, number] = [168, 85, 247]; // Rose Magenta
+    // INDUSTRIAL PROFESSIONAL DESIGN - Navy Blue + Cyan
+    const primaryColor: [number, number, number] = [30, 58, 95]; // Bleu Marine
+    const accentColor: [number, number, number] = [6, 182, 212]; // Cyan Clair
+    const secondaryColor: [number, number, number] = [45, 55, 72]; // Gris Foncé
     const lightGray: [number, number, number] = [241, 245, 249];
-    const mediumGray: [number, number, number] = [100, 116, 139];
-    const darkGray: [number, number, number] = [30, 41, 59];
+    const mediumGray: [number, number, number] = [107, 114, 128];
+    const darkGray: [number, number, number] = [31, 41, 55];
 
-    // === HEADER with RADICAL DESIGN ===
+    // === HEADER with INDUSTRIAL PROFESSIONAL DESIGN ===
     // Main gradient background
     doc.setFillColor(...primaryColor);
     doc.rect(0, 0, 210, 60, 'F');
@@ -2030,7 +2030,7 @@ export default function Products() {
 
     // Tagline
     doc.setFontSize(10);
-    doc.setTextColor(234, 88, 12); // Orange accent
+    doc.setTextColor(6, 182, 212); // Cyan accent
     doc.setFont('helvetica', 'bold');
     doc.text('AUTOMATISATION INDUSTRIELLE', 15, 31);
 
@@ -2322,11 +2322,11 @@ export default function Products() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      {/* Hero Header - RADICAL NEW DESIGN */}
-      <section className="relative min-h-[60vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-purple-900 to-primary">
+      {/* Hero Header - INDUSTRIAL PROFESSIONAL DESIGN */}
+      <section className="relative min-h-[60vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-slate-800 to-primary">
         {/* Animated Orbs */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-accent/50 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
-        <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-secondary/40 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
+        <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
 
         <div className="container relative z-10">
           <motion.div
@@ -2347,7 +2347,7 @@ export default function Products() {
 
             <h1 className="text-7xl md:text-8xl font-black text-white mb-8 leading-tight">
               {language === 'ar' ? 'المنتجات' : 'Équipements'} <br />
-              <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">{language === 'ar' ? 'الصناعية' : 'Industriels'}</span>
+              <span className="bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-400 bg-clip-text text-transparent">{language === 'ar' ? 'الصناعية' : 'Industriels'}</span>
             </h1>
             <p className="text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
               {language === 'ar' ? 'أفضل المعدات الصناعية' : 'Équipements industriels de qualité professionnelle'}
@@ -2417,8 +2417,8 @@ export default function Products() {
                       onClick={() => setSelectedCategory(category.id)}
                       className={`px-6 py-3 rounded-xl font-bold uppercase tracking-wide text-sm transition-all duration-300 ${
                         selectedCategory === category.id
-                          ? 'bg-gradient-to-r from-accent to-orange-500 text-white shadow-lg shadow-accent/50'
-                          : 'bg-background/50 border-2 border-accent/30 text-foreground hover:border-accent/60 hover:bg-accent/10'
+                          ? 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-lg shadow-cyan-500/50'
+                          : 'bg-background/50 border-2 border-cyan-400/30 text-foreground hover:border-cyan-400/60 hover:bg-cyan-400/10'
                       }`}
                     >
                       {language === 'ar' ? category.nameAr : category.name}
@@ -2436,7 +2436,7 @@ export default function Products() {
               >
                 <button
                   onClick={() => setShowCart(!showCart)}
-                  className="relative px-8 py-3 rounded-xl font-bold uppercase tracking-wide text-sm bg-gradient-to-r from-accent to-orange-500 text-white shadow-lg shadow-accent/50 hover:shadow-xl hover:shadow-accent/70 transition-all flex items-center gap-2"
+                  className="relative px-8 py-3 rounded-xl font-bold uppercase tracking-wide text-sm bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-lg shadow-cyan-500/50 hover:shadow-xl hover:shadow-cyan-500/70 transition-all flex items-center gap-2"
                 >
                   <ShoppingCart className="h-5 w-5" />
                   {language === 'ar' ? 'السلة' : 'Panier'}
@@ -2475,10 +2475,10 @@ export default function Products() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl max-h-[90vh] bg-gradient-to-br from-card via-card to-card/90 border border-accent/20 rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden"
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl max-h-[90vh] bg-gradient-to-br from-card via-card to-card/90 border border-cyan-400/20 rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-accent to-orange-500 text-white p-6 flex justify-between items-center">
+            <div className="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white p-6 flex justify-between items-center">
               <div>
                 <h3 className="text-2xl font-black">
                   {language === 'ar' ? 'سلة التسوق' : 'Panier'}
@@ -2562,7 +2562,7 @@ export default function Products() {
               {cart.length > 0 && (
                 <div className="lg:w-64 flex flex-col gap-4">
                   {/* Summary Card */}
-                  <div className="bg-gradient-to-br from-accent/10 to-orange-500/10 rounded-2xl p-4 border border-accent/20 space-y-3">
+                  <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-600/10 rounded-2xl p-4 border border-cyan-400/20 space-y-3">
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
                       {language === 'ar' ? 'الملخص' : 'Résumé'}
                     </p>
@@ -2584,7 +2584,7 @@ export default function Products() {
                         <span className="font-bold text-sm">
                           {language === 'ar' ? 'المجموع' : 'Total'}:
                         </span>
-                        <span className="text-lg font-black bg-gradient-to-r from-accent to-orange-500 bg-clip-text text-transparent">
+                        <span className="text-lg font-black bg-gradient-to-r from-cyan-500 to-cyan-600 bg-clip-text text-transparent">
                           {cartTotal} MAD
                         </span>
                       </div>
@@ -2596,7 +2596,7 @@ export default function Products() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setShowOrderDialog(true)}
-                    className="w-full px-4 py-3 bg-gradient-to-r from-accent to-orange-500 text-white font-bold rounded-xl shadow-lg shadow-accent/30 hover:shadow-xl hover:shadow-accent/50 transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-sm"
+                    className="w-full px-4 py-3 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/50 transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-sm"
                   >
                     {language === 'ar' ? 'إتمام الطلب' : 'Commander'}
                     <ArrowRight size={16} />

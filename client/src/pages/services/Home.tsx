@@ -70,12 +70,12 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      {/* Hero Section - RADICAL NEW DESIGN 2026 */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-primary via-purple-900 to-primary">
+      {/* Hero Section - INDUSTRIAL PROFESSIONAL DESIGN 2026 */}
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-primary via-slate-800 to-primary">
         {/* Animated Background Orbs */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-accent/40 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-secondary/30 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
-        <div className="absolute top-1/2 right-0 w-72 h-72 bg-accent/20 rounded-full blur-[100px] animate-pulse" style={{ animation: 'float 12s ease-in-out infinite 4s' }}></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
+        <div className="absolute top-1/2 right-0 w-72 h-72 bg-cyan-500/15 rounded-full blur-[100px] animate-pulse" style={{ animation: 'float 12s ease-in-out infinite 4s' }}></div>
 
         {/* Grid Pattern Overlay */}
         <div className="absolute inset-0 opacity-10" style={{
@@ -97,10 +97,10 @@ export default function Home() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 border border-accent/40 backdrop-blur-sm"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/20 border border-cyan-400/40 backdrop-blur-sm"
               >
-                <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
-                <span className="text-accent font-bold text-sm uppercase tracking-widest">{t('home.hero.badge')}</span>
+                <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+                <span className="text-cyan-400 font-bold text-sm uppercase tracking-widest">{t('home.hero.badge')}</span>
               </motion.div>
 
               {/* Main Title */}
@@ -112,7 +112,7 @@ export default function Home() {
               >
                 {t('home.hero.title')}
                 <br />
-                <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">{t('home.hero.title.accent')}</span>
+                <span className="bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-400 bg-clip-text text-transparent">{t('home.hero.title.accent')}</span>
               </motion.h1>
 
               {/* Description */}
@@ -136,7 +136,7 @@ export default function Home() {
                   <motion.button
                     whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(234, 88, 12, 0.4)' }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-8 py-4 bg-gradient-to-r from-accent to-orange-500 text-primary font-bold rounded-xl flex items-center gap-2 shadow-lg hover:shadow-2xl transition-all"
+                    className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white font-bold rounded-xl flex items-center gap-2 shadow-lg hover:shadow-2xl transition-all"
                   >
                     {t('home.hero.cta.quote')}
                     <ArrowRight size={20} />
@@ -146,7 +146,7 @@ export default function Home() {
                   <motion.button
                     whileHover={{ scale: 1.05, borderColor: 'rgba(234, 88, 12, 0.8)' }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-8 py-4 border-2 border-accent/50 text-white font-bold rounded-xl hover:bg-accent/10 transition-all"
+                    className="px-8 py-4 border-2 border-cyan-400/50 text-white font-bold rounded-xl hover:bg-cyan-400/10 transition-all"
                   >
                     {t('home.hero.cta.discover')}
                   </motion.button>
@@ -170,8 +170,8 @@ export default function Home() {
                     whileHover={{ y: -5 }}
                     className="group"
                   >
-                    <p className="text-4xl font-black bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent mb-2">{stat.value}</p>
-                    <p className="text-sm text-gray-300 group-hover:text-accent transition-colors">{stat.label}</p>
+                    <p className="text-4xl font-black bg-gradient-to-r from-cyan-400 to-cyan-300 bg-clip-text text-transparent mb-2">{stat.value}</p>
+                    <p className="text-sm text-gray-300 group-hover:text-cyan-400 transition-colors">{stat.label}</p>
                   </motion.div>
                 ))}
               </motion.div>
@@ -185,10 +185,10 @@ export default function Home() {
               className="relative"
             >
               {/* Glowing Background Shape */}
-              <div className="absolute -inset-8 bg-gradient-to-r from-accent/20 via-secondary/20 to-accent/20 rounded-3xl blur-3xl opacity-50"></div>
+              <div className="absolute -inset-8 bg-gradient-to-r from-cyan-500/20 via-cyan-400/20 to-cyan-500/20 rounded-3xl blur-3xl opacity-50"></div>
 
               {/* Main Image */}
-              <div className="relative rounded-3xl overflow-hidden border-2 border-accent/30 backdrop-blur-sm">
+              <div className="relative rounded-3xl overflow-hidden border-2 border-cyan-400/30 backdrop-blur-sm">
                 <img
                   src="/somatisme.png"
                   alt="Automatisme industriel"
@@ -201,7 +201,7 @@ export default function Home() {
               <motion.div
                 animate={{ y: [0, -15, 0] }}
                 transition={{ duration: 5, repeat: Infinity }}
-                className="absolute -bottom-8 -left-8 bg-gradient-to-br from-accent/90 to-orange-600 p-6 rounded-2xl max-w-xs shadow-2xl"
+                className="absolute -bottom-8 -left-8 bg-gradient-to-br from-cyan-500/90 to-cyan-600 p-6 rounded-2xl max-w-xs shadow-2xl"
               >
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
