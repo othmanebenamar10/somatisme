@@ -269,27 +269,36 @@ export default function Projects() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      {/* Hero Section - Ultra Pro */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 gradient-hero opacity-5"></div>
-        <div className="absolute top-20 right-20 w-96 h-96 bg-accent/15 rounded-full blur-[100px] animate-pulse-slow"></div>
-        <div className="absolute bottom-20 left-20 w-80 h-80 bg-primary/15 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute inset-0 grid-pattern opacity-30"></div>
+      {/* Hero Section - RADICAL NEW DESIGN */}
+      <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-purple-900 to-primary">
+        {/* Animated Orbs */}
+        <div className="absolute top-0 right-1/3 w-96 h-96 bg-accent/50 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
+        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-secondary/40 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
 
         <div className="container relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-4xl mx-auto"
+            transition={{ duration: 0.9 }}
+            className="text-center max-w-5xl mx-auto"
           >
-            <h1 className="text-display text-foreground mb-6">
-              <span className="gradient-text">{t('projects.hero.title')}</span>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 border border-accent/40 backdrop-blur-sm mb-8"
+            >
+              <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
+              <span className="text-accent font-bold text-sm uppercase tracking-widest">Nos Réalisations</span>
+            </motion.div>
+
+            <h1 className="text-7xl md:text-8xl font-black text-white mb-8 leading-tight">
+              Projets <br />
+              <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">Réussis</span>
             </h1>
-            <p className="text-body-large text-muted-foreground mb-8">
+            <p className="text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
               {t('projects.hero.subtitle')}
             </p>
-            <div className="divider-gradient w-32 mx-auto"></div>
           </motion.div>
         </div>
       </section>
