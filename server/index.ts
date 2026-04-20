@@ -40,8 +40,9 @@ function logAudit(action: string, ip: string, details: any): void {
   // or store in a separate audit collection in MongoDB
 }
 
+const app = express();
+
 async function startServer() {
-  const app = express();
   const server = createServer(app);
 
   // Military-grade security middleware
@@ -234,4 +235,10 @@ async function startServer() {
   });
 }
 
-startServer().catch(console.error);
+// Only start server if not in Vercel environment
+if (process.env.VERCEL !== "1") {
+  startServer().catch(console.error);
+}
+
+// Export app for Vercel
+export default app;
