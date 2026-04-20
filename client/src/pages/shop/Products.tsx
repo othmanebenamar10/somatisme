@@ -2405,6 +2405,9 @@ export default function Products() {
       doc.setFont('helvetica', 'bold');
       doc.text('www.somatisme.ma', 105, 291, { align: 'center' });
 
+      // Save PDF to downloads
+      doc.save(`Facture_${invoiceNumber}_SOMATISME.pdf`);
+
       // Get PDF as base64
       const pdfBase64 = doc.output('dataurlstring').split(',')[1];
 
