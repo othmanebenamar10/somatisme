@@ -2166,12 +2166,6 @@ export default function Products() {
               transition={{ duration: 0.8 }}
               className="space-y-6"
             >
-              <div className="inline-block px-4 py-2 bg-accent/10 rounded-lg border border-accent/30">
-                <span className="text-accent font-semibold text-sm">
-                  {language === 'ar' ? 'كتالوج' : 'Catalogue'}
-                </span>
-              </div>
-
               <h1 className="text-display text-foreground">
                 {language === 'ar' ? 'معداتنا الصناعية' : 'Nos Équipements'}
                 <span className="text-accent">
