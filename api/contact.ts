@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -14,13 +14,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Validate Resend API key
-    if (!process.env.RESEND_API_KEY) {
-      console.error('[EMAIL] RESEND_API_KEY not configured');
+    // Validate SMTP config
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.error('[EMAIL] SMTP_USER or SMTP_PASS not configured');
       return res.status(500).json({ error: 'Email service not configured' });
     }
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port: parseInt(process.env.SMTP_PORT || '587'),
+      secure: false,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
 
     // Email content
     const htmlContent = `
@@ -60,15 +68,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       </div>
     `;
 
-    // Send email via Resend
-    const result = await resend.emails.send({
-      from: 'SOMATISME <onboarding@resend.dev>',
+    // Send email via SMTP
+    await transporter.sendMail({
+      from: `"SOMATISME" <${process.env.SMTP_USER}>`,
       to: process.env.EMAIL_TO || 'info@somatisme.ma',
       subject: `Nouvelle demande de contact: ${subject}`,
       html: htmlContent,
     });
 
-    console.log('[EMAIL] Contact form email sent via Resend:', result);
+    console.log('[EMAIL] Contact form email sent via SMTP Gmail');
 
     return res.status(200).json({ success: true, message: 'Email sent successfully' });
   } catch (error) {

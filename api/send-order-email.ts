@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -13,13 +13,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Missing required order information' });
     }
 
-    // Validate Resend API key
-    if (!process.env.RESEND_API_KEY) {
-      console.error('[EMAIL] RESEND_API_KEY not configured');
+    // Validate SMTP config
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.error('[EMAIL] SMTP_USER or SMTP_PASS not configured');
       return res.status(500).json({ error: 'Email service not configured' });
     }
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port: parseInt(process.env.SMTP_PORT || '587'),
+      secure: false,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
 
     // Customer email HTML
     const customerHtml = `
@@ -69,23 +77,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       </div>
     `;
 
-    // Send customer email
-    await resend.emails.send({
-      from: 'SOMATISME <onboarding@resend.dev>',
+    // Send customer email via SMTP Gmail
+    await transporter.sendMail({
+      from: `"SOMATISME" <${process.env.SMTP_USER}>`,
       to: orderForm.email,
       subject: 'Confirmation de votre commande SOMATISME',
       html: customerHtml,
     });
-    console.log('[EMAIL] Customer order email sent');
+    console.log('[EMAIL] Customer order email sent via SMTP Gmail');
 
-    // Send admin email
-    await resend.emails.send({
-      from: 'SOMATISME <onboarding@resend.dev>',
+    // Send admin email via SMTP Gmail
+    await transporter.sendMail({
+      from: `"SOMATISME" <${process.env.SMTP_USER}>`,
       to: process.env.EMAIL_TO || 'info@somatisme.ma',
       subject: `NOUVELLE COMMANDE - ${orderForm.name}`,
       html: adminHtml,
     });
-    console.log('[EMAIL] Admin order email sent');
+    console.log('[EMAIL] Admin order email sent via SMTP Gmail');
 
     return res.status(200).json({ success: true, message: 'Commande recue. Confirmation envoyee par email.' });
   } catch (error) {
