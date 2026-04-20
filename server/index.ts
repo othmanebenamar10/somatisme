@@ -184,6 +184,11 @@ async function startServer() {
     }
   });
 
+  // Test endpoint
+  app.get("/api/test", (req, res) => {
+    res.json({ status: "API is working" });
+  });
+
   // API endpoint for sending order confirmation emails
   app.post("/api/send-order-email", async (req, res) => {
     console.log("[ORDER] Received order request");
