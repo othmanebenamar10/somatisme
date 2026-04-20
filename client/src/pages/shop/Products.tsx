@@ -2156,78 +2156,107 @@ export default function Products() {
       <Header />
       
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-blue-800/80"></div>
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yIDItNCAyLTRzLTItMi00IDJjMCAyLTItNC00IDJzMiA0IDQgMnoiLz48cGF0aCBkPSJNMCAwaDYwdjYwSDB6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
-        <div className="container relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg">
-              {language === 'ar' ? 'معداتنا الصناعية' : 'Nos Équipements Industriels'}
-            </h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-              {language === 'ar' 
-                ? 'Découvrez notre catalogue de matériel industriel de haute qualité pour l\'automatisme, la régulation et l\'électricité'
-                : 'Découvrez notre catalogue de matériel industriel de haute qualité pour l\'automatisme, la régulation et l\'électricité'}
-            </p>
-            <div className="mt-8 flex justify-center gap-4">
-              <div className="bg-white/10 backdrop-blur-sm px-6 py-3 rounded-lg border border-white/20">
-                <p className="text-2xl font-bold text-white">119+</p>
-                <p className="text-sm text-blue-200">{language === 'ar' ? 'منتجات' : 'Produits'}</p>
+      <section className="relative py-20 md:py-32 overflow-hidden">
+        <div className="container">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="space-y-6"
+            >
+              <div className="inline-block px-4 py-2 bg-accent/10 rounded-lg border border-accent/30">
+                <span className="text-accent font-semibold text-sm">
+                  {language === 'ar' ? 'معداتنا الصناعية' : 'Nos Équipements Industriels'}
+                </span>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm px-6 py-3 rounded-lg border border-white/20">
-                <p className="text-2xl font-bold text-white">24/7</p>
-                <p className="text-sm text-blue-200">{language === 'ar' ? 'دعم' : 'Support'}</p>
+
+              <h1 className="text-display text-foreground">
+                {language === 'ar' ? 'معداتنا الصناعية' : 'Nos Équipements'}
+                <span className="text-accent">
+                  {language === 'ar' ? ' الصناعية' : ' Industriels'}
+                </span>
+              </h1>
+
+              <p className="text-lg text-muted-foreground max-w-lg">
+                {language === 'ar' 
+                  ? 'Découvrez notre catalogue de matériel industriel de haute qualité pour l\'automatisme, la régulation et l\'électricité'
+                  : 'Découvrez notre catalogue de matériel industriel de haute qualité pour l\'automatisme, la régulation et l\'électricité'}
+              </p>
+
+              <div className="flex gap-8 pt-8">
+                <div>
+                  <p className="text-2xl font-bold text-primary">119+</p>
+                  <p className="text-sm text-muted-foreground">{language === 'ar' ? 'منتجات' : 'Produits'}</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-primary">24/7</p>
+                  <p className="text-sm text-muted-foreground">{language === 'ar' ? 'دعم' : 'Support'}</p>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+
+            {/* Right Image */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative"
+            >
+              <div className="relative rounded-lg overflow-hidden shadow-2xl">
+                <img
+                  src="/somatisme.png"
+                  alt="Équipements industriels"
+                  className="w-full h-auto object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent"></div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
           {/* Search and Filters */}
-          <div className="relative z-10 -mt-4 bg-white/10 backdrop-blur-md rounded-2xl p-6 shadow-xl border border-white/20">
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-200 h-5 w-5" />
-                <Input
-                  placeholder={language === 'ar' ? 'بحث عن منتج...' : 'Rechercher un produit...'}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 bg-white/20 border-white/30 text-white placeholder-blue-200 focus:bg-white/30"
-                />
+          <section className="py-12 bg-muted/30 border-y border-border">
+            <div className="container">
+              <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+                  <Input
+                    placeholder={language === 'ar' ? 'بحث عن منتج...' : 'Rechercher un produit...'}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-12"
+                  />
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  {categories.map((category) => (
+                    <Button
+                      key={category.id}
+                      variant={selectedCategory === category.id ? 'default' : 'outline'}
+                      onClick={() => setSelectedCategory(category.id)}
+                    >
+                      {language === 'ar' ? category.nameAr : category.name}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCart(!showCart)}
+                  className="relative"
+                >
+                  <ShoppingCart className="h-5 w-5 mr-2" />
+                  {language === 'ar' ? 'السلة' : 'Panier'}
+                  {cart.length > 0 && (
+                    <Badge className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 bg-accent text-accent-foreground">
+                      {cart.length}
+                    </Badge>
+                  )}
+                </Button>
               </div>
-              <div className="flex gap-2 flex-wrap">
-                {categories.map((category) => (
-                  <Button
-                    key={category.id}
-                    variant={selectedCategory === category.id ? 'default' : 'outline'}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className={selectedCategory === category.id 
-                      ? 'bg-white text-blue-900 hover:bg-white/90' 
-                      : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
-                    }
-                  >
-                    {language === 'ar' ? category.nameAr : category.name}
-                  </Button>
-                ))}
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => setShowCart(!showCart)}
-                className="relative bg-white/20 text-white border-white/30 hover:bg-white/30"
-              >
-                <ShoppingCart className="h-5 w-5 mr-2" />
-                {language === 'ar' ? 'السلة' : 'Panier'}
-                {cart.length > 0 && (
-                  <Badge className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 bg-red-500 text-white">
-                    {cart.length}
-                  </Badge>
-                )}
-              </Button>
             </div>
-          </div>
+          </section>
 
           {/* Cart Sidebar */}
           {showCart && (
@@ -2235,41 +2264,38 @@ export default function Products() {
               initial={{ opacity: 0, x: 300 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 300 }}
-              className="fixed right-0 top-0 h-full w-96 bg-white border-l shadow-2xl z-50 p-6 overflow-y-auto"
+              className="fixed right-0 top-0 h-full w-80 bg-card border-l shadow-lg z-50 p-4 overflow-y-auto"
             >
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-gray-900">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold">
                   {language === 'ar' ? 'سلة التسوق' : 'Panier'}
                 </h3>
-                <Button variant="ghost" size="sm" onClick={() => setShowCart(false)} className="text-gray-600 hover:text-gray-900">
+                <Button variant="ghost" size="sm" onClick={() => setShowCart(false)}>
                   ✕
                 </Button>
               </div>
               {cart.length === 0 ? (
-                <div className="text-center py-12">
-                  <ShoppingCart className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-                  <p className="text-gray-500">
-                    {language === 'ar' ? 'السلة فارغة' : 'Panier vide'}
-                  </p>
-                </div>
+                <p className="text-muted-foreground text-center py-8">
+                  {language === 'ar' ? 'السلة فارغة' : 'Panier vide'}
+                </p>
               ) : (
                 <>
                   {cart.map((item, index) => (
-                    <div key={index} className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-200">
-                      <img src={item.image} alt={language === 'ar' ? item.nameAr : item.name} className="w-20 h-20 object-cover rounded-lg shadow-md" />
+                    <div key={index} className="flex items-center gap-2 mb-4 pb-4 border-b">
+                      <img src={item.image} alt={language === 'ar' ? item.nameAr : item.name} className="w-16 h-16 object-cover rounded" />
                       <div className="flex-1">
-                        <p className="font-semibold text-sm text-gray-900 mb-1">{language === 'ar' ? item.nameAr : item.name}</p>
-                        <p className="text-sm text-blue-600 font-medium">{item.price} MAD</p>
+                        <p className="font-medium text-sm">{language === 'ar' ? item.nameAr : item.name}</p>
+                        <p className="text-sm text-muted-foreground">{item.price} MAD</p>
                       </div>
-                      <Button variant="ghost" size="sm" onClick={() => removeFromCart(index)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                    ✕
-                  </Button>
+                      <Button variant="ghost" size="sm" onClick={() => removeFromCart(index)}>
+                        ✕
+                      </Button>
                     </div>
                   ))}
-                  <div className="border-t-2 border-gray-200 pt-6 mt-6">
-                    <div className="flex justify-between font-bold mb-4">
-                      <span>{language === 'ar' ? 'المجموع' : 'Total'}:</span>
-                      <span>{cartTotal} MAD</span>
+                  <div className="border-t pt-4 mt-4">
+                    <div className="flex justify-between mb-4">
+                      <span className="font-bold">{language === 'ar' ? 'المجموع' : 'Total'}:</span>
+                      <span className="font-bold">{cartTotal} MAD</span>
                     </div>
                     <Button className="w-full" onClick={() => setShowOrderDialog(true)}>
                       {language === 'ar' ? 'إتمام الطلب' : 'Commander'}
@@ -2281,71 +2307,65 @@ export default function Products() {
           )}
 
           {/* Products Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <section className="py-20 bg-background">
+            <div className="container">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product, index) => (
               <motion.div
                 key={product.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.05 }}
-                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200"
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group bg-card border border-border rounded-lg p-6 hover:border-accent transition-all duration-300 hover:shadow-lg"
               >
-                {product.featured && (
-                  <Badge className="absolute top-3 right-3 z-10 bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0 shadow-md">
-                    {language === 'ar' ? 'مميز' : 'En vedette'}
-                  </Badge>
-                )}
-                <div className="relative aspect-square overflow-hidden bg-gray-100">
+                <div className="aspect-square overflow-hidden bg-muted rounded-lg mb-4">
                   <img
                     src={product.image}
                     alt={language === 'ar' ? product.nameAr : product.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
-                <div className="p-5">
-                  <Badge variant="secondary" className="mb-3 text-xs bg-blue-100 text-blue-700 hover:bg-blue-200">
-                    {language === 'ar' ? product.categoryAr : product.category}
-                  </Badge>
-                  <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
-                    {language === 'ar' ? product.nameAr : product.name}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-3">{product.brand}</p>
-                  <p className="text-sm text-gray-500 mb-4 line-clamp-2">
-                    {language === 'ar' ? product.descriptionAr : product.description}
-                  </p>
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="text-2xl font-bold text-blue-600">{product.price} MAD</p>
-                  </div>
-                  <Button
-                    size="sm"
-                    onClick={() => addToCart(product)}
-                    disabled={product.stock === 0}
-                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg transition-all"
-                  >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    {product.stock === 0 
-                      ? (language === 'ar' ? 'نفدت الكمية' : 'Rupture')
-                      : (language === 'ar' ? 'أضف' : 'Ajouter')
-                    }
-                  </Button>
-                  <p className="text-xs text-gray-500 mt-3 text-center">
-                    {language === 'ar' ? `الكمية: ${product.stock}` : `Stock: ${product.stock}`}
-                  </p>
+                <Badge variant="secondary" className="mb-3 text-xs">
+                  {language === 'ar' ? product.categoryAr : product.category}
+                </Badge>
+                <h3 className="text-subheading text-foreground mb-2 line-clamp-2">
+                  {language === 'ar' ? product.nameAr : product.name}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-3">{product.brand}</p>
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                  {language === 'ar' ? product.descriptionAr : product.description}
+                </p>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-lg font-bold text-primary">{product.price} MAD</p>
                 </div>
+                <Button
+                  size="sm"
+                  onClick={() => addToCart(product)}
+                  disabled={product.stock === 0}
+                  className="w-full"
+                >
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  {product.stock === 0 
+                    ? (language === 'ar' ? 'نفدت الكمية' : 'Rupture')
+                    : (language === 'ar' ? 'أضف' : 'Ajouter')
+                  }
+                </Button>
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  {language === 'ar' ? `الكمية: ${product.stock}` : `Stock: ${product.stock}`}
+                </p>
               </motion.div>
             ))}
-          </div>
+              </div>
 
-          {filteredProducts.length === 0 && (
-            <div className="text-center py-16 bg-gray-50 rounded-2xl">
-              <p className="text-gray-500 text-lg">
-                {language === 'ar' ? 'لا توجد منتجات مطابقة' : 'Aucun produit trouvé'}
-              </p>
+              {filteredProducts.length === 0 && (
+                <div className="text-center py-16">
+                  <p className="text-muted-foreground">
+                    {language === 'ar' ? 'لا توجد منتجات مطابقة' : 'Aucun produit trouvé'}
+                  </p>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      </section>
+          </section>
 
       {/* Order Dialog */}
       <Dialog open={showOrderDialog} onOpenChange={setShowOrderDialog}>
