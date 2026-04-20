@@ -2155,62 +2155,6 @@ export default function Products() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
-      {/* Hero Section */}
-      <section className="relative py-20 md:py-32 overflow-hidden">
-        <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            {/* Left Content */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="space-y-6"
-            >
-              <h1 className="text-display text-foreground">
-                {language === 'ar' ? 'معداتنا الصناعية' : 'Nos Équipements'}
-                <span className="text-accent">
-                  {language === 'ar' ? ' الصناعية' : ' Industriels'}
-                </span>
-              </h1>
-
-              <p className="text-lg text-muted-foreground max-w-lg">
-                {language === 'ar' 
-                  ? 'Découvrez notre catalogue de matériel industriel de haute qualité pour l\'automatisme, la régulation et l\'électricité'
-                  : 'Découvrez notre catalogue de matériel industriel de haute qualité pour l\'automatisme, la régulation et l\'électricité'}
-              </p>
-
-              <div className="flex gap-8 pt-8">
-                <div>
-                  <p className="text-2xl font-bold text-primary">119+</p>
-                  <p className="text-sm text-muted-foreground">{language === 'ar' ? 'منتجات' : 'Produits'}</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-primary">24/7</p>
-                  <p className="text-sm text-muted-foreground">{language === 'ar' ? 'دعم' : 'Support'}</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Right Image */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
-            >
-              <div className="relative rounded-lg overflow-hidden shadow-2xl">
-                <img
-                  src="/somatisme.png"
-                  alt="Équipements industriels"
-                  className="w-full h-auto object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent"></div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
       {/* Search and Filters */}
       <section className="py-12 bg-muted/30 border-y border-border">
         <div className="container">
