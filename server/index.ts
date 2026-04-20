@@ -227,7 +227,7 @@ async function startServer() {
             </div>
             
             <p style="color: #666; margin: 20px 0;">
-              ✅ Votre facture PDF est attachée à cet email.<br>
+              ✅ Votre facture PDF sera envoyée séparément.<br>
               ⏳ Nous confirmerons votre commande dans les 24 heures.<br>
               💳 Paiement à la livraison.
             </p>
