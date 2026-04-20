@@ -2014,7 +2014,7 @@ export default function Products() {
     doc.setFontSize(8);
     doc.setTextColor(148, 163, 184);
     doc.text('Equipements - Regulation - Installation Electrique', 15, 40);
-    doc.text('+212 679 825 646  |  contact@somatisme.ma  |  www.somatisme.ma', 15, 46);
+    doc.text('+212 679 825 646  |  somatisme@gmail.com  |  www.somatisme.ma', 15, 46);
 
     // === INVOICE TITLE BLOCK ===
     doc.setFillColor(...lightGray);
@@ -2223,7 +2223,7 @@ export default function Products() {
     doc.setFontSize(7);
     doc.setTextColor(203, 213, 225);
     doc.setFont('helvetica', 'normal');
-    doc.text('Equipements Industriels  |  +212 679 825 646  |  contact@somatisme.ma', 105, 289, { align: 'center' });
+    doc.text('Equipements Industriels  |  +212 679 825 646  |  somatisme@gmail.com', 105, 289, { align: 'center' });
     doc.setTextColor(...accentColor);
     doc.setFont('helvetica', 'bold');
     doc.text('www.somatisme.ma', 105, 294, { align: 'center' });
