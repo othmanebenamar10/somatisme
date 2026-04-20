@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -9,101 +9,71 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const { name, email, phone, company, subject, message } = req.body;
 
-    const ip = req.headers['x-forwarded-for'] as string || 'unknown';
-
-    // Input validation
+    // Validate required fields
     if (!name || !email || !subject || !message) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: 'Invalid email address' });
+    // Validate Resend API key
+    if (!process.env.RESEND_API_KEY) {
+      console.error('[EMAIL] RESEND_API_KEY not configured');
+      return res.status(500).json({ error: 'Email service not configured' });
     }
 
-    // Phone validation (Moroccan format)
-    const phoneRegex = /^(06\d{8}|(\+212|00212)\d{9})$/;
-    if (phone && !phoneRegex.test(phone)) {
-      return res.status(400).json({ error: 'Invalid phone number' });
-    }
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
-    // Sanitize inputs
-    const sanitize = (str: string) => str.trim().replace(/[<>]/g, '');
-
-    const emailContent = `
+    // Email content
+    const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">Nouvelle demande de contact</h2>
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Nom:</strong></td>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;">${sanitize(name)}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">${name}</td>
           </tr>
           <tr>
             <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Email:</strong></td>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;">${sanitize(email)}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">${email}</td>
           </tr>
-          ${phone ? `
           <tr>
             <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Téléphone:</strong></td>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;">${sanitize(phone)}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">${phone || 'Non fourni'}</td>
           </tr>
-          ` : ''}
           ${company ? `
           <tr>
             <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Entreprise:</strong></td>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;">${sanitize(company)}</td>
-          </tr>
-          ` : ''}
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">${company}</td>
+          </tr>` : ''}
           <tr>
             <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Sujet:</strong></td>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;">${sanitize(subject)}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">${subject}</td>
           </tr>
           <tr>
             <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>IP:</strong></td>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;">${ip}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">${req.headers['x-forwarded-for'] || 'unknown'}</td>
           </tr>
         </table>
-        <div style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 5px;">
-          <strong style="color: #333;">Message:</strong>
-          <p style="color: #666; white-space: pre-wrap; margin-top: 10px;">${sanitize(message)}</p>
+        <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 5px;">
+          <strong>Message:</strong>
+          <p style="white-space: pre-wrap;">${message}</p>
         </div>
-        <p style="margin-top: 20px; color: #999; font-size: 12px;">Cet email a été envoyé depuis le formulaire de contact du site SOMATISME.</p>
       </div>
     `;
 
-    // Check if SMTP credentials are configured
-    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      console.error('SMTP credentials not configured');
-      return res.status(500).json({ error: 'SMTP not configured' });
-    }
-
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_FROM || process.env.SMTP_USER,
+    // Send email via Resend
+    const result = await resend.emails.send({
+      from: 'SOMATISME <onboarding@resend.dev>',
       to: process.env.EMAIL_TO || 'info@somatisme.ma',
       subject: `Nouvelle demande de contact: ${subject}`,
-      html: emailContent,
+      html: htmlContent,
     });
 
-    console.log('Email sent successfully for:', email);
+    console.log('[EMAIL] Contact form email sent via Resend:', result);
 
-    return res.status(200).json({ 
-      success: true, 
-      message: 'Email sent successfully' 
-    });
+    return res.status(200).json({ success: true, message: 'Email sent successfully' });
   } catch (error) {
-    console.error('Contact API error:', error);
+    console.error('[ERROR] Contact form error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return res.status(500).json({ error: errorMessage });
+    return res.status(500).json({ error: `Failed to send email: ${errorMessage}` });
   }
 }
