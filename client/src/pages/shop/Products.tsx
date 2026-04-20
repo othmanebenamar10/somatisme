@@ -2281,8 +2281,23 @@ export default function Products() {
       // Generate invoice
       generateInvoice(orderItems, orderForm, cartTotal);
 
-      // Send order via WhatsApp with professional format
-      const orderMessage = `🔔 *NOUVELLE COMMANDE SOMATISME*\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n👤 *INFORMATIONS CLIENT*\n\n*Nom:* ${orderForm.name}\n*Email:* ${orderForm.email}\n*Téléphone:* ${orderForm.phone}\n${orderForm.company ? `*Entreprise:* ${orderForm.company}\n` : ''}${orderForm.address ? `*Adresse:* ${orderForm.address}\n` : ''}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📦 *PRODUITS COMMANDÉS*\n\n${orderItems.map((item, idx) => `${idx + 1}. *${item.name}*\n   💰 ${item.price} MAD`).join('\n\n')}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n💵 *TOTAL: ${cartTotal} MAD*\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${orderForm.message ? `\n📝 *MESSAGE ADDITIONNEL:*\n${orderForm.message}\n` : ''}\n✅ *Facture PDF générée et téléchargée*\n\n⏳ Nous confirmerons votre commande dans les 24h.\n\n🔒 Paiement à la livraison | Livraison gratuite`;
+      // Send order via WhatsApp with clean format
+      const orderMessage = `NOUVELLE COMMANDE SOMATISME
+
+INFORMATIONS CLIENT:
+Nom: ${orderForm.name}
+Email: ${orderForm.email}
+Telephone: ${orderForm.phone}
+${orderForm.company ? `Entreprise: ${orderForm.company}\n` : ''}${orderForm.address ? `Adresse: ${orderForm.address}\n` : ''}
+PRODUITS COMMANDES:
+${orderItems.map((item, idx) => `${idx + 1}. ${item.name} - ${item.price} MAD`).join('\n')}
+
+TOTAL: ${cartTotal} MAD
+${orderForm.message ? `\nMessage: ${orderForm.message}` : ''}
+
+Facture PDF generee et telechargee.
+Confirmation dans les 24h.
+Paiement a la livraison.`;
       
       const whatsappUrl = `https://wa.me/212679825646?text=${encodeURIComponent(orderMessage)}`;
       window.open(whatsappUrl, '_blank');
