@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { orderForm, orderItems, cartTotal } = req.body;
+    const { orderForm, orderItems, cartTotal, pdfBase64, invoiceNumber } = req.body;
 
     if (!orderForm || !orderForm.email || !orderItems || !cartTotal) {
       return res.status(400).json({ error: 'Missing required order information' });
@@ -224,23 +224,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 </body>
 </html>`;
 
-    // Send customer email via SMTP Gmail
+    // PDF attachment config
+    const attachments = pdfBase64 ? [{
+      filename: `Facture_${invoiceNumber || Date.now()}_SOMATISME.pdf`,
+      content: pdfBase64,
+      encoding: 'base64',
+      contentType: 'application/pdf',
+    }] : [];
+
+    // Send customer email via SMTP Gmail with PDF
     await transporter.sendMail({
       from: `"SOMATISME" <${process.env.SMTP_USER}>`,
       to: orderForm.email,
-      subject: 'Confirmation de votre commande SOMATISME',
+      subject: `Confirmation de votre commande SOMATISME - ${invoiceNumber || ''}`,
       html: customerHtml,
+      attachments,
     });
-    console.log('[EMAIL] Customer order email sent via SMTP Gmail');
+    console.log('[EMAIL] Customer order email sent via SMTP Gmail with PDF');
 
-    // Send admin email via SMTP Gmail
+    // Send admin email via SMTP Gmail with PDF
     await transporter.sendMail({
       from: `"SOMATISME" <${process.env.SMTP_USER}>`,
       to: process.env.EMAIL_TO || 'info@somatisme.ma',
-      subject: `NOUVELLE COMMANDE - ${orderForm.name}`,
+      subject: `NOUVELLE COMMANDE - ${orderForm.name} - ${invoiceNumber || ''}`,
       html: adminHtml,
+      attachments,
     });
-    console.log('[EMAIL] Admin order email sent via SMTP Gmail');
+    console.log('[EMAIL] Admin order email sent via SMTP Gmail with PDF');
 
     return res.status(200).json({ success: true, message: 'Commande recue. Confirmation envoyee par email.' });
   } catch (error) {

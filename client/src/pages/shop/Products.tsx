@@ -2411,14 +2411,16 @@ export default function Products() {
       // Get PDF as base64
       const pdfBase64 = doc.output('dataurlstring').split(',')[1];
 
-      // Send order email
+      // Send order email with PDF attachment
       const emailResponse = await fetch('/api/send-order-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           orderForm,
           orderItems,
-          cartTotal
+          cartTotal,
+          pdfBase64,
+          invoiceNumber
         })
       });
 
