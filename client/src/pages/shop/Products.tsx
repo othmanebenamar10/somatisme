@@ -2168,7 +2168,7 @@ export default function Products() {
             >
               <div className="inline-block px-4 py-2 bg-accent/10 rounded-lg border border-accent/30">
                 <span className="text-accent font-semibold text-sm">
-                  {language === 'ar' ? 'معداتنا الصناعية' : 'Nos Équipements Industriels'}
+                  {language === 'ar' ? 'كتالوج' : 'Catalogue'}
                 </span>
               </div>
 
