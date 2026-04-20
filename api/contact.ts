@@ -30,43 +30,95 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     });
 
+    const ip = req.headers['x-forwarded-for'] || 'unknown';
+    const date = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
     // Email content
-    const htmlContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">Nouvelle demande de contact</h2>
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Nom:</strong></td>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;">${name}</td>
-          </tr>
-          <tr>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Email:</strong></td>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;">${email}</td>
-          </tr>
-          <tr>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Téléphone:</strong></td>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;">${phone || 'Non fourni'}</td>
-          </tr>
-          ${company ? `
-          <tr>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Entreprise:</strong></td>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;">${company}</td>
-          </tr>` : ''}
-          <tr>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Sujet:</strong></td>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;">${subject}</td>
-          </tr>
-          <tr>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>IP:</strong></td>
-            <td style="padding: 10px; border-bottom: 1px solid #eee;">${req.headers['x-forwarded-for'] || 'unknown'}</td>
-          </tr>
-        </table>
-        <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 5px;">
-          <strong>Message:</strong>
-          <p style="white-space: pre-wrap;">${message}</p>
-        </div>
-      </div>
-    `;
+    const htmlContent = `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#0f172a;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f172a;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+        <!-- HEADER -->
+        <tr><td style="background:linear-gradient(135deg,#1e3a5f 0%,#0e7490 100%);border-radius:16px 16px 0 0;padding:40px 40px 30px;text-align:center;">
+          <div style="display:inline-block;background:rgba(6,182,212,0.15);border:1px solid rgba(6,182,212,0.3);border-radius:12px;padding:8px 20px;margin-bottom:16px;">
+            <span style="color:#06b6d4;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;">SOMATISME</span>
+          </div>
+          <h1 style="color:#ffffff;font-size:26px;font-weight:700;margin:0 0 8px;">Nouvelle Demande de Contact</h1>
+          <p style="color:#94a3b8;font-size:14px;margin:0;">${date}</p>
+        </td></tr>
+
+        <!-- BODY -->
+        <tr><td style="background:#1e293b;padding:40px;">
+
+          <!-- Alert badge -->
+          <div style="background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.25);border-radius:10px;padding:16px 20px;margin-bottom:30px;display:flex;align-items:center;">
+            <span style="color:#06b6d4;font-size:13px;font-weight:600;">📬 Un prospect vous a contacté via le site web</span>
+          </div>
+
+          <!-- Info grid -->
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="50%" style="padding:0 8px 16px 0;vertical-align:top;">
+                <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:16px 18px;">
+                  <p style="color:#64748b;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px;">Nom</p>
+                  <p style="color:#f1f5f9;font-size:15px;font-weight:600;margin:0;">${name}</p>
+                </div>
+              </td>
+              <td width="50%" style="padding:0 0 16px 8px;vertical-align:top;">
+                <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:16px 18px;">
+                  <p style="color:#64748b;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px;">Email</p>
+                  <p style="color:#06b6d4;font-size:15px;font-weight:600;margin:0;">${email}</p>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td width="50%" style="padding:0 8px 16px 0;vertical-align:top;">
+                <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:16px 18px;">
+                  <p style="color:#64748b;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px;">Téléphone</p>
+                  <p style="color:#f1f5f9;font-size:15px;font-weight:600;margin:0;">${phone || 'Non fourni'}</p>
+                </div>
+              </td>
+              <td width="50%" style="padding:0 0 16px 8px;vertical-align:top;">
+                <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:16px 18px;">
+                  <p style="color:#64748b;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px;">Entreprise</p>
+                  <p style="color:#f1f5f9;font-size:15px;font-weight:600;margin:0;">${company || 'Non fourni'}</p>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Subject -->
+          <div style="background:#0f172a;border:1px solid #334155;border-left:3px solid #06b6d4;border-radius:10px;padding:16px 18px;margin-bottom:20px;">
+            <p style="color:#64748b;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px;">Sujet</p>
+            <p style="color:#f1f5f9;font-size:15px;font-weight:600;margin:0;">${subject}</p>
+          </div>
+
+          <!-- Message -->
+          <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:20px;margin-bottom:20px;">
+            <p style="color:#64748b;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px;">Message</p>
+            <p style="color:#cbd5e1;font-size:14px;line-height:1.8;margin:0;white-space:pre-wrap;">${message}</p>
+          </div>
+
+          <!-- IP -->
+          <p style="color:#475569;font-size:12px;margin:0;">IP: ${ip}</p>
+
+        </td></tr>
+
+        <!-- FOOTER -->
+        <tr><td style="background:#0f172a;border-radius:0 0 16px 16px;padding:24px 40px;text-align:center;border-top:1px solid #1e293b;">
+          <p style="color:#334155;font-size:12px;margin:0 0 4px;">SOMATISME — Automatisation Industrielle</p>
+          <p style="color:#334155;font-size:11px;margin:0;">Mohammedia, Maroc • info@somatisme.ma • +212 523 302 829</p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
 
     // Send email via SMTP
     await transporter.sendMail({

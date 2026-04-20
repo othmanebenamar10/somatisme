@@ -29,53 +29,200 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     });
 
-    // Customer email HTML
-    const customerHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #1e3a5f;">Confirmation de Commande</h2>
-        <p>Bonjour <strong>${orderForm.name}</strong>,</p>
-        <p>Merci pour votre commande ! Voici les détails :</p>
-        <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #06b6d4; margin: 20px 0;">
-          ${orderItems.map((item: any, idx: number) => `
-            <p><strong>${idx + 1}. ${item.name}</strong> - ${item.price} MAD</p>
-          `).join('')}
-          <hr style="border: none; border-top: 1px solid #ddd; margin: 15px 0;">
-          <p style="font-size: 18px;"><strong>Total :</strong> <span style="color: #06b6d4;">${cartTotal} MAD</span></p>
-        </div>
-        <p>Nous confirmerons votre commande dans les 24 heures.<br>Paiement a la livraison.</p>
-        <p style="color: #999; font-size: 12px;">Cet email a ete envoye depuis le systeme de commande SOMATISME.</p>
-      </div>
-    `;
+    const date = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const orderNumber = `CMD-${Date.now().toString().slice(-6)}`;
 
-    // Admin email HTML
-    const adminHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #1e3a5f;">NOUVELLE COMMANDE</h2>
-        <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0;">
-          <h3>Informations Client</h3>
-          <p><strong>Nom :</strong> ${orderForm.name}</p>
-          <p><strong>Email :</strong> ${orderForm.email}</p>
-          <p><strong>Telephone :</strong> ${orderForm.phone}</p>
-          ${orderForm.company ? `<p><strong>Entreprise :</strong> ${orderForm.company}</p>` : ''}
-          ${orderForm.address ? `<p><strong>Adresse :</strong> ${orderForm.address}</p>` : ''}
-        </div>
-        <div style="background: #e7f3ff; padding: 15px; border-radius: 5px; margin: 20px 0;">
-          <h3>Produits Commandes</h3>
-          ${orderItems.map((item: any, idx: number) => `
-            <p><strong>${idx + 1}. ${item.name}</strong> - ${item.price} MAD</p>
-          `).join('')}
-          <hr style="border: none; border-top: 1px solid #ddd; margin: 15px 0;">
-          <p style="font-size: 18px;"><strong>Total :</strong> <span style="color: #06b6d4;">${cartTotal} MAD</span></p>
-        </div>
-        ${orderForm.message ? `
-          <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0;">
-            <h3>Message du client :</h3>
-            <p>${orderForm.message}</p>
+    // Customer email HTML - bright/light professional style
+    const customerHtml = `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+        <!-- HEADER -->
+        <tr><td style="background:linear-gradient(135deg,#1e3a5f 0%,#0e7490 100%);border-radius:16px 16px 0 0;padding:40px;text-align:center;">
+          <div style="background:rgba(6,182,212,0.2);border:1px solid rgba(6,182,212,0.4);border-radius:12px;display:inline-block;padding:8px 20px;margin-bottom:20px;">
+            <span style="color:#67e8f9;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;">SOMATISME</span>
           </div>
-        ` : ''}
-        <p>Veuillez contacter le client dans les 24 heures pour confirmer la commande.</p>
-      </div>
-    `;
+          <div style="width:64px;height:64px;background:rgba(6,182,212,0.2);border:2px solid #06b6d4;border-radius:50%;margin:0 auto 16px;line-height:64px;text-align:center;">
+            <span style="font-size:28px;">✅</span>
+          </div>
+          <h1 style="color:#ffffff;font-size:24px;font-weight:700;margin:0 0 8px;">Commande Confirmée !</h1>
+          <p style="color:#94a3b8;font-size:14px;margin:0;">Réf: <strong style="color:#06b6d4;">${orderNumber}</strong> &nbsp;•&nbsp; ${date}</p>
+        </td></tr>
+
+        <!-- BODY -->
+        <tr><td style="background:#ffffff;padding:40px;">
+          <p style="color:#1e293b;font-size:16px;margin:0 0 24px;">Bonjour <strong>${orderForm.name}</strong>,</p>
+          <p style="color:#475569;font-size:14px;line-height:1.7;margin:0 0 30px;">Merci pour votre commande ! Nous avons bien reçu votre demande et notre équipe vous contactera dans les <strong>24 heures</strong> pour confirmer la livraison.</p>
+
+          <!-- Order items -->
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:24px;">
+            <div style="background:#1e3a5f;padding:14px 20px;">
+              <p style="color:#ffffff;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin:0;">🛒 Produits Commandés</p>
+            </div>
+            <div style="padding:20px;">
+              ${orderItems.map((item: any, idx: number) => `
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f1f5f9;">
+                <div>
+                  <p style="color:#1e293b;font-size:14px;font-weight:600;margin:0;">${idx + 1}. ${item.name}</p>
+                </div>
+                <div style="background:#ecfeff;border:1px solid #a5f3fc;border-radius:8px;padding:4px 12px;">
+                  <span style="color:#0e7490;font-size:14px;font-weight:700;">${item.price} MAD</span>
+                </div>
+              </div>`).join('')}
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 0 0;">
+                <p style="color:#1e293b;font-size:16px;font-weight:700;margin:0;">TOTAL</p>
+                <p style="color:#0e7490;font-size:22px;font-weight:800;margin:0;">${cartTotal} MAD</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Info boxes -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+            <tr>
+              <td width="33%" style="padding:0 6px 0 0;">
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;text-align:center;">
+                  <p style="font-size:20px;margin:0 0 4px;">🚚</p>
+                  <p style="color:#166534;font-size:11px;font-weight:700;margin:0;">Livraison</p>
+                  <p style="color:#15803d;font-size:10px;margin:4px 0 0;">Confirmée sous 24h</p>
+                </div>
+              </td>
+              <td width="33%" style="padding:0 3px;">
+                <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;text-align:center;">
+                  <p style="font-size:20px;margin:0 0 4px;">💳</p>
+                  <p style="color:#1e40af;font-size:11px;font-weight:700;margin:0;">Paiement</p>
+                  <p style="color:#1d4ed8;font-size:10px;margin:4px 0 0;">À la livraison</p>
+                </div>
+              </td>
+              <td width="33%" style="padding:0 0 0 6px;">
+                <div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:10px;padding:14px;text-align:center;">
+                  <p style="font-size:20px;margin:0 0 4px;">📞</p>
+                  <p style="color:#6b21a8;font-size:11px;font-weight:700;margin:0;">Support</p>
+                  <p style="color:#7e22ce;font-size:10px;margin:4px 0 0;">05 23 30 28 29</p>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+        </td></tr>
+
+        <!-- FOOTER -->
+        <tr><td style="background:#1e293b;border-radius:0 0 16px 16px;padding:24px 40px;text-align:center;">
+          <p style="color:#64748b;font-size:12px;margin:0 0 4px;">SOMATISME — Automatisation Industrielle</p>
+          <p style="color:#475569;font-size:11px;margin:0;">Mohammedia, Maroc • info@somatisme.ma • +212 523 302 829</p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+    // Admin email HTML - dark professional style
+    const adminHtml = `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#0f172a;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f172a;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+        <!-- HEADER -->
+        <tr><td style="background:linear-gradient(135deg,#1e3a5f 0%,#0e7490 100%);border-radius:16px 16px 0 0;padding:40px;text-align:center;">
+          <div style="background:rgba(6,182,212,0.15);border:1px solid rgba(6,182,212,0.3);border-radius:12px;display:inline-block;padding:8px 20px;margin-bottom:16px;">
+            <span style="color:#06b6d4;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;">SOMATISME</span>
+          </div>
+          <h1 style="color:#ffffff;font-size:26px;font-weight:700;margin:0 0 8px;">🔔 Nouvelle Commande</h1>
+          <div style="background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);border-radius:20px;display:inline-block;padding:4px 16px;margin-top:8px;">
+            <span style="color:#fca5a5;font-size:12px;font-weight:700;">ACTION REQUISE</span>
+          </div>
+        </td></tr>
+
+        <!-- BODY -->
+        <tr><td style="background:#1e293b;padding:40px;">
+
+          <!-- Order ref -->
+          <div style="background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.25);border-radius:10px;padding:16px 20px;margin-bottom:28px;text-align:center;">
+            <p style="color:#94a3b8;font-size:12px;margin:0 0 4px;">Référence commande</p>
+            <p style="color:#06b6d4;font-size:20px;font-weight:800;margin:0;letter-spacing:2px;">${orderNumber}</p>
+            <p style="color:#64748b;font-size:12px;margin:4px 0 0;">${date}</p>
+          </div>
+
+          <!-- Client info -->
+          <p style="color:#64748b;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px;">👤 Informations Client</p>
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+            <tr>
+              <td width="50%" style="padding:0 8px 12px 0;">
+                <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:14px 16px;">
+                  <p style="color:#64748b;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 4px;">Nom</p>
+                  <p style="color:#f1f5f9;font-size:14px;font-weight:600;margin:0;">${orderForm.name}</p>
+                </div>
+              </td>
+              <td width="50%" style="padding:0 0 12px 8px;">
+                <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:14px 16px;">
+                  <p style="color:#64748b;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 4px;">Téléphone</p>
+                  <p style="color:#06b6d4;font-size:14px;font-weight:600;margin:0;">${orderForm.phone}</p>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td width="50%" style="padding:0 8px 0 0;">
+                <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:14px 16px;">
+                  <p style="color:#64748b;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 4px;">Email</p>
+                  <p style="color:#06b6d4;font-size:14px;font-weight:600;margin:0;">${orderForm.email}</p>
+                </div>
+              </td>
+              <td width="50%" style="padding:0 0 0 8px;">
+                <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:14px 16px;">
+                  <p style="color:#64748b;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 4px;">Entreprise</p>
+                  <p style="color:#f1f5f9;font-size:14px;font-weight:600;margin:0;">${orderForm.company || '—'}</p>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Products -->
+          <p style="color:#64748b;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px;">🛒 Produits Commandés</p>
+          <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;overflow:hidden;margin-bottom:28px;">
+            ${orderItems.map((item: any, idx: number) => `
+            <div style="padding:14px 18px;border-bottom:1px solid #1e293b;display:flex;justify-content:space-between;">
+              <span style="color:#cbd5e1;font-size:14px;">${idx + 1}. ${item.name}</span>
+              <span style="color:#06b6d4;font-size:14px;font-weight:700;">${item.price} MAD</span>
+            </div>`).join('')}
+            <div style="padding:16px 18px;background:#0c1929;display:flex;justify-content:space-between;align-items:center;">
+              <span style="color:#94a3b8;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Total</span>
+              <span style="color:#06b6d4;font-size:24px;font-weight:800;">${cartTotal} MAD</span>
+            </div>
+          </div>
+
+          ${orderForm.message ? `
+          <!-- Message -->
+          <div style="background:#0f172a;border:1px solid #334155;border-left:3px solid #06b6d4;border-radius:10px;padding:16px 18px;margin-bottom:28px;">
+            <p style="color:#64748b;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 8px;">Message du client</p>
+            <p style="color:#cbd5e1;font-size:14px;line-height:1.7;margin:0;">${orderForm.message}</p>
+          </div>` : ''}
+
+          <!-- CTA -->
+          <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:16px 20px;text-align:center;">
+            <p style="color:#fca5a5;font-size:13px;font-weight:600;margin:0;">⚡ Contacter le client dans les 24 heures pour confirmer la commande</p>
+          </div>
+
+        </td></tr>
+
+        <!-- FOOTER -->
+        <tr><td style="background:#0f172a;border-radius:0 0 16px 16px;padding:24px 40px;text-align:center;border-top:1px solid #1e293b;">
+          <p style="color:#334155;font-size:12px;margin:0 0 4px;">SOMATISME — Automatisation Industrielle</p>
+          <p style="color:#334155;font-size:11px;margin:0;">Mohammedia, Maroc • info@somatisme.ma • +212 523 302 829</p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
 
     // Send customer email via SMTP Gmail
     await transporter.sendMail({
