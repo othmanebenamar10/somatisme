@@ -326,33 +326,6 @@ async function startServer() {
     }
   });
 
-  // API endpoint for PayPal checkout
-  app.post("/api/checkout", async (req, res) => {
-    try {
-      const { items, customerInfo } = req.body;
-
-      if (!items || !Array.isArray(items) || items.length === 0) {
-        return res.status(400).json({ error: 'No items provided' });
-      }
-
-      if (!customerInfo || !customerInfo.email) {
-        return res.status(400).json({ error: 'Customer email required' });
-      }
-
-      // Calculate total amount
-      const total = items.reduce((sum: number, item: any) => sum + item.price, 0);
-
-      // For PayPal integration, you would use PayPal SDK
-      // For now, return approval URL for PayPal
-      const approvalUrl = `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=${process.env.PAYPAL_EMAIL || 'your-paypal-email@example.com'}&item_name=Commande SOMATISME&amount=${total.toFixed(2)}&currency_code=MAD`;
-      
-      res.json({ approvalUrl });
-    } catch (error) {
-      console.error('Checkout error:', error);
-      res.status(500).json({ error: 'Failed to create checkout session' });
-    }
-  });
-
   // Handle client-side routing - serve index.html for all routes
   app.get("*", (_req, res) => {
     res.sendFile(path.join(staticPath, "index.html"));
