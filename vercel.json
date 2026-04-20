@@ -3,7 +3,6 @@
   "outputDirectory": "dist/public",
   "installCommand": "pnpm install",
   "framework": "vite",
-  "nodeVersion": "20.x",
   "env": {
     "NODE_OPTIONS": "--no-deprecation"
   },
