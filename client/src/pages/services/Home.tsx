@@ -58,12 +58,12 @@ export default function Home() {
   };
 
   const partnersData = [
-    { name: 'Procter & Gamble', url: 'www.pg.ma', logoUrl: '/pg.png' },
-    { name: 'Smart Strategies', url: 'www.smartstrategies.ma', logoUrl: '/brands/Smart-Strategies.png' },
-    { name: 'Espace Metal', url: 'www.espacemetal.net', logoUrl: '/brands/Espace-Metal.png' },
-    { name: 'Comaprom', url: '', logoUrl: '/brands/Comaprom.png' },
-    { name: 'Electroprint', url: '', logoUrl: '/brands/Electroprint.png' },
-    { name: 'FATER', url: '', logoUrl: '/brands/FATER.png' },
+    { name: 'Procter & Gamble', url: 'www.pg.ma', logoUrl: 'https://via.placeholder.com/400x400/22c55e/ffffff?text=PG' },
+    { name: 'Smart Strategies', url: 'www.smartstrategies.ma', logoUrl: 'https://via.placeholder.com/400x400/22c55e/ffffff?text=SS' },
+    { name: 'Espace Metal', url: 'www.espacemetal.net', logoUrl: 'https://via.placeholder.com/400x400/22c55e/ffffff?text=EM' },
+    { name: 'Comaprom', url: '', logoUrl: 'https://via.placeholder.com/400x400/22c55e/ffffff?text=C' },
+    { name: 'Electroprint', url: '', logoUrl: 'https://via.placeholder.com/400x400/22c55e/ffffff?text=E' },
+    { name: 'FATER', url: '', logoUrl: 'https://via.placeholder.com/400x400/22c55e/ffffff?text=F' },
   ];
 
   return (
