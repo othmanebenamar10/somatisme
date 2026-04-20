@@ -166,18 +166,29 @@ async function startServer() {
       };
 
       // Send email
-      await transporter.sendMail(mailOptions);
-      auditLogger("EMAIL_SENT", { ip, userAgent, email });
+      try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log("[EMAIL] Contact form email sent successfully:", info.messageId);
+        auditLogger("EMAIL_SENT", { ip, userAgent, email });
 
-      // Update submission status
-      submission.status = "processed";
-      await submission.save();
+        // Update submission status
+        submission.status = "processed";
+        await submission.save();
 
-      res.json({ success: true, message: "Email sent successfully" });
+        res.json({ success: true, message: "Email sent successfully" });
+      } catch (emailError) {
+        console.error("[EMAIL] SMTP Error:", {
+          message: (emailError as Error).message,
+          code: (emailError as any).code,
+          command: (emailError as any).command,
+          responseCode: (emailError as any).responseCode,
+        });
+        throw emailError;
+      }
     } catch (error) {
-      console.error("Error processing contact form:", error);
+      console.error("[ERROR] Error processing contact form:", error);
       auditLogger("ERROR", { ip: req.ip || "unknown", error: (error as Error).message });
-      res.status(500).json({ error: "Failed to process request" });
+      res.status(500).json({ error: "Failed to send email - check server logs" });
     }
   });
 
