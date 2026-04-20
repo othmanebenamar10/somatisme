@@ -1974,7 +1974,9 @@ export default function Products() {
     setCart(cart.filter((_, i) => i !== index));
   };
 
-  const cartTotal = cart.reduce((sum, item) => sum + item.price, 0);
+  const cartSubtotal = cart.reduce((total, item) => total + item.price, 0);
+  const shippingFee = Math.round(cartSubtotal * 0.1); // 10% shipping fee
+  const cartTotal = cartSubtotal + shippingFee;
 
   const generateInvoice = (orderItems: any[], orderInfo: any, total: number) => {
     const doc = new jsPDF();
@@ -2573,15 +2575,15 @@ export default function Products() {
                         <span className="text-muted-foreground">
                           {language === 'ar' ? 'المجموع الجزئي' : 'Sous-total'}:
                         </span>
-                        <span className="font-bold">{cartTotal} MAD</span>
+                        <span className="font-bold">{cartSubtotal} MAD</span>
                       </div>
                       <div className="flex justify-between text-xs">
                         <span className="text-muted-foreground">
-                          {language === 'ar' ? 'الشحن' : 'Livraison'}:
+                          {language === 'ar' ? 'الشحن (10%)' : 'Livraison (10%)'}:
                         </span>
-                        <span className="font-bold text-accent">Gratuit</span>
+                        <span className="font-bold text-cyan-600">{shippingFee} MAD</span>
                       </div>
-                      <div className="border-t border-accent/20 pt-2 flex justify-between">
+                      <div className="border-t border-cyan-300 pt-2 flex justify-between">
                         <span className="font-bold text-sm">
                           {language === 'ar' ? 'المجموع' : 'Total'}:
                         </span>
@@ -2733,13 +2735,13 @@ export default function Products() {
 
                 {/* Summary Card */}
                 <div className="bg-gradient-to-br from-cyan-50 to-cyan-100/50 p-4 rounded-xl border border-cyan-200 space-y-2">
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-xs">
                     <span className="text-muted-foreground">{language === 'ar' ? 'الإجمالي الجزئي' : 'Sous-total'}:</span>
-                    <span className="font-bold">{cartTotal} MAD</span>
+                    <span className="font-bold">{cartSubtotal} MAD</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">{language === 'ar' ? 'الشحن' : 'Livraison'}:</span>
-                    <span className="font-bold text-cyan-600">Gratuit</span>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">{language === 'ar' ? 'الشحن (10%)' : 'Livraison (10%)'}:</span>
+                    <span className="font-bold text-cyan-600">{shippingFee} MAD</span>
                   </div>
                   <div className="border-t-2 border-cyan-300 pt-2 flex justify-between">
                     <span className="font-bold text-primary">{language === 'ar' ? 'المجموع' : 'Total'}:</span>
