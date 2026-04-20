@@ -2457,7 +2457,7 @@ export default function Products() {
         </div>
       </motion.section>
 
-      {/* Cart Sidebar - PREMIUM DESIGN */}
+      {/* Cart Modal Popup - PREMIUM DESIGN */}
       {showCart && (
         <>
           {/* Backdrop */}
@@ -2466,16 +2466,16 @@ export default function Products() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowCart(false)}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-40"
           />
 
-          {/* Cart Panel */}
+          {/* Cart Modal */}
           <motion.div
-            initial={{ opacity: 0, x: 400 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 400 }}
-            transition={{ duration: 0.3 }}
-            className="fixed right-0 top-0 h-full w-96 bg-gradient-to-b from-card to-card/80 border-l border-accent/20 shadow-2xl z-50 flex flex-col overflow-hidden"
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ duration: 0.3, type: 'spring', stiffness: 300, damping: 30 }}
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl max-h-[90vh] bg-gradient-to-br from-card via-card to-card/90 border border-accent/20 rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden"
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-accent to-orange-500 text-white p-6 flex justify-between items-center">
@@ -2497,99 +2497,118 @@ export default function Products() {
               </motion.button>
             </div>
 
-            {/* Items Container */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {cart.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center">
-                  <ShoppingCart size={48} className="text-muted-foreground/30 mb-4" />
-                  <p className="text-muted-foreground font-medium">
-                    {language === 'ar' ? 'السلة فارغة' : 'Panier vide'}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {language === 'ar' ? 'أضف منتجات لبدء التسوق' : 'Ajoutez des produits pour commencer'}
+            {/* Content - 2 Column Layout */}
+            <div className="flex-1 overflow-hidden flex flex-col lg:flex-row gap-6 p-6">
+              {/* Left: Products List */}
+              <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+                {cart.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                    <ShoppingCart size={56} className="text-muted-foreground/20 mb-4" />
+                    <p className="text-muted-foreground font-bold text-lg">
+                      {language === 'ar' ? 'السلة فارغة' : 'Panier vide'}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {language === 'ar' ? 'أضف منتجات لبدء التسوق' : 'Ajoutez des produits pour commencer'}
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">
+                      {language === 'ar' ? 'المنتجات' : 'Produits'}
+                    </p>
+                    {cart.map((item, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        className="bg-background/50 rounded-xl p-3 border border-border/50 hover:border-accent/30 transition-all group"
+                      >
+                        <div className="flex gap-3">
+                          <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0">
+                            <img
+                              src={item.image}
+                              alt={language === 'ar' ? item.nameAr : item.name}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-bold text-xs truncate">
+                              {language === 'ar' ? item.nameAr : item.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {item.brand}
+                            </p>
+                            <p className="text-accent font-bold text-xs mt-1">
+                              {item.price} MAD
+                            </p>
+                          </div>
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => removeFromCart(index)}
+                            className="p-1.5 hover:bg-destructive/10 text-destructive rounded-lg transition-colors flex-shrink-0"
+                          >
+                            <X size={16} />
+                          </motion.button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </>
+                )}
+              </div>
+
+              {/* Right: Summary & Checkout */}
+              {cart.length > 0 && (
+                <div className="lg:w-64 flex flex-col gap-4">
+                  {/* Summary Card */}
+                  <div className="bg-gradient-to-br from-accent/10 to-orange-500/10 rounded-2xl p-4 border border-accent/20 space-y-3">
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                      {language === 'ar' ? 'الملخص' : 'Résumé'}
+                    </p>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">
+                          {language === 'ar' ? 'المجموع الجزئي' : 'Sous-total'}:
+                        </span>
+                        <span className="font-bold">{cartTotal} MAD</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">
+                          {language === 'ar' ? 'الشحن' : 'Livraison'}:
+                        </span>
+                        <span className="font-bold text-accent">Gratuit</span>
+                      </div>
+                      <div className="border-t border-accent/20 pt-2 flex justify-between">
+                        <span className="font-bold text-sm">
+                          {language === 'ar' ? 'المجموع' : 'Total'}:
+                        </span>
+                        <span className="text-lg font-black bg-gradient-to-r from-accent to-orange-500 bg-clip-text text-transparent">
+                          {cartTotal} MAD
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Checkout Button */}
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setShowOrderDialog(true)}
+                    className="w-full px-4 py-3 bg-gradient-to-r from-accent to-orange-500 text-white font-bold rounded-xl shadow-lg shadow-accent/30 hover:shadow-xl hover:shadow-accent/50 transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-sm"
+                  >
+                    {language === 'ar' ? 'إتمام الطلب' : 'Commander'}
+                    <ArrowRight size={16} />
+                  </motion.button>
+
+                  {/* Info */}
+                  <p className="text-xs text-muted-foreground text-center bg-muted/30 p-2 rounded-lg">
+                    {language === 'ar' ? 'الدفع عند الاستلام' : 'Paiement à la livraison'}
                   </p>
                 </div>
-              ) : (
-                cart.map((item, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="bg-background/50 rounded-xl p-4 border border-border/50 hover:border-accent/30 transition-all group"
-                  >
-                    <div className="flex gap-3">
-                      <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-                        <img
-                          src={item.image}
-                          alt={language === 'ar' ? item.nameAr : item.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-sm truncate">
-                          {language === 'ar' ? item.nameAr : item.name}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {item.brand}
-                        </p>
-                        <p className="text-accent font-bold text-sm mt-2">
-                          {item.price} MAD
-                        </p>
-                      </div>
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => removeFromCart(index)}
-                        className="p-2 hover:bg-destructive/10 text-destructive rounded-lg transition-colors flex-shrink-0"
-                      >
-                        <X size={18} />
-                      </motion.button>
-                    </div>
-                  </motion.div>
-                ))
               )}
             </div>
-
-            {/* Footer */}
-            {cart.length > 0 && (
-              <div className="border-t border-border/50 bg-background/50 p-6 space-y-4">
-                {/* Summary */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      {language === 'ar' ? 'المجموع الجزئي' : 'Sous-total'}:
-                    </span>
-                    <span className="font-bold">{cartTotal} MAD</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      {language === 'ar' ? 'الشحن' : 'Livraison'}:
-                    </span>
-                    <span className="font-bold text-accent">Gratuit</span>
-                  </div>
-                  <div className="border-t border-border pt-2 flex justify-between">
-                    <span className="font-bold">
-                      {language === 'ar' ? 'المجموع' : 'Total'}:
-                    </span>
-                    <span className="text-lg font-black bg-gradient-to-r from-accent to-orange-500 bg-clip-text text-transparent">
-                      {cartTotal} MAD
-                    </span>
-                  </div>
-                </div>
-
-                {/* Checkout Button */}
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setShowOrderDialog(true)}
-                  className="w-full px-6 py-4 bg-gradient-to-r from-accent to-orange-500 text-white font-bold rounded-xl shadow-lg shadow-accent/30 hover:shadow-xl hover:shadow-accent/50 transition-all flex items-center justify-center gap-2 uppercase tracking-wide"
-                >
-                  {language === 'ar' ? 'إتمام الطلب' : 'Procéder au paiement'}
-                  <ArrowRight size={18} />
-                </motion.button>
-              </div>
-            )}
           </motion.div>
         </>
       )}
