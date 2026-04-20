@@ -115,20 +115,20 @@ export default function About() {
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
             >
-              <div className="inline-flex p-4 rounded-xl bg-accent/10 mb-6 text-accent">
+              <div className="inline-flex p-4 rounded-xl bg-cyan-500/10 mb-6 text-cyan-500">
                 <TrendingUp size={32} />
               </div>
               <h2 className="text-heading text-white mb-6">{t('about.growth.title')}</h2>
-              <p className="text-body-large text-gray-300 mb-8">
+              <p className="text-body-large text-gray-100 mb-8">
                 {t('about.growth.desc')}
               </p>
 
-              <div className="card-glass p-6 border-l-4 border-accent">
+              <div className="card-glass p-6 border-l-4 border-cyan-500">
                 <div className="flex items-center gap-4 mb-3 text-white font-bold">
-                  <ShieldCheck className="text-accent" />
+                  <ShieldCheck className="text-cyan-500" />
                   <span>{t('about.finance.title')}</span>
                 </div>
-                <p className="text-gray-300 italic">
+                <p className="text-white italic leading-relaxed">
                   "{t('about.finance.desc')}"
                 </p>
               </div>
