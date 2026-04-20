@@ -2195,7 +2195,7 @@ export default function Products() {
                   placeholder={language === 'ar' ? 'بحث عن منتج...' : 'Rechercher un produit...'}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 bg-white/90 border-white/30 text-gray-900 placeholder-gray-500 focus:bg-white"
+                  className="pl-12 bg-white/20 border-white/30 text-white placeholder-blue-200 focus:bg-white/30"
                 />
               </div>
               <div className="flex gap-2 flex-wrap">
