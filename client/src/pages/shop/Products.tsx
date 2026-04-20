@@ -1957,65 +1957,132 @@ export default function Products() {
     const doc = new jsPDF();
     const invoiceNumber = `INV-${Date.now()}`;
     const date = new Date().toLocaleDateString('fr-FR');
-
-    // Header
-    doc.setFontSize(20);
-    doc.setTextColor(0, 102, 204);
-    doc.text('SOMATISME', 20, 20);
+    
+    // Header with gradient background effect
+    doc.setFillColor(0, 102, 204);
+    doc.rect(0, 0, 210, 40, 'F');
+    
+    doc.setFontSize(24);
+    doc.setTextColor(255, 255, 255);
+    doc.text('SOMATISME', 105, 20, { align: 'center' });
     
     doc.setFontSize(12);
+    doc.setTextColor(255, 255, 255);
+    doc.text('Équipements Industriels', 105, 30, { align: 'center' });
+    
+    // Invoice title box
+    doc.setFillColor(240, 240, 240);
+    doc.rect(15, 50, 180, 25, 'F');
+    
+    doc.setFontSize(16);
+    doc.setTextColor(0, 102, 204);
+    doc.text('FACTURE', 105, 60, { align: 'center' });
+    
+    doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
-    doc.text('Facture / Invoice', 20, 30);
+    doc.text(`Numéro: ${invoiceNumber}`, 105, 68, { align: 'center' });
+    doc.text(`Date: ${date}`, 105, 73, { align: 'center' });
     
-    // Invoice details
-    doc.setFontSize(10);
-    doc.text(`Numéro: ${invoiceNumber}`, 20, 45);
-    doc.text(`Date: ${date}`, 20, 52);
-    doc.text('Statut: À PAYER', 20, 59);
-    
-    // Customer info
-    doc.setFontSize(12);
-    doc.setTextColor(0, 102, 204);
-    doc.text('Informations Client:', 20, 75);
-    
+    // Status badge
+    doc.setFillColor(255, 193, 7);
+    doc.roundedRect(140, 85, 50, 12, 3, 3, 'F');
     doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
-    doc.text(`Nom: ${orderInfo.name}`, 20, 85);
-    doc.text(`Email: ${orderInfo.email}`, 20, 92);
-    doc.text(`Téléphone: ${orderInfo.phone}`, 20, 99);
-    if (orderInfo.company) doc.text(`Entreprise: ${orderInfo.company}`, 20, 106);
-    if (orderInfo.address) doc.text(`Adresse: ${orderInfo.address}`, 20, 113);
+    doc.text('À PAYER', 165, 92, { align: 'center' });
     
-    // Products table
+    // Customer info box
+    doc.setFillColor(248, 249, 250);
+    doc.rect(15, 105, 85, 50, 'F');
+    
     doc.setFontSize(12);
     doc.setTextColor(0, 102, 204);
-    doc.text('Produits Commandés:', 20, 130);
+    doc.text('Informations Client:', 20, 115);
     
-    let y = 140;
+    doc.setFontSize(9);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Nom: ${orderInfo.name}`, 20, 123);
+    doc.text(`Email: ${orderInfo.email}`, 20, 130);
+    doc.text(`Téléphone: ${orderInfo.phone}`, 20, 137);
+    if (orderInfo.company) doc.text(`Entreprise: ${orderInfo.company}`, 20, 144);
+    if (orderInfo.address) doc.text(`Adresse: ${orderInfo.address}`, 20, 151);
+    
+    // Company info box
+    doc.setFillColor(248, 249, 250);
+    doc.rect(110, 105, 85, 50, 'F');
+    
+    doc.setFontSize(12);
+    doc.setTextColor(0, 102, 204);
+    doc.text('Informations Société:', 115, 115);
+    
+    doc.setFontSize(9);
+    doc.setTextColor(0, 0, 0);
+    doc.text('SOMATISME', 115, 123);
+    doc.text('Équipements Industriels', 115, 130);
+    doc.text('Maroc', 115, 137);
+    doc.text('Tél: +212 679 825 646', 115, 144);
+    doc.text('Email: contact@somatisme.ma', 115, 151);
+    
+    // Products table header
+    doc.setFillColor(0, 102, 204);
+    doc.rect(15, 165, 180, 10, 'F');
+    
     doc.setFontSize(10);
+    doc.setTextColor(255, 255, 255);
+    doc.text('#', 20, 172);
+    doc.text('Produit', 35, 172);
+    doc.text('Prix', 170, 172);
+    
+    // Products table rows
+    let y = 180;
+    doc.setFontSize(9);
     doc.setTextColor(0, 0, 0);
     
     orderItems.forEach((item, index) => {
-      doc.text(`${index + 1}. ${item.name}`, 20, y);
-      doc.text(`${item.price} MAD`, 150, y);
+      if (index % 2 === 0) {
+        doc.setFillColor(248, 249, 250);
+        doc.rect(15, y - 5, 180, 10, 'F');
+      }
+      
+      doc.text(`${index + 1}`, 20, y);
+      doc.text(item.name, 35, y);
+      doc.text(`${item.price} MAD`, 170, y);
       y += 10;
     });
     
-    // Total
+    // Total section
     y += 10;
+    doc.setFillColor(0, 102, 204);
+    doc.rect(110, y, 85, 25, 'F');
+    
     doc.setFontSize(12);
-    doc.setTextColor(0, 102, 204);
-    doc.text('Total:', 20, y);
+    doc.setTextColor(255, 255, 255);
+    doc.text('Total:', 120, y + 10);
     
-    doc.setFontSize(14);
-    doc.setTextColor(0, 0, 0);
-    doc.text(`${total} MAD`, 50, y);
+    doc.setFontSize(18);
+    doc.setTextColor(255, 255, 255);
+    doc.text(`${total} MAD`, 152, y + 10);
     
-    // Footer
+    doc.setFontSize(8);
+    doc.setTextColor(255, 255, 255);
+    doc.text('TTC', 165, y + 20);
+    
+    // Terms and conditions
+    y += 35;
     doc.setFontSize(8);
     doc.setTextColor(128, 128, 128);
-    doc.text('Somatisme - Équipements Industriels', 20, 280);
-    doc.text('Contact: +212 679 825 646', 20, 285);
+    doc.text('Conditions de vente:', 15, y);
+    doc.text('- Paiement à la livraison ou sur place', 15, y + 5);
+    doc.text('- Délai de livraison selon disponibilité', 15, y + 10);
+    doc.text('- Garantie selon type de produit', 15, y + 15);
+    
+    // Footer
+    doc.setFillColor(0, 102, 204);
+    doc.rect(0, 280, 210, 17, 'F');
+    
+    doc.setFontSize(9);
+    doc.setTextColor(255, 255, 255);
+    doc.text('SOMATISME - Équipements Industriels', 105, 288, { align: 'center' });
+    doc.text('Contact: +212 679 825 646 | Email: contact@somatisme.ma', 105, 295, { align: 'center' });
     
     // Save the PDF
     doc.save(`Facture_${invoiceNumber}.pdf`);
