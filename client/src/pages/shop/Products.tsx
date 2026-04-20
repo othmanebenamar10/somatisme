@@ -1957,132 +1957,157 @@ export default function Products() {
     const doc = new jsPDF();
     const invoiceNumber = `INV-${Date.now()}`;
     const date = new Date().toLocaleDateString('fr-FR');
+    const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR');
     
-    // Header with gradient background effect
-    doc.setFillColor(0, 102, 204);
-    doc.rect(0, 0, 210, 40, 'F');
+    // Header - Modern gradient-like effect
+    doc.setFillColor(30, 58, 138);
+    doc.rect(0, 0, 210, 50, 'F');
     
-    doc.setFontSize(24);
+    // Company name
+    doc.setFontSize(32);
     doc.setTextColor(255, 255, 255);
-    doc.text('SOMATISME', 105, 20, { align: 'center' });
+    doc.setFont('helvetica', 'bold');
+    doc.text('SOMATISME', 20, 25);
     
     doc.setFontSize(12);
+    doc.setTextColor(200, 200, 200);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Équipements Industriels', 20, 35);
+    doc.text('Solutions d\'automatisation & régulation', 20, 42);
+    
+    // Invoice info on the right
+    doc.setFontSize(10);
     doc.setTextColor(255, 255, 255);
-    doc.text('Équipements Industriels', 105, 30, { align: 'center' });
+    doc.text('FACTURE', 170, 20, { align: 'right' });
+    doc.setFontSize(8);
+    doc.text(`#${invoiceNumber}`, 170, 27, { align: 'right' });
+    doc.text(`Date: ${date}`, 170, 34, { align: 'right' });
+    doc.text(`Échéance: ${dueDate}`, 170, 41, { align: 'right' });
     
-    // Invoice title box
-    doc.setFillColor(240, 240, 240);
-    doc.rect(15, 50, 180, 25, 'F');
+    // Status badge - Modern design
+    doc.setFillColor(239, 68, 68);
+    doc.roundedRect(130, 55, 65, 14, 4, 4, 'F');
+    doc.setFontSize(9);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.text('STATUT: À PAYER', 162.5, 63, { align: 'center' });
     
-    doc.setFontSize(16);
-    doc.setTextColor(0, 102, 204);
-    doc.text('FACTURE', 105, 60, { align: 'center' });
-    
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    doc.text(`Numéro: ${invoiceNumber}`, 105, 68, { align: 'center' });
-    doc.text(`Date: ${date}`, 105, 73, { align: 'center' });
-    
-    // Status badge
-    doc.setFillColor(255, 193, 7);
-    doc.roundedRect(140, 85, 50, 12, 3, 3, 'F');
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    doc.text('À PAYER', 165, 92, { align: 'center' });
-    
-    // Customer info box
-    doc.setFillColor(248, 249, 250);
-    doc.rect(15, 105, 85, 50, 'F');
-    
-    doc.setFontSize(12);
-    doc.setTextColor(0, 102, 204);
-    doc.text('Informations Client:', 20, 115);
+    // Bill to section
+    doc.setFontSize(11);
+    doc.setTextColor(30, 58, 138);
+    doc.setFont('helvetica', 'bold');
+    doc.text('FACTURÉ À', 15, 80);
     
     doc.setFontSize(9);
-    doc.setTextColor(0, 0, 0);
-    doc.text(`Nom: ${orderInfo.name}`, 20, 123);
-    doc.text(`Email: ${orderInfo.email}`, 20, 130);
-    doc.text(`Téléphone: ${orderInfo.phone}`, 20, 137);
-    if (orderInfo.company) doc.text(`Entreprise: ${orderInfo.company}`, 20, 144);
-    if (orderInfo.address) doc.text(`Adresse: ${orderInfo.address}`, 20, 151);
+    doc.setTextColor(60, 60, 60);
+    doc.setFont('helvetica', 'normal');
+    doc.text(orderInfo.name, 15, 88);
+    if (orderInfo.company) {
+      doc.text(orderInfo.company, 15, 95);
+      doc.text(orderInfo.address || '', 15, 102);
+    } else {
+      doc.text(orderInfo.address || '', 15, 95);
+    }
+    doc.text(orderInfo.email, 15, orderInfo.company ? 109 : 102);
+    doc.text(orderInfo.phone, 15, orderInfo.company ? 116 : 109);
     
-    // Company info box
-    doc.setFillColor(248, 249, 250);
-    doc.rect(110, 105, 85, 50, 'F');
-    
-    doc.setFontSize(12);
-    doc.setTextColor(0, 102, 204);
-    doc.text('Informations Société:', 115, 115);
+    // Ship to section
+    doc.setFontSize(11);
+    doc.setTextColor(30, 58, 138);
+    doc.setFont('helvetica', 'bold');
+    doc.text('LIVRÉ À', 120, 80);
     
     doc.setFontSize(9);
-    doc.setTextColor(0, 0, 0);
-    doc.text('SOMATISME', 115, 123);
-    doc.text('Équipements Industriels', 115, 130);
-    doc.text('Maroc', 115, 137);
-    doc.text('Tél: +212 679 825 646', 115, 144);
-    doc.text('Email: contact@somatisme.ma', 115, 151);
+    doc.setTextColor(60, 60, 60);
+    doc.setFont('helvetica', 'normal');
+    doc.text('SOMATISME', 120, 88);
+    doc.text('Équipements Industriels', 120, 95);
+    doc.text('Maroc', 120, 102);
+    doc.text('+212 679 825 646', 120, 109);
+    doc.text('contact@somatisme.ma', 120, 116);
     
     // Products table header
-    doc.setFillColor(0, 102, 204);
-    doc.rect(15, 165, 180, 10, 'F');
+    doc.setFillColor(30, 58, 138);
+    doc.rect(15, 130, 180, 12, 'F');
     
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setTextColor(255, 255, 255);
-    doc.text('#', 20, 172);
-    doc.text('Produit', 35, 172);
-    doc.text('Prix', 170, 172);
+    doc.setFont('helvetica', 'bold');
+    doc.text('#', 20, 137);
+    doc.text('DESCRIPTION', 35, 137);
+    doc.text('QUANTITÉ', 130, 137);
+    doc.text('PRIX UNITAIRE', 155, 137);
+    doc.text('TOTAL', 185, 137);
     
     // Products table rows
-    let y = 180;
+    let y = 145;
     doc.setFontSize(9);
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor(60, 60, 60);
+    doc.setFont('helvetica', 'normal');
     
     orderItems.forEach((item, index) => {
       if (index % 2 === 0) {
-        doc.setFillColor(248, 249, 250);
-        doc.rect(15, y - 5, 180, 10, 'F');
+        doc.setFillColor(248, 250, 252);
+        doc.rect(15, y - 5, 180, 12, 'F');
       }
       
       doc.text(`${index + 1}`, 20, y);
-      doc.text(item.name, 35, y);
-      doc.text(`${item.price} MAD`, 170, y);
-      y += 10;
+      doc.text(item.name.substring(0, 50) + (item.name.length > 50 ? '...' : ''), 35, y);
+      doc.text('1', 130, y);
+      doc.text(`${item.price} MAD`, 155, y);
+      doc.text(`${item.price} MAD`, 185, y);
+      y += 12;
     });
     
-    // Total section
-    y += 10;
-    doc.setFillColor(0, 102, 204);
-    doc.rect(110, y, 85, 25, 'F');
+    // Summary section
+    y += 5;
+    doc.setFillColor(248, 250, 252);
+    doc.rect(120, y, 75, 50, 'F');
     
-    doc.setFontSize(12);
-    doc.setTextColor(255, 255, 255);
-    doc.text('Total:', 120, y + 10);
+    doc.setFontSize(9);
+    doc.setTextColor(60, 60, 60);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Sous-total:', 125, y + 10);
+    doc.text(`${total} MAD`, 185, y + 10, { align: 'right' });
     
-    doc.setFontSize(18);
-    doc.setTextColor(255, 255, 255);
-    doc.text(`${total} MAD`, 152, y + 10);
+    doc.text('TVA (0%):', 125, y + 20);
+    doc.text('0.00 MAD', 185, y + 20, { align: 'right' });
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 58, 138);
+    doc.text('TOTAL:', 125, y + 35);
+    doc.setFontSize(14);
+    doc.text(`${total} MAD`, 185, y + 35, { align: 'right' });
+    
+    // Notes and terms
+    y += 60;
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 58, 138);
+    doc.text('NOTES & CONDITIONS', 15, y);
     
     doc.setFontSize(8);
-    doc.setTextColor(255, 255, 255);
-    doc.text('TTC', 165, y + 20);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(80, 80, 80);
+    doc.text('Merci pour votre commande. Le paiement est dû à la livraison.', 15, y + 8);
+    doc.text('Délai de livraison selon disponibilité du stock.', 15, y + 15);
+    doc.text('Garantie selon le type de produit.', 15, y + 22);
+    doc.text('Pour toute question, contactez-nous au +212 679 825 646', 15, y + 29);
     
-    // Terms and conditions
-    y += 35;
-    doc.setFontSize(8);
-    doc.setTextColor(128, 128, 128);
-    doc.text('Conditions de vente:', 15, y);
-    doc.text('- Paiement à la livraison ou sur place', 15, y + 5);
-    doc.text('- Délai de livraison selon disponibilité', 15, y + 10);
-    doc.text('- Garantie selon type de produit', 15, y + 15);
-    
-    // Footer
-    doc.setFillColor(0, 102, 204);
-    doc.rect(0, 280, 210, 17, 'F');
+    // Footer - Modern design
+    doc.setFillColor(30, 58, 138);
+    doc.rect(0, 275, 210, 22, 'F');
     
     doc.setFontSize(9);
     doc.setTextColor(255, 255, 255);
-    doc.text('SOMATISME - Équipements Industriels', 105, 288, { align: 'center' });
-    doc.text('Contact: +212 679 825 646 | Email: contact@somatisme.ma', 105, 295, { align: 'center' });
+    doc.setFont('helvetica', 'bold');
+    doc.text('SOMATISME', 105, 283, { align: 'center' });
+    
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Équipements Industriels | +212 679 825 646 | contact@somatisme.ma', 105, 290, { align: 'center' });
+    doc.text('www.somatisme.ma', 105, 295, { align: 'center' });
     
     // Save the PDF
     doc.save(`Facture_${invoiceNumber}.pdf`);
@@ -2131,60 +2156,77 @@ export default function Products() {
       <Header />
       
       {/* Hero Section */}
-      <section className="py-16 bg-gradient-to-b from-muted/50 to-background">
-        <div className="container">
+      <section className="relative py-20 bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-blue-800/80"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yIDItNCAyLTRzLTItMi00IDJjMCAyLTItNC00IDJzMiA0IDQgMnoiLz48cGF0aCBkPSJNMCAwaDYwdjYwSDB6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
+        <div className="container relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg">
               {language === 'ar' ? 'معداتنا الصناعية' : 'Nos Équipements Industriels'}
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
               {language === 'ar' 
                 ? 'Découvrez notre catalogue de matériel industriel de haute qualité pour l\'automatisme, la régulation et l\'électricité'
                 : 'Découvrez notre catalogue de matériel industriel de haute qualité pour l\'automatisme, la régulation et l\'électricité'}
             </p>
+            <div className="mt-8 flex justify-center gap-4">
+              <div className="bg-white/10 backdrop-blur-sm px-6 py-3 rounded-lg border border-white/20">
+                <p className="text-2xl font-bold text-white">119+</p>
+                <p className="text-sm text-blue-200">{language === 'ar' ? 'منتجات' : 'Produits'}</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm px-6 py-3 rounded-lg border border-white/20">
+                <p className="text-2xl font-bold text-white">24/7</p>
+                <p className="text-sm text-blue-200">{language === 'ar' ? 'دعم' : 'Support'}</p>
+              </div>
+            </div>
           </motion.div>
 
           {/* Search and Filters */}
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-8">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder={language === 'ar' ? 'بحث عن منتج...' : 'Rechercher un produit...'}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+          <div className="relative z-10 -mt-4 bg-white/10 backdrop-blur-md rounded-2xl p-6 shadow-xl border border-white/20">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-200 h-5 w-5" />
+                <Input
+                  placeholder={language === 'ar' ? 'بحث عن منتج...' : 'Rechercher un produit...'}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-12 bg-white/20 border-white/30 text-white placeholder-blue-200 focus:bg-white/30"
+                />
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {categories.map((category) => (
+                  <Button
+                    key={category.id}
+                    variant={selectedCategory === category.id ? 'default' : 'outline'}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={selectedCategory === category.id 
+                      ? 'bg-white text-blue-900 hover:bg-white/90' 
+                      : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
+                    }
+                  >
+                    {language === 'ar' ? category.nameAr : category.name}
+                  </Button>
+                ))}
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => setShowCart(!showCart)}
+                className="relative bg-white/20 text-white border-white/30 hover:bg-white/30"
+              >
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                {language === 'ar' ? 'السلة' : 'Panier'}
+                {cart.length > 0 && (
+                  <Badge className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 bg-red-500 text-white">
+                    {cart.length}
+                  </Badge>
+                )}
+              </Button>
             </div>
-            <div className="flex gap-2 flex-wrap">
-              {categories.map((category) => (
-                <Button
-                  key={category.id}
-                  variant={selectedCategory === category.id ? 'default' : 'outline'}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={language === 'ar' ? 'font-arabic' : ''}
-                >
-                  {language === 'ar' ? category.nameAr : category.name}
-                </Button>
-              ))}
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => setShowCart(!showCart)}
-              className="relative"
-            >
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              {language === 'ar' ? 'السلة' : 'Panier'}
-              {cart.length > 0 && (
-                <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0">
-                  {cart.length}
-                </Badge>
-              )}
-            </Button>
           </div>
 
           {/* Cart Sidebar */}
@@ -2193,35 +2235,38 @@ export default function Products() {
               initial={{ opacity: 0, x: 300 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 300 }}
-              className="fixed right-0 top-0 h-full w-80 bg-background border-l shadow-lg z-50 p-4 overflow-y-auto"
+              className="fixed right-0 top-0 h-full w-96 bg-white border-l shadow-2xl z-50 p-6 overflow-y-auto"
             >
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold text-gray-900">
                   {language === 'ar' ? 'سلة التسوق' : 'Panier'}
                 </h3>
-                <Button variant="ghost" size="sm" onClick={() => setShowCart(false)}>
+                <Button variant="ghost" size="sm" onClick={() => setShowCart(false)} className="text-gray-600 hover:text-gray-900">
                   ✕
                 </Button>
               </div>
               {cart.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">
-                  {language === 'ar' ? 'السلة فارغة' : 'Panier vide'}
-                </p>
+                <div className="text-center py-12">
+                  <ShoppingCart className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+                  <p className="text-gray-500">
+                    {language === 'ar' ? 'السلة فارغة' : 'Panier vide'}
+                  </p>
+                </div>
               ) : (
                 <>
                   {cart.map((item, index) => (
-                    <div key={index} className="flex items-center gap-2 mb-4 pb-4 border-b">
-                      <img src={item.image} alt={language === 'ar' ? item.nameAr : item.name} className="w-16 h-16 object-cover rounded" />
+                    <div key={index} className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-200">
+                      <img src={item.image} alt={language === 'ar' ? item.nameAr : item.name} className="w-20 h-20 object-cover rounded-lg shadow-md" />
                       <div className="flex-1">
-                        <p className="font-medium text-sm">{language === 'ar' ? item.nameAr : item.name}</p>
-                        <p className="text-sm text-muted-foreground">{item.price} MAD</p>
+                        <p className="font-semibold text-sm text-gray-900 mb-1">{language === 'ar' ? item.nameAr : item.name}</p>
+                        <p className="text-sm text-blue-600 font-medium">{item.price} MAD</p>
                       </div>
-                      <Button variant="ghost" size="sm" onClick={() => removeFromCart(index)}>
-                        ✕
-                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => removeFromCart(index)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                    ✕
+                  </Button>
                     </div>
                   ))}
-                  <div className="border-t pt-4 mt-4">
+                  <div className="border-t-2 border-gray-200 pt-6 mt-6">
                     <div className="flex justify-between font-bold mb-4">
                       <span>{language === 'ar' ? 'المجموع' : 'Total'}:</span>
                       <span>{cartTotal} MAD</span>
@@ -2236,53 +2281,55 @@ export default function Products() {
           )}
 
           {/* Products Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredProducts.map((product, index) => (
               <motion.div
                 key={product.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-card rounded-lg overflow-hidden border hover:shadow-lg transition-shadow"
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200"
               >
                 {product.featured && (
-                  <Badge className="absolute top-2 right-2 z-10 bg-accent">
+                  <Badge className="absolute top-3 right-3 z-10 bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0 shadow-md">
                     {language === 'ar' ? 'مميز' : 'En vedette'}
                   </Badge>
                 )}
-                <div className="aspect-square overflow-hidden">
+                <div className="relative aspect-square overflow-hidden bg-gray-100">
                   <img
                     src={product.image}
                     alt={language === 'ar' ? product.nameAr : product.name}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
-                <div className="p-4">
-                  <Badge variant="secondary" className="mb-2 text-xs">
+                <div className="p-5">
+                  <Badge variant="secondary" className="mb-3 text-xs bg-blue-100 text-blue-700 hover:bg-blue-200">
                     {language === 'ar' ? product.categoryAr : product.category}
                   </Badge>
-                  <h3 className="font-semibold mb-1 line-clamp-2">
+                  <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                     {language === 'ar' ? product.nameAr : product.name}
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-2">{product.brand}</p>
-                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                  <p className="text-sm text-gray-600 mb-3">{product.brand}</p>
+                  <p className="text-sm text-gray-500 mb-4 line-clamp-2">
                     {language === 'ar' ? product.descriptionAr : product.description}
                   </p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-lg font-bold text-accent">{product.price} MAD</p>
-                    <Button
-                      size="sm"
-                      onClick={() => addToCart(product)}
-                      disabled={product.stock === 0}
-                    >
-                      <ShoppingCart className="h-4 w-4 mr-1" />
-                      {product.stock === 0 
-                        ? (language === 'ar' ? 'نفدت الكمية' : 'Rupture')
-                        : (language === 'ar' ? 'أضف' : 'Ajouter')
-                      }
-                    </Button>
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-2xl font-bold text-blue-600">{product.price} MAD</p>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">
+                  <Button
+                    size="sm"
+                    onClick={() => addToCart(product)}
+                    disabled={product.stock === 0}
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg transition-all"
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    {product.stock === 0 
+                      ? (language === 'ar' ? 'نفدت الكمية' : 'Rupture')
+                      : (language === 'ar' ? 'أضف' : 'Ajouter')
+                    }
+                  </Button>
+                  <p className="text-xs text-gray-500 mt-3 text-center">
                     {language === 'ar' ? `الكمية: ${product.stock}` : `Stock: ${product.stock}`}
                   </p>
                 </div>
@@ -2291,8 +2338,8 @@ export default function Products() {
           </div>
 
           {filteredProducts.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">
+            <div className="text-center py-16 bg-gray-50 rounded-2xl">
+              <p className="text-gray-500 text-lg">
                 {language === 'ar' ? 'لا توجد منتجات مطابقة' : 'Aucun produit trouvé'}
               </p>
             </div>
