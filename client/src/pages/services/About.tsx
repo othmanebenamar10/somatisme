@@ -15,12 +15,12 @@ export default function About() {
   const { t } = useLanguage();
 
   const partners = [
-    { name: 'Procter & Gamble', url: 'https://www.pg.ma', desc: 'Leader mondial des produits de grande consommation.', logoUrl: 'https://via.placeholder.com/400x400/22c55e/ffffff?text=PG' },
-    { name: 'Smart Strategies', url: 'https://www.smartstrategies.ma', desc: 'Société spécialisée dans l\'industrie de la sidérurgie.', logoUrl: 'https://via.placeholder.com/400x400/22c55e/ffffff?text=SS' },
-    { name: 'Espace Metal', url: 'http://www.espacemetal.net/', desc: 'Chaudronnerie, charpente métallique et tuyauterie.', logoUrl: 'https://via.placeholder.com/400x400/22c55e/ffffff?text=EM' },
-    { name: 'Comaprom', url: '#', desc: 'Produits métallurgiques et industrie du tube soudé.', logoUrl: 'https://via.placeholder.com/400x400/22c55e/ffffff?text=C' },
-    { name: 'Electroprint', url: '#', desc: 'Solutions avancées de marquage et impression industrielle.', logoUrl: 'https://via.placeholder.com/400x400/22c55e/ffffff?text=E' },
-    { name: 'FATER', url: '#', desc: 'Partenaire industriel majeur en produits d\'hygiène et santé.', logoUrl: 'https://via.placeholder.com/400x400/22c55e/ffffff?text=F' },
+    { name: 'Procter & Gamble', url: 'https://www.pg.ma', desc: 'Leader mondial des produits de grande consommation.', logoUrl: '/pg.png' },
+    { name: 'Smart Strategies', url: 'https://www.smartstrategies.ma', desc: 'Société spécialisée dans l\'industrie de la sidérurgie.', logoUrl: '/brands/Smart-Strategies.png' },
+    { name: 'Espace Metal', url: 'http://www.espacemetal.net/', desc: 'Chaudronnerie, charpente métallique et tuyauterie.', logoUrl: '/brands/Espace-Metal.png' },
+    { name: 'Comaprom', url: '#', desc: 'Produits métallurgiques et industrie du tube soudé.', logoUrl: '/brands/Comaprom.png' },
+    { name: 'Electroprint', url: '#', desc: 'Solutions avancées de marquage et impression industrielle.', logoUrl: '/brands/Electroprint.png' },
+    { name: 'FATER', url: '#', desc: 'Partenaire industriel majeur en produits d\'hygiène et santé.', logoUrl: '/brands/FATER.png' },
   ];
 
   return (
