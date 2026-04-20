@@ -2278,8 +2278,151 @@ export default function Products() {
         quantity: 1
       }));
 
-      // Generate invoice
-      generateInvoice(orderItems, orderForm, cartTotal);
+      // Generate invoice and get PDF as base64
+      const doc = new jsPDF();
+      const timestamp = Date.now();
+      const randomHash = Math.random().toString(36).substring(2, 15);
+      const invoiceNumber = `INV-${timestamp}-${randomHash.toUpperCase()}`;
+      
+      const date = new Date().toLocaleDateString('fr-FR');
+      const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR');
+
+      const primaryColor: [number, number, number] = [30, 58, 95];
+      const accentColor: [number, number, number] = [6, 182, 212];
+      const secondaryColor: [number, number, number] = [45, 55, 72];
+      const lightGray: [number, number, number] = [241, 245, 249];
+      const mediumGray: [number, number, number] = [107, 114, 128];
+      const darkGray: [number, number, number] = [31, 41, 55];
+
+      // === HEADER ===
+      doc.setFillColor(...primaryColor);
+      doc.rect(0, 0, 210, 50, 'F');
+
+      doc.setTextColor(...accentColor);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('SOMATISME', 15, 20);
+
+      doc.setTextColor(...accentColor);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text('AUTOMATISATION INDUSTRIELLE', 15, 31);
+
+      doc.setFontSize(8);
+      doc.setTextColor(203, 213, 225);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Équipements • Régulation • Installation Électrique', 15, 37);
+      doc.text('+212 679 825 646  |  somatisme@gmail.com  |  www.somatisme.ma', 15, 43);
+
+      // === INVOICE TITLE BLOCK ===
+      doc.setFillColor(...lightGray);
+      doc.roundedRect(15, 65, 180, 28, 3, 3, 'F');
+
+      doc.setFontSize(22);
+      doc.setTextColor(...primaryColor);
+      doc.setFont('helvetica', 'bold');
+      doc.text('FACTURE', 20, 78);
+
+      doc.setFontSize(10);
+      doc.setTextColor(...mediumGray);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`N° ${invoiceNumber}`, 150, 73);
+      doc.text(`Date: ${date}`, 150, 80);
+      doc.text(`Échéance: ${dueDate}`, 150, 87);
+
+      // === CUSTOMER INFO ===
+      doc.setFontSize(10);
+      doc.setTextColor(...primaryColor);
+      doc.setFont('helvetica', 'bold');
+      doc.text('INFORMATIONS CLIENT', 15, 110);
+
+      doc.setFontSize(9);
+      doc.setTextColor(...darkGray);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`${orderForm.name}`, 15, 120);
+      doc.text(`${orderForm.email}`, 15, 127);
+      doc.text(`${orderForm.phone}`, 15, 134);
+      if (orderForm.company) doc.text(`${orderForm.company}`, 15, 141);
+      if (orderForm.address) doc.text(`${orderForm.address}`, 15, 148);
+
+      // === PRODUCTS TABLE ===
+      doc.setFontSize(10);
+      doc.setTextColor(...primaryColor);
+      doc.setFont('helvetica', 'bold');
+      doc.text('PRODUITS COMMANDÉS', 15, 165);
+
+      doc.setFillColor(...lightGray);
+      doc.rect(15, 170, 180, 8, 'F');
+
+      doc.setFontSize(9);
+      doc.setTextColor(...primaryColor);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Produit', 20, 175);
+      doc.text('Prix', 170, 175);
+
+      let yPos = 185;
+      orderItems.forEach((item: any, idx: number) => {
+        doc.setTextColor(...darkGray);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${idx + 1}. ${item.name}`, 20, yPos);
+        doc.text(`${item.price} MAD`, 170, yPos);
+        yPos += 10;
+      });
+
+      // === TOTALS ===
+      yPos += 5;
+      doc.setDrawColor(...accentColor);
+      doc.line(15, yPos, 195, yPos);
+
+      yPos += 10;
+      doc.setFontSize(10);
+      doc.setTextColor(...darkGray);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Sous-total:', 140, yPos);
+      doc.text(`${cartSubtotal} MAD`, 170, yPos);
+
+      yPos += 8;
+      doc.text('Frais de livraison (10%):', 140, yPos);
+      doc.text(`${shippingFee.toFixed(2)} MAD`, 170, yPos);
+
+      yPos += 10;
+      doc.setFillColor(...accentColor);
+      doc.rect(140, yPos - 5, 55, 10, 'F');
+
+      doc.setFontSize(12);
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.text('TOTAL:', 145, yPos + 2);
+      doc.text(`${cartTotal} MAD`, 170, yPos + 2);
+
+      // === FOOTER ===
+      doc.setFontSize(7);
+      doc.setTextColor(203, 213, 225);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Équipements Industriels  |  +212 679 825 646  |  somatisme@gmail.com', 105, 286, { align: 'center' });
+
+      doc.setTextColor(...accentColor);
+      doc.setFont('helvetica', 'bold');
+      doc.text('www.somatisme.ma', 105, 291, { align: 'center' });
+
+      // Get PDF as base64
+      const pdfBase64 = doc.output('dataurlstring').split(',')[1];
+
+      // Send order email with PDF
+      const emailResponse = await fetch('/api/send-order-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderForm,
+          orderItems,
+          cartTotal,
+          pdfBase64
+        })
+      });
+
+      if (!emailResponse.ok) {
+        throw new Error('Failed to send order email');
+      }
 
       // Send order via WhatsApp with clean format
       const orderMessage = `NOUVELLE COMMANDE SOMATISME
@@ -2302,7 +2445,7 @@ Paiement a la livraison.`;
       const whatsappUrl = `https://wa.me/212679825646?text=${encodeURIComponent(orderMessage)}`;
       window.open(whatsappUrl, '_blank');
       
-      toast.success('Commande envoyée avec succès. Facture téléchargée.');
+      toast.success('Commande envoyée avec succès. Email de confirmation envoyé.');
       setCart([]);
       setShowOrderDialog(false);
       setShowCart(false);
