@@ -1954,10 +1954,14 @@ export default function Products() {
 
   const filteredProducts = products.filter((product) => {
     const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+    const searchLower = searchQuery.toLowerCase();
     const matchesSearch = searchQuery === '' || 
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.nameAr.includes(searchQuery) ||
-      product.brand.toLowerCase().includes(searchQuery.toLowerCase());
+      product.name.toLowerCase().includes(searchLower) ||
+      product.nameAr.toLowerCase().includes(searchLower) ||
+      product.description.toLowerCase().includes(searchLower) ||
+      product.descriptionAr.toLowerCase().includes(searchLower) ||
+      product.brand.toLowerCase().includes(searchLower) ||
+      product.category.toLowerCase().includes(searchLower);
     return matchesCategory && matchesSearch;
   });
 
