@@ -125,10 +125,10 @@ export default function Contact() {
       <Header />
 
       {/* Hero Section - RADICAL NEW DESIGN */}
-      <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-purple-900 to-primary">
+      <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-slate-800 to-primary">
         {/* Animated Orbs */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-accent/50 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
-        <div className="absolute bottom-0 right-1/3 w-80 h-80 bg-secondary/40 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
+        <div className="absolute bottom-0 right-1/3 w-80 h-80 bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
 
         <div className="container relative z-10">
           <motion.div
