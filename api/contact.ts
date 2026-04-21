@@ -9,7 +9,7 @@ import {
   setCorsHeaders,
   sendError,
   verifyRecaptcha,
-} from './lib/security';
+} from './_lib/security';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   setCorsHeaders(res);
