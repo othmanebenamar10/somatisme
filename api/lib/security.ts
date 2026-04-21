@@ -87,3 +87,27 @@ export function sendError(
 ): void {
   res.status(status).json({ error: message });
 }
+
+// ── Google reCAPTCHA v3 server-side verification ─────────────────────────────
+export async function verifyRecaptcha(
+  token: string | null | undefined,
+  minScore = 0.5
+): Promise<boolean> {
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+  // If key not configured, skip silently (graceful degradation)
+  if (!secretKey) return true;
+  if (!token || typeof token !== 'string' || token.length > 2048) return false;
+
+  try {
+    const response = await fetch(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(token)}`,
+      { method: 'POST' }
+    );
+    const data = await response.json();
+    // data.score: 1.0 = human, 0.0 = bot
+    return data.success === true && (data.score ?? 1) >= minScore;
+  } catch (err) {
+    console.error('[RECAPTCHA] Verification error:', err);
+    return false;
+  }
+}

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
+import { useRecaptcha } from '@/hooks/useRecaptcha';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -25,7 +26,9 @@ export default function Contact() {
     message: '',
   });
   const [botField, setBotField] = useState(''); // Anti-spam Honeypot
+  const [formStartTime] = useState(() => Date.now()); // Timing bot detection
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { getToken } = useRecaptcha();
   const [showTermsDialog, setShowTermsDialog] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [currentStep, setCurrentStep] = useState(1); // Step 1: Contact Info, Step 2: Details, Step 3: Confirm
@@ -85,6 +88,12 @@ export default function Contact() {
       return;
     }
 
+    // Timing bot check: humans take > 3 seconds to fill a multi-step form
+    if (Date.now() - formStartTime < 3000) {
+      toast.error('Erreur de soumission');
+      return;
+    }
+
     // Show terms dialog first
     setShowTermsDialog(true);
   };
@@ -95,12 +104,17 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
+      // Get reCAPTCHA token
+      const recaptchaToken = await getToken('contact_form');
+
       const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          recaptchaToken,
+          _duration: Date.now() - formStartTime,
+        }),
       });
 
       const data = await response.json();
@@ -502,6 +516,25 @@ export default function Contact() {
             </motion.form>
 
           </div>
+
+          {/* Google Maps Integration */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="mt-16 rounded-3xl overflow-hidden border-2 border-accent/20 shadow-2xl shadow-accent/10 h-[400px] relative"
+          >
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3319.4441551046!2d-7.3871439!3d33.684534!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzPCsDQxJzA0LjMiTiA3wrAyMycxMy43Ilc!5e0!3m2!1sfr!2sma!4v1713600000000!5m2!1sfr!2sma" 
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }} 
+              allowFullScreen 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+              className="grayscale contrast-125 opacity-80 hover:opacity-100 hover:grayscale-0 transition-all duration-700"
+            ></iframe>
+          </motion.div>
         </div>
       </section>
 

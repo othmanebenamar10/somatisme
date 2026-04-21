@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useRecaptcha } from '@/hooks/useRecaptcha';
 import { ShoppingCart, Filter, Search, Star, Check, X, Download, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -1933,6 +1934,9 @@ export default function Products() {
     address: '',
     message: ''
   });
+  const [orderHoneypot, setOrderHoneypot] = useState(''); // Bot trap
+  const [orderFormOpenTime, setOrderFormOpenTime] = useState(0); // Timing check
+  const { getToken: getRecaptchaToken } = useRecaptcha();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fadeInUp = {
@@ -2268,6 +2272,19 @@ export default function Products() {
       return;
     }
 
+    // Honeypot check: bots fill hidden fields, humans don't
+    if (orderHoneypot) {
+      setCart([]);
+      setShowOrderDialog(false);
+      return;
+    }
+
+    // Timing check: < 2s = bot
+    if (orderFormOpenTime && Date.now() - orderFormOpenTime < 2000) {
+      toast.error('Veuillez patienter avant de soumettre.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -2565,6 +2582,10 @@ export default function Products() {
       // Get PDF as base64
       const pdfBase64 = doc.output('dataurlstring').split(',')[1];
 
+      // Get reCAPTCHA token before sending
+      const recaptchaToken = await getRecaptchaToken('order_submit');
+      const submitDuration = orderFormOpenTime ? Date.now() - orderFormOpenTime : 99999;
+
       // Send order email - non-blocking (order completes even if email fails)
       fetch('/api/send-order-email', {
         method: 'POST',
@@ -2574,7 +2595,10 @@ export default function Products() {
           orderItems,
           cartTotal,
           pdfBase64,
-          invoiceNumber
+          invoiceNumber,
+          recaptchaToken,
+          _duration: submitDuration,
+          website: orderHoneypot || undefined,
         })
       }).then(res => res.json())
         .then(data => console.log('[EMAIL] Sent:', data))
@@ -2991,6 +3015,7 @@ Paiement a la livraison.`;
       {/* Order Dialog - Step by Step */}
       <Dialog open={showOrderDialog} onOpenChange={(open) => {
         setShowOrderDialog(open);
+        if (open) setOrderFormOpenTime(Date.now()); // Record time for bot detection
         if (!open) setCartStep('summary');
       }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
@@ -3078,6 +3103,17 @@ Paiement a la livraison.`;
               <>
                 {/* Form Fields */}
                 <div className="space-y-4">
+                  {/* Honeypot — hidden from humans, bots fill it */}
+                  <div style={{ position: 'absolute', left: '-9999px', top: '-9999px', opacity: 0, pointerEvents: 'none' }} aria-hidden="true" tabIndex={-1}>
+                    <input
+                      type="text"
+                      name="website"
+                      value={orderHoneypot}
+                      onChange={(e) => setOrderHoneypot(e.target.value)}
+                      autoComplete="off"
+                      tabIndex={-1}
+                    />
+                  </div>
                   <div>
                     <label className="block text-sm font-bold text-primary mb-2">
                       {language === 'ar' ? 'الاسم الكامل *' : 'Nom complet *'}

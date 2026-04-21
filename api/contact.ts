@@ -8,6 +8,7 @@ import {
   getClientIp,
   setCorsHeaders,
   sendError,
+  verifyRecaptcha,
 } from './lib/security';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -44,6 +45,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (name.length < 2)   return sendError(res, 400, 'Nom trop court');
     if (subject.length < 3) return sendError(res, 400, 'Sujet trop court');
     if (message.length < 5) return sendError(res, 400, 'Message trop court');
+
+    // reCAPTCHA v3 verification (skipped gracefully if key not configured)
+    const recaptchaToken = sanitizeString(req.body?.recaptchaToken, 2048);
+    const isHuman = await verifyRecaptcha(recaptchaToken, 0.5);
+    if (!isHuman) {
+      console.warn('[SECURITY] reCAPTCHA failed from IP:', ip);
+      return sendError(res, 403, 'Verification de securite echouee. Veuillez reessayer.');
+    }
 
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
       console.error('[EMAIL] SMTP_USER or SMTP_PASS not configured');

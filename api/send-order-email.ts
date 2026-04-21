@@ -9,6 +9,7 @@ import {
   getClientIp,
   setCorsHeaders,
   sendError,
+  verifyRecaptcha,
 } from './lib/security';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -65,6 +66,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const cartTotal = Number(body.cartTotal) || 0;
     if (cartTotal <= 0) return sendError(res, 400, 'Total de commande invalide');
+
+    // Honeypot: if filled, it's a bot
+    if (body.website || body._honey) {
+      console.warn('[SECURITY] Honeypot triggered from IP:', ip);
+      return res.status(200).json({ success: true }); // Silent reject
+    }
+
+    // Timing check: form submitted in < 1.5s is almost certainly a bot
+    const submitDuration = Number(body._duration) || 99999;
+    if (submitDuration < 1500) {
+      console.warn('[SECURITY] Timing bot detected from IP:', ip, `(${submitDuration}ms)`);
+      return res.status(200).json({ success: true }); // Silent reject
+    }
+
+    // reCAPTCHA v3 verification
+    const recaptchaToken = sanitizeString(body.recaptchaToken, 2048);
+    const isHuman = await verifyRecaptcha(recaptchaToken, 0.5);
+    if (!isHuman) {
+      console.warn('[SECURITY] reCAPTCHA failed from IP:', ip);
+      return sendError(res, 403, 'Verification de securite echouee. Veuillez reessayer.');
+    }
 
     const pdfBase64    = typeof body.pdfBase64 === 'string' ? body.pdfBase64 : null;
     const invoiceNumber = sanitizeString(body.invoiceNumber, 60);
