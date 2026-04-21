@@ -1979,7 +1979,8 @@ export default function Products() {
 
   const cartSubtotal = cart.reduce((total, item) => total + item.price, 0);
   const shippingFee = Math.round(cartSubtotal * 0.02); // 2% shipping fee
-  const cartTotal = cartSubtotal + shippingFee;
+  const tva = Math.round(cartSubtotal * 0.20); // 20% TVA
+  const cartTotal = cartSubtotal + shippingFee + tva;
 
   const generateInvoice = (orderItems: any[], orderInfo: any, total: number) => {
     const doc = new jsPDF();
@@ -2214,10 +2215,10 @@ export default function Products() {
 
     doc.setTextColor(...mediumGray);
     doc.setFont('helvetica', 'normal');
-    doc.text('TVA (0%)', 120, y + 12);
+    doc.text('TVA (20%)', 120, y + 12);
     doc.setTextColor(...darkGray);
     doc.setFont('helvetica', 'bold');
-    doc.text('0.00 MAD', 190, y + 12, { align: 'right' });
+    doc.text(`${tva} MAD`, 190, y + 12, { align: 'right' });
 
     // Divider
     doc.setDrawColor(...mediumGray);
@@ -2532,9 +2533,9 @@ export default function Products() {
       doc.text(`${cartSubtotal} MAD`, 196, botY + 8, { align: 'right' });
 
       doc.setTextColor(...C.sub);
-      doc.text('TVA (0%)', totX, botY + 16);
+      doc.text('TVA (20%)', totX, botY + 16);
       doc.setTextColor(...C.text);
-      doc.text('0.00 MAD', 196, botY + 16, { align: 'right' });
+      doc.text(`${tva} MAD`, 196, botY + 16, { align: 'right' });
 
       // Separator
       doc.setDrawColor(210, 220, 230);
@@ -2901,9 +2902,15 @@ Paiement a la livraison.`;
                         </span>
                         <span className="font-bold text-cyan-600">{shippingFee} MAD</span>
                       </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-muted-foreground">
+                          {language === 'ar' ? 'ضريبة القيمة المضافة (20%)' : 'TVA (20%)'}:
+                        </span>
+                        <span className="font-bold text-amber-600">{tva} MAD</span>
+                      </div>
                       <div className="border-t border-cyan-300 pt-2 flex justify-between">
                         <span className="font-bold text-sm">
-                          {language === 'ar' ? 'المجموع' : 'Total'}:
+                          {language === 'ar' ? 'المجموع' : 'Total TTC'}:
                         </span>
                         <span className="text-lg font-black bg-gradient-to-r from-cyan-500 to-cyan-600 bg-clip-text text-transparent">
                           {cartTotal} MAD
@@ -3062,8 +3069,12 @@ Paiement a la livraison.`;
                     <span className="text-muted-foreground">{language === 'ar' ? 'الشحن (2%)' : 'Livraison (2%)'}:</span>
                     <span className="font-bold text-cyan-600">{shippingFee} MAD</span>
                   </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">{language === 'ar' ? 'ضريبة القيمة المضافة (20%)' : 'TVA (20%)'}:</span>
+                    <span className="font-bold text-amber-600">{tva} MAD</span>
+                  </div>
                   <div className="border-t-2 border-cyan-300 pt-2 flex justify-between">
-                    <span className="font-bold text-primary">{language === 'ar' ? 'المجموع' : 'Total'}:</span>
+                    <span className="font-bold text-primary">{language === 'ar' ? 'المجموع' : 'Total TTC'}:</span>
                     <span className="text-lg bg-gradient-to-r from-cyan-500 to-cyan-600 bg-clip-text text-transparent font-bold">{cartTotal} MAD</span>
                   </div>
                 </div>
