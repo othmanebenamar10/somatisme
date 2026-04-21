@@ -388,7 +388,7 @@ export default async function handler(req: any, res: any) {
 
     await transporter.sendMail({
       from: `"SOMATISME" <${process.env.SMTP_USER}>`,
-      to: process.env.EMAIL_TO || 'info@somatisme.ma',
+      to: process.env.EMAIL_TO || process.env.SMTP_USER,
       subject: adminSubject,
       html: adminHtml,
       attachments,
