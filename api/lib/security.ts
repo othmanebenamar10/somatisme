@@ -99,10 +99,11 @@ export async function verifyRecaptcha(
   if (!token || typeof token !== 'string' || token.length > 2048) return false;
 
   try {
-    const response = await fetch(
-      `https://www.google.com/recaptcha/api/siteverify?secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(token)}`,
-      { method: 'POST' }
-    );
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(token)}`,
+    });
     const data = await response.json();
     // data.score: 1.0 = human, 0.0 = bot
     return data.success === true && (data.score ?? 1) >= minScore;
