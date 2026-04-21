@@ -204,7 +204,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         <!-- FOOTER -->
         <tr><td style="background:#1e293b;border-radius:0 0 16px 16px;padding:24px 40px;text-align:center;">
           <p style="color:#64748b;font-size:12px;margin:0 0 4px;">SOMATISME — Automatisation Industrielle</p>
-          <p style="color:#475569;font-size:11px;margin:0;">Mohammedia, Maroc • info@somatisme.ma • +212 523 302 829</p>
+          <p style="color:#475569;font-size:11px;margin:0;">Rue Résistance Nassime GH12 Appt 1, Mohammedia • info@somatisme.ma • +212 679 825 646</p>
         </td></tr>
 
       </table>
@@ -307,7 +307,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         <!-- FOOTER -->
         <tr><td style="background:#0f172a;border-radius:0 0 16px 16px;padding:24px 40px;text-align:center;border-top:1px solid #1e293b;">
           <p style="color:#334155;font-size:12px;margin:0 0 4px;">SOMATISME — Automatisation Industrielle</p>
-          <p style="color:#334155;font-size:11px;margin:0;">Mohammedia, Maroc • info@somatisme.ma • +212 523 302 829</p>
+          <p style="color:#334155;font-size:11px;margin:0;">Rue Résistance Nassime GH12 Appt 1, Mohammedia • info@somatisme.ma • +212 679 825 646</p>
         </td></tr>
 
       </table>

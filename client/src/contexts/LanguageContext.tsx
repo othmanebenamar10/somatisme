@@ -89,7 +89,7 @@ const translations = {
     "footer.phone": "+212 679 825 646",
     "footer.fax": "",
     "footer.email": "info@somatisme.ma",
-    "footer.address": "Mohammedia, Maroc",
+    "footer.address": "Rue résistance residence Nassime GH 12 Appt N°1, Mohammedia",
     "footer.copyright": "© 2026 SOMATISME. Tous droits réservés.",
     "footer.privacy": "Politique de confidentialité",
     "footer.terms": "Conditions d'utilisation",

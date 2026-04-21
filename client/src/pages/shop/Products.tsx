@@ -2133,9 +2133,10 @@ export default function Products() {
     doc.setTextColor(...mediumGray);
     doc.setFont('helvetica', 'normal');
     doc.text('Equipements Industriels', 120, 124);
-    doc.text('Mohammedia, Maroc', 120, 129);
-    doc.text('+212 679 825 646', 120, 134);
-    doc.text('contact@somatisme.ma', 120, 139);
+    doc.text('Rue Résistance Nassime GH12 Appt 1', 120, 129);
+    doc.text('Mohammedia, Maroc', 120, 134);
+    doc.text('+212 679 825 646', 120, 139);
+    doc.text('contact@somatisme.ma', 120, 144);
 
     // === PRODUCTS TABLE ===
     const tableY = 155;
@@ -2453,9 +2454,10 @@ export default function Products() {
       doc.setTextColor(...C.sub);
       doc.setFont('helvetica', 'normal');
       doc.text('Equipements Industriels', col2, infoY + 17);
-      doc.text('Mohammedia, Maroc', col2, infoY + 23);
-      doc.text('+212 679 825 646', col2, infoY + 29);
-      doc.text('contact@somatisme.ma', col2, infoY + 35);
+      doc.text('Rue Résistance Nassime GH12 Appt 1', col2, infoY + 23);
+      doc.text('Mohammedia, Maroc', col2, infoY + 29);
+      doc.text('+212 679 825 646', col2, infoY + 35);
+      doc.text('contact@somatisme.ma', col2, infoY + 41);
 
       // ══════════════════════════════════════════
       // PRODUCTS TABLE

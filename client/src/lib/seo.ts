@@ -74,8 +74,9 @@ export function generateOrganizationSchema() {
     description: siteConfig.description,
     address: {
       '@type': 'PostalAddress',
-      addressCountry: 'MA',
+      streetAddress: 'Rue résistance residence Nassime GH 12 Appartement N°1',
       addressLocality: 'Mohammedia',
+      addressCountry: 'MA',
     },
     contactPoint: {
       '@type': 'ContactPoint',
