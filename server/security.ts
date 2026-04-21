@@ -49,7 +49,10 @@ export const SECURITY_CONFIG = {
     '/projects',
     '/products',
     '/privacy',
-    '/terms'
+    '/terms',
+    '/api/contact',
+    '/api/send-order-email',
+    '/api/test'
   ]
 };
 
@@ -242,7 +245,7 @@ export const sanitizeInput = (input: any): any => {
 // CSRF Protection
 export const csrfProtection = (req: Request, res: Response, next: NextFunction) => {
   const csrfToken = req.headers['x-csrf-token'] as string;
-  const sessionToken = req.session?.csrfToken;
+  const sessionToken = (req as any).session?.csrfToken;
   
   if (!csrfToken || !sessionToken || csrfToken !== sessionToken) {
     console.warn(`[SECURITY] CSRF token mismatch from IP: ${req.ip}`);

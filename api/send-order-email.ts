@@ -1,22 +1,80 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import nodemailer from 'nodemailer';
+import {
+  checkRateLimit,
+  escapeHtml,
+  sanitizeString,
+  isValidEmail,
+  isValidPhone,
+  getClientIp,
+  setCorsHeaders,
+  sendError,
+} from './lib/security';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  setCorsHeaders(res);
+
+  if (req.method === 'OPTIONS') return res.status(204).end();
+  if (req.method !== 'POST') return sendError(res, 405, 'Method not allowed');
+
+  // Body size guard: PDF base64 can be large, cap at 2 MB
+  const contentLength = parseInt(req.headers['content-length'] || '0', 10);
+  if (contentLength > 2_000_000) return sendError(res, 413, 'Request too large');
+
+  // Rate limiting: 5 orders / 5 minutes per IP
+  const ip = getClientIp(req);
+  if (!checkRateLimit(ip, 5, 300_000)) {
+    return sendError(res, 429, 'Too many requests. Please wait before trying again.');
   }
 
   try {
-    const { orderForm, orderItems, cartTotal, pdfBase64, invoiceNumber } = req.body;
+    const body = req.body || {};
 
-    if (!orderForm || !orderForm.email || !orderItems || !cartTotal) {
-      return res.status(400).json({ error: 'Missing required order information' });
+    // Validate and sanitize orderForm fields
+    const name    = sanitizeString(body.orderForm?.name, 100);
+    const email   = sanitizeString(body.orderForm?.email, 254);
+    const phone   = sanitizeString(body.orderForm?.phone, 20);
+    const company = sanitizeString(body.orderForm?.company, 150);
+    const address = sanitizeString(body.orderForm?.address, 200);
+    const message = sanitizeString(body.orderForm?.message, 1000);
+
+    if (!name || !email || !phone) {
+      return sendError(res, 400, 'Informations client manquantes');
     }
+    if (!isValidEmail(email)) {
+      return sendError(res, 400, 'Adresse email invalide');
+    }
+    if (phone && !isValidPhone(phone)) {
+      return sendError(res, 400, 'Numéro de téléphone invalide');
+    }
+
+    // Validate orderItems
+    const rawItems = body.orderItems;
+    if (!Array.isArray(rawItems) || rawItems.length === 0) {
+      return sendError(res, 400, 'Aucun produit dans la commande');
+    }
+    if (rawItems.length > 50) {
+      return sendError(res, 400, 'Trop de produits dans la commande');
+    }
+
+    // Sanitize each item
+    const orderItems = rawItems.map((item: any) => ({
+      name:  sanitizeString(item?.name, 200),
+      price: Number(item?.price) || 0,
+    })).filter(item => item.name);
+
+    const cartTotal = Number(body.cartTotal) || 0;
+    if (cartTotal <= 0) return sendError(res, 400, 'Total de commande invalide');
+
+    const pdfBase64    = typeof body.pdfBase64 === 'string' ? body.pdfBase64 : null;
+    const invoiceNumber = sanitizeString(body.invoiceNumber, 60);
+
+    const orderForm = { name, email, phone, company, address, message };
 
     // Validate SMTP config
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
       console.error('[EMAIL] SMTP_USER or SMTP_PASS not configured');
-      return res.status(500).json({ error: 'Email service not configured' });
+      return sendError(res, 500, 'Email service unavailable');
     }
 
     const transporter = nodemailer.createTransport({
@@ -31,6 +89,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const date = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     const orderNumber = `CMD-${Date.now().toString().slice(-6)}`;
+
+    // Escape all user data before inserting into HTML
+    const safeName    = escapeHtml(orderForm.name);
+    const safeEmail   = escapeHtml(orderForm.email);
+    const safePhone   = escapeHtml(orderForm.phone);
+    const safeCompany = escapeHtml(orderForm.company);
+    const safeMessage = escapeHtml(orderForm.message);
+    const safeInvoice = escapeHtml(invoiceNumber);
+    const safeOrderNumber = escapeHtml(orderNumber);
+    // Email subjects: strip newlines to prevent header injection
+    const customerSubject = `Confirmation de votre commande SOMATISME - ${safeInvoice}`.replace(/[\r\n]/g, '');
+    const adminSubject    = `NOUVELLE COMMANDE - ${safeName} - ${safeInvoice}`.replace(/[\r\n]/g, '');
 
     // Customer email HTML - bright/light professional style
     const customerHtml = `<!DOCTYPE html>
@@ -50,12 +120,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             <span style="font-size:28px;">✅</span>
           </div>
           <h1 style="color:#ffffff;font-size:24px;font-weight:700;margin:0 0 8px;">Commande Confirmée !</h1>
-          <p style="color:#94a3b8;font-size:14px;margin:0;">Réf: <strong style="color:#06b6d4;">${orderNumber}</strong> &nbsp;•&nbsp; ${date}</p>
+          <p style="color:#94a3b8;font-size:14px;margin:0;">R&#233;f: <strong style="color:#06b6d4;">${safeOrderNumber}</strong> &nbsp;&bull;&nbsp; ${date}</p>
         </td></tr>
 
         <!-- BODY -->
         <tr><td style="background:#ffffff;padding:40px;">
-          <p style="color:#1e293b;font-size:16px;margin:0 0 24px;">Bonjour <strong>${orderForm.name}</strong>,</p>
+          <p style="color:#1e293b;font-size:16px;margin:0 0 24px;">Bonjour <strong>${safeName}</strong>,</p>
           <p style="color:#475569;font-size:14px;line-height:1.7;margin:0 0 30px;">Merci pour votre commande ! Nous avons bien reçu votre demande et notre équipe vous contactera dans les <strong>24 heures</strong> pour confirmer la livraison.</p>
 
           <!-- Order items -->
@@ -67,15 +137,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               ${orderItems.map((item: any, idx: number) => `
               <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f1f5f9;">
                 <div>
-                  <p style="color:#1e293b;font-size:14px;font-weight:600;margin:0;">${idx + 1}. ${item.name}</p>
+                  <p style="color:#1e293b;font-size:14px;font-weight:600;margin:0;">${idx + 1}. ${escapeHtml(item.name)}</p>
                 </div>
                 <div style="background:#ecfeff;border:1px solid #a5f3fc;border-radius:8px;padding:4px 12px;">
-                  <span style="color:#0e7490;font-size:14px;font-weight:700;">${item.price} MAD</span>
+                  <span style="color:#0e7490;font-size:14px;font-weight:700;">${Number(item.price)} MAD</span>
                 </div>
               </div>`).join('')}
               <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 0 0;">
                 <p style="color:#1e293b;font-size:16px;font-weight:700;margin:0;">TOTAL</p>
-                <p style="color:#0e7490;font-size:22px;font-weight:800;margin:0;">${cartTotal} MAD</p>
+                <p style="color:#0e7490;font-size:22px;font-weight:800;margin:0;">${Number(cartTotal)} MAD</p>
               </div>
             </div>
           </div>
@@ -147,7 +217,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           <!-- Order ref -->
           <div style="background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.25);border-radius:10px;padding:16px 20px;margin-bottom:28px;text-align:center;">
             <p style="color:#94a3b8;font-size:12px;margin:0 0 4px;">Référence commande</p>
-            <p style="color:#06b6d4;font-size:20px;font-weight:800;margin:0;letter-spacing:2px;">${orderNumber}</p>
+            <p style="color:#06b6d4;font-size:20px;font-weight:800;margin:0;letter-spacing:2px;">${safeOrderNumber}</p>
             <p style="color:#64748b;font-size:12px;margin:4px 0 0;">${date}</p>
           </div>
 
@@ -158,13 +228,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               <td width="50%" style="padding:0 8px 12px 0;">
                 <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:14px 16px;">
                   <p style="color:#64748b;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 4px;">Nom</p>
-                  <p style="color:#f1f5f9;font-size:14px;font-weight:600;margin:0;">${orderForm.name}</p>
+                  <p style="color:#f1f5f9;font-size:14px;font-weight:600;margin:0;">${safeName}</p>
                 </div>
               </td>
               <td width="50%" style="padding:0 0 12px 8px;">
                 <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:14px 16px;">
                   <p style="color:#64748b;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 4px;">Téléphone</p>
-                  <p style="color:#06b6d4;font-size:14px;font-weight:600;margin:0;">${orderForm.phone}</p>
+                  <p style="color:#06b6d4;font-size:14px;font-weight:600;margin:0;">${safePhone}</p>
                 </div>
               </td>
             </tr>
@@ -172,13 +242,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               <td width="50%" style="padding:0 8px 0 0;">
                 <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:14px 16px;">
                   <p style="color:#64748b;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 4px;">Email</p>
-                  <p style="color:#06b6d4;font-size:14px;font-weight:600;margin:0;">${orderForm.email}</p>
+                  <p style="color:#06b6d4;font-size:14px;font-weight:600;margin:0;">${safeEmail}</p>
                 </div>
               </td>
               <td width="50%" style="padding:0 0 0 8px;">
                 <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;padding:14px 16px;">
                   <p style="color:#64748b;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 4px;">Entreprise</p>
-                  <p style="color:#f1f5f9;font-size:14px;font-weight:600;margin:0;">${orderForm.company || '—'}</p>
+                  <p style="color:#f1f5f9;font-size:14px;font-weight:600;margin:0;">${safeCompany || '—'}</p>
                 </div>
               </td>
             </tr>
@@ -189,12 +259,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;overflow:hidden;margin-bottom:28px;">
             ${orderItems.map((item: any, idx: number) => `
             <div style="padding:14px 18px;border-bottom:1px solid #1e293b;display:flex;justify-content:space-between;">
-              <span style="color:#cbd5e1;font-size:14px;">${idx + 1}. ${item.name}</span>
-              <span style="color:#06b6d4;font-size:14px;font-weight:700;">${item.price} MAD</span>
+              <span style="color:#cbd5e1;font-size:14px;">${idx + 1}. ${escapeHtml(item.name)}</span>
+              <span style="color:#06b6d4;font-size:14px;font-weight:700;">${Number(item.price)} MAD</span>
             </div>`).join('')}
             <div style="padding:16px 18px;background:#0c1929;display:flex;justify-content:space-between;align-items:center;">
               <span style="color:#94a3b8;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Total</span>
-              <span style="color:#06b6d4;font-size:24px;font-weight:800;">${cartTotal} MAD</span>
+              <span style="color:#06b6d4;font-size:24px;font-weight:800;">${Number(cartTotal)} MAD</span>
             </div>
           </div>
 
@@ -202,7 +272,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           <!-- Message -->
           <div style="background:#0f172a;border:1px solid #334155;border-left:3px solid #06b6d4;border-radius:10px;padding:16px 18px;margin-bottom:28px;">
             <p style="color:#64748b;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 8px;">Message du client</p>
-            <p style="color:#cbd5e1;font-size:14px;line-height:1.7;margin:0;">${orderForm.message}</p>
+            <p style="color:#cbd5e1;font-size:14px;line-height:1.7;margin:0;">${safeMessage}</p>
           </div>` : ''}
 
           <!-- CTA -->
@@ -236,26 +306,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     await transporter.sendMail({
       from: `"SOMATISME" <${process.env.SMTP_USER}>`,
       to: orderForm.email,
-      subject: `Confirmation de votre commande SOMATISME - ${invoiceNumber || ''}`,
+      subject: customerSubject,
       html: customerHtml,
       attachments,
     });
-    console.log('[EMAIL] Customer order email sent via SMTP Gmail with PDF');
+    console.log('[EMAIL] Customer order email sent via SMTP Gmail');
 
-    // Send admin email via SMTP Gmail with PDF
     await transporter.sendMail({
       from: `"SOMATISME" <${process.env.SMTP_USER}>`,
       to: process.env.EMAIL_TO || 'info@somatisme.ma',
-      subject: `NOUVELLE COMMANDE - ${orderForm.name} - ${invoiceNumber || ''}`,
+      subject: adminSubject,
       html: adminHtml,
       attachments,
     });
-    console.log('[EMAIL] Admin order email sent via SMTP Gmail with PDF');
+    console.log('[EMAIL] Admin order email sent via SMTP Gmail');
 
     return res.status(200).json({ success: true, message: 'Commande recue. Confirmation envoyee par email.' });
   } catch (error) {
     console.error('[ERROR] Order email error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return res.status(500).json({ error: `Failed to send order email: ${errorMessage}` });
+    return sendError(res, 500, 'Une erreur est survenue lors du traitement de votre commande.');
   }
 }
