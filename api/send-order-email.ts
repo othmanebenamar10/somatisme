@@ -1,14 +1,68 @@
-import {
-  checkRateLimit,
-  escapeHtml,
-  sanitizeString,
-  isValidEmail,
-  isValidPhone,
-  getClientIp,
-  setCorsHeaders,
-  sendError,
-  verifyRecaptcha,
-} from './_lib/security';
+import nodemailer from 'nodemailer';
+
+// ── Inline utilities (no relative imports for Vercel compatibility) ──────────
+
+const _rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+function checkRateLimit(ip: string, max = 10, windowMs = 60_000): boolean {
+  const now = Date.now();
+  const entry = _rateLimitStore.get(ip);
+  if (!entry || now > entry.resetAt) { _rateLimitStore.set(ip, { count: 1, resetAt: now + windowMs }); return true; }
+  if (entry.count >= max) return false;
+  entry.count++;
+  return true;
+}
+
+function escapeHtml(str: unknown): string {
+  if (str == null) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
+}
+
+function sanitizeString(str: unknown, maxLen = 500): string {
+  if (str == null) return '';
+  return String(str).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,'').replace(/[\r\n]{3,}/g,'\n\n').trim().slice(0, maxLen);
+}
+
+function isValidEmail(email: unknown): boolean {
+  if (typeof email !== 'string') return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) && email.length <= 254;
+}
+
+function isValidPhone(phone: unknown): boolean {
+  if (typeof phone !== 'string') return false;
+  return /^[\d\s\-\+\(\)]{7,20}$/.test(phone);
+}
+
+function getClientIp(req: any): string {
+  const fwd = req.headers['x-forwarded-for'];
+  return (typeof fwd === 'string' ? fwd.split(',')[0].trim() : null) || req.socket?.remoteAddress || 'unknown';
+}
+
+function setCorsHeaders(res: any): void {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
+
+function sendError(res: any, status: number, message: string): void {
+  res.status(status).json({ error: message });
+}
+
+async function verifyRecaptcha(token: string | null | undefined, minScore = 0.5): Promise<boolean> {
+  const secret = process.env.RECAPTCHA_SECRET_KEY;
+  if (!secret) return true;
+  if (!token || typeof token !== 'string' || token.length > 2048) return false;
+  try {
+    const r = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`,
+    });
+    const data = await r.json() as { success: boolean; score?: number };
+    return data.success === true && (data.score ?? 1) >= minScore;
+  } catch { return false; }
+}
+
+// ── Handler ──────────────────────────────────────────────────────────────────
 
 export default async function handler(req: any, res: any) {
   setCorsHeaders(res);
@@ -97,7 +151,6 @@ export default async function handler(req: any, res: any) {
       return sendError(res, 500, 'Email service unavailable');
     }
 
-    const { default: nodemailer } = await import('nodemailer');
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: parseInt(process.env.SMTP_PORT || '587'),
