@@ -1,7 +1,6 @@
 {
   "name": "somatisme",
   "version": "1.0.0",
-  "type": "module",
   "license": "MIT",
   "scripts": {
     "dev": "tsx watch server/index.ts",
