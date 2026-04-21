@@ -59,123 +59,65 @@ const staticPath =
 
 app.use(express.static(staticPath));
 
-// Initialize database connection asynchronously
+// Initialize database connection (optional - won't block startup)
 connectToDatabase().catch(error => {
   console.error("Failed to connect to database:", error);
 });
 
-  // API endpoint for contact form with military-grade security
+  // API endpoint for contact form
   app.post("/api/contact", async (req, res) => {
     try {
-      const ip = req.ip || req.socket.remoteAddress || "unknown";
-      const userAgent = req.headers["user-agent"] || "unknown";
-      
-      // Sanitize input
+      const ip = req.ip || req.socket?.remoteAddress || "unknown";
       const sanitizedBody = sanitizeInput(req.body);
       const { name, email, phone, company, subject, message } = sanitizedBody;
 
-      // Security: Validate required fields
       if (!name || !email || !subject || !message) {
-        auditLogger("INVALID_REQUEST", { ip, userAgent, missingFields: { name, email, subject, message } });
-        return res.status(400).json({ error: "Missing required fields" });
+        return res.status(400).json({ error: "Champs obligatoires manquants" });
       }
 
-      // Security: Check if IP is in trusted list (optional)
-      if (TRUSTED_IPS.length > 0 && !TRUSTED_IPS.includes(ip)) {
-        auditLogger("UNTRUSTED_IP", { ip, userAgent, email });
-        // You can choose to block or just log untrusted IPs
+      if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+        console.error("[EMAIL] SMTP_USER or SMTP_PASS not configured");
+        return res.status(500).json({ error: "Email service unavailable - configure SMTP_USER and SMTP_PASS in .env" });
       }
 
-      // Security: Store submission in MongoDB with IP tracking
-      const submission = new ContactSubmission({
-        name,
-        email,
-        phone,
-        company,
-        subject,
-        message,
-        ipAddress: ip,
-        userAgent,
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST || "smtp.gmail.com",
+        port: parseInt(process.env.SMTP_PORT || "587"),
+        secure: false,
+        auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
       });
 
-      await submission.save();
-      auditLogger("SUBMISSION_RECEIVED", { ip, userAgent, email, subject, status: submission.status });
-
-      // Security: Check if submission was flagged as spam
-      if (submission.status === "spam" || submission.riskScore >= 100) {
-        auditLogger("SPAM_DETECTED", { ip, userAgent, email, riskScore: submission.riskScore });
-        return res.status(403).json({ error: "Submission flagged as spam" });
-      }
-
-      // Initialize Resend
-      if (!process.env.RESEND_API_KEY) {
-        console.error("[EMAIL] RESEND_API_KEY not configured");
-        return res.status(500).json({ error: 'Email service not configured - missing RESEND_API_KEY' });
-      }
-
-      const resend = new Resend(process.env.RESEND_API_KEY);
-
-      // Email content
       const htmlContent = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">Nouvelle demande de contact</h2>
-          <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-              <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Nom:</strong></td>
-              <td style="padding: 10px; border-bottom: 1px solid #eee;">${name}</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Email:</strong></td>
-              <td style="padding: 10px; border-bottom: 1px solid #eee;">${email}</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Téléphone:</strong></td>
-              <td style="padding: 10px; border-bottom: 1px solid #eee;">${phone || "Non renseigné"}</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Entreprise:</strong></td>
-              <td style="padding: 10px; border-bottom: 1px solid #eee;">${company || "Non renseigné"}</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Sujet:</strong></td>
-              <td style="padding: 10px; border-bottom: 1px solid #eee;">${subject}</td>
-            </tr>
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px">
+          <h2 style="color:#1e40af;border-bottom:2px solid #1e40af;padding-bottom:10px">Nouvelle demande de contact — SOMATISME</h2>
+          <table style="width:100%;border-collapse:collapse">
+            <tr><td style="padding:8px;border-bottom:1px solid #eee"><strong>Nom</strong></td><td style="padding:8px;border-bottom:1px solid #eee">${name}</td></tr>
+            <tr><td style="padding:8px;border-bottom:1px solid #eee"><strong>Email</strong></td><td style="padding:8px;border-bottom:1px solid #eee">${email}</td></tr>
+            <tr><td style="padding:8px;border-bottom:1px solid #eee"><strong>Téléphone</strong></td><td style="padding:8px;border-bottom:1px solid #eee">${phone || "Non renseigné"}</td></tr>
+            <tr><td style="padding:8px;border-bottom:1px solid #eee"><strong>Entreprise</strong></td><td style="padding:8px;border-bottom:1px solid #eee">${company || "Non renseigné"}</td></tr>
+            <tr><td style="padding:8px;border-bottom:1px solid #eee"><strong>Sujet</strong></td><td style="padding:8px;border-bottom:1px solid #eee">${subject}</td></tr>
           </table>
-          <div style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 5px;">
-            <strong style="color: #333;">Message:</strong>
-            <p style="color: #666; white-space: pre-wrap; margin-top: 10px;">${message}</p>
+          <div style="margin-top:20px;padding:15px;background:#f8fafc;border-radius:8px">
+            <strong>Message :</strong>
+            <p style="color:#475569;white-space:pre-wrap;margin-top:8px">${message}</p>
           </div>
-          <p style="margin-top: 20px; color: #999; font-size: 12px;">Cet email a été envoyé depuis le formulaire de contact du site SOMATISME.</p>
-        </div>
-      `;
+        </div>`;
 
-      // Send email via Resend
-      try {
-        const result = await resend.emails.send({
-          from: "SOMATISME <onboarding@resend.dev>",
-          to: process.env.EMAIL_TO || "info@somatisme.ma",
-          subject: `Nouvelle demande de contact: ${subject}`,
-          html: htmlContent,
-        });
+      await transporter.sendMail({
+        from: `"SOMATISME" <${process.env.SMTP_USER}>`,
+        to: process.env.EMAIL_TO || "info@somatisme.ma",
+        replyTo: email,
+        subject: `[Contact] ${subject} — ${name}`,
+        html: htmlContent,
+      });
 
-        console.log("[EMAIL] Contact form email sent successfully via Resend");
-        auditLogger("EMAIL_SENT", { ip, userAgent, email });
-
-        // Update submission status
-        submission.status = "processed";
-        await submission.save();
-
-        res.json({ success: true, message: "Email sent successfully" });
-      } catch (emailError) {
-        console.error("[EMAIL] Resend Error:", {
-          message: (emailError as Error).message,
-        });
-        throw emailError;
-      }
+      console.log("[EMAIL] Contact email sent to", process.env.EMAIL_TO || "info@somatisme.ma");
+      auditLogger("EMAIL_SENT", { ip, email });
+      res.json({ success: true, message: "Votre message a été envoyé avec succès !" });
     } catch (error) {
-      console.error("[ERROR] Error processing contact form:", error);
+      console.error("[ERROR] Contact form error:", error);
       auditLogger("ERROR", { ip: req.ip || "unknown", error: (error as Error).message });
-      res.status(500).json({ error: "Failed to send email - check server logs" });
+      res.status(500).json({ error: "Erreur lors de l'envoi. Vérifiez les logs serveur." });
     }
   });
 
