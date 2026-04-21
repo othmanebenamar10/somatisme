@@ -1,4 +1,5 @@
-import nodemailer from 'nodemailer';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const nodemailer = require('nodemailer');
 
 export default async function handler(req: any, res: any) {
   res.setHeader('Access-Control-Allow-Origin', '*');
