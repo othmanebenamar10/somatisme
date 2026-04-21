@@ -3,7 +3,6 @@ import { useState, useRef, useEffect } from 'react';
 import { useRecaptcha } from '@/hooks/useRecaptcha';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Mail, Phone, MapPin, ArrowRight, User, Building, MessageSquare, Send, CheckCircle2, ShieldCheck, ClipboardCheck, X } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -29,7 +28,6 @@ export default function Contact() {
   const [formStartTime] = useState(() => Date.now()); // Timing bot detection
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { getToken } = useRecaptcha();
-  const [showTermsDialog, setShowTermsDialog] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [currentStep, setCurrentStep] = useState(1); // Step 1: Contact Info, Step 2: Details, Step 3: Confirm
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -88,23 +86,15 @@ export default function Contact() {
       return;
     }
 
-    // Timing bot check: humans take > 3 seconds to fill a multi-step form
-    if (Date.now() - formStartTime < 3000) {
-      toast.error('Erreur de soumission');
+    // Terms must be accepted on step 3
+    if (!termsAccepted) {
+      toast.error('Veuillez accepter les conditions avant de soumettre.');
       return;
     }
 
-    // Show terms dialog first
-    setShowTermsDialog(true);
-  };
-
-  const handleTermsAccept = async () => {
-    if (!termsAccepted) return;
-    setShowTermsDialog(false);
     setIsSubmitting(true);
 
     try {
-      // Get reCAPTCHA token
       const recaptchaToken = await getToken('contact_form');
 
       const response = await fetch('/api/contact', {
@@ -122,6 +112,8 @@ export default function Contact() {
       if (response.ok) {
         toast.success(data.message || t('contact.form.success'));
         setFormData({ name: '', email: '', phone: '', company: '', subject: '', message: '' });
+        setCurrentStep(1);
+        setTermsAccepted(false);
       } else {
         toast.error(data.error || t('contact.form.error'));
       }
@@ -130,9 +122,9 @@ export default function Contact() {
       console.error('Form submission error:', error);
     } finally {
       setIsSubmitting(false);
-      setTermsAccepted(false);
     }
   };
+
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -474,6 +466,19 @@ export default function Contact() {
                   <p className="text-xs text-muted-foreground bg-muted/30 p-3 rounded-lg border border-border/50">
                     ✓ Vérifiez vos informations avant de soumettre. Vous recevrez une confirmation par email.
                   </p>
+
+                  {/* Terms acceptance checkbox */}
+                  <label className="flex items-start gap-3 cursor-pointer mt-4">
+                    <input
+                      type="checkbox"
+                      checked={termsAccepted}
+                      onChange={(e) => setTermsAccepted(e.target.checked)}
+                      className="mt-1 w-4 h-4 rounded border-border accent-cyan-500 cursor-pointer"
+                    />
+                    <span className="text-sm text-foreground">
+                      {t('contact.terms.accept')}
+                    </span>
+                  </label>
                 </motion.div>
               )}
 
@@ -576,59 +581,6 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* Terms Dialog */}
-      <Dialog open={showTermsDialog} onOpenChange={setShowTermsDialog}>
-        <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">{t('contact.terms.title')}</DialogTitle>
-            <DialogDescription>{t('contact.terms.description')}</DialogDescription>
-          </DialogHeader>
-          <div className="flex-1 overflow-y-auto pr-2 my-4 text-sm text-muted-foreground space-y-4">
-            <div className="space-y-4">
-              <h3 className="font-bold text-foreground">Acceptation des Conditions</h3>
-              <p>En soumettant ce formulaire, vous acceptez que SOMATISME traite vos données personnelles aux fins de répondre à votre demande de devis ou de service.</p>
-
-              <h3 className="font-bold text-foreground">Collecte des Données</h3>
-              <p>Nous collectons vos informations de contact (nom, email, téléphone, entreprise) et les détails de votre projet uniquement pour vous fournir nos services industriels.</p>
-
-              <h3 className="font-bold text-foreground">Utilisation des Données</h3>
-              <p>Vos données sont utilisées pour traiter vos demandes, vous fournir des informations sur nos solutions, et communiquer avec vous sur vos projets. Nous ne vendons ni ne louons vos données à des tiers.</p>
-
-              <h3 className="font-bold text-foreground">Protection des Données</h3>
-              <p>Nous mettons en œuvre des mesures de sécurité techniques et organisationnelles appropriées pour protéger vos données contre l'accès non autorisé, conformément à la réglementation en vigueur.</p>
-
-              <h3 className="font-bold text-foreground">Vos Droits</h3>
-              <p>Vous avez le droit d'accéder, rectifier, supprimer ou limiter le traitement de vos données personnelles. Pour exercer ces droits, contactez-nous à info@somatisme.ma.</p>
-
-              <h3 className="font-bold text-foreground">Délai de Conservation</h3>
-              <p>Vos données sont conservées uniquement pendant la durée nécessaire à la prestation de nos services et conformément aux obligations légales.</p>
-
-              <h3 className="font-bold text-foreground">Contact</h3>
-              <p>Pour toute question concernant le traitement de vos données, contactez-nous à info@somatisme.ma ou par téléphone au 05 23 30 28 29.</p>
-            </div>
-          </div>
-          <div className="space-y-4 pt-4 border-t border-border">
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={termsAccepted}
-                onChange={(e) => setTermsAccepted(e.target.checked)}
-                className="mt-1 w-4 h-4 rounded border-border text-accent focus:ring-accent"
-              />
-              <span className="text-sm text-foreground">
-                {t('contact.terms.accept')}
-              </span>
-            </label>
-            <Button
-              onClick={handleTermsAccept}
-              disabled={!termsAccepted}
-              className="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-accent-foreground"
-            >
-              {t('contact.terms.submit')}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <Footer />
     </div>
