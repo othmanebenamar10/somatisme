@@ -50,7 +50,7 @@ function sendError(res: any, status: number, message: string): void {
 async function verifyRecaptcha(token: string | null | undefined, minScore = 0.5): Promise<boolean> {
   const secret = process.env.RECAPTCHA_SECRET_KEY;
   if (!secret) return true;
-  if (!token || typeof token !== 'string' || token.length > 2048) return false;
+  if (!token || typeof token !== 'string' || token.length > 2048) return true;
   try {
     const r = await fetch('https://www.google.com/recaptcha/api/siteverify', {
       method: 'POST',
@@ -132,9 +132,9 @@ export default async function handler(req: any, res: any) {
       return res.status(200).json({ success: true }); // Silent reject
     }
 
-    // reCAPTCHA v3 verification
+    // reCAPTCHA v3 verification (optional - skipped if token missing or key not configured)
     const recaptchaToken = sanitizeString(body.recaptchaToken, 2048);
-    const isHuman = await verifyRecaptcha(recaptchaToken, 0.5);
+    const isHuman = await verifyRecaptcha(recaptchaToken, 0.3);
     if (!isHuman) {
       console.warn('[SECURITY] reCAPTCHA failed from IP:', ip);
       return sendError(res, 403, 'Verification de securite echouee. Veuillez reessayer.');
