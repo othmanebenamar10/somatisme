@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import nodemailer from 'nodemailer';
 import {
   checkRateLimit,
   escapeHtml,
@@ -99,6 +98,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return sendError(res, 500, 'Email service unavailable');
     }
 
+    const { default: nodemailer } = await import('nodemailer');
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: parseInt(process.env.SMTP_PORT || '587'),
