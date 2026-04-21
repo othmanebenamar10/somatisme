@@ -52,8 +52,7 @@ export default function InvoiceTemplate({
           <div className="mt-4 text-sm">
             <p className="font-semibold">Contact:</p>
             <p>Email: info@somatisme.ma</p>
-            <p>Tél: 05 23 30 28 29</p>
-            <p>WhatsApp: +212 679 825 646</p>
+            <p>Tél: +212 679 825 646</p>
           </div>
         </div>
         <div className="text-right">

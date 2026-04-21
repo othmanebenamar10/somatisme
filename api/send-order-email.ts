@@ -193,7 +193,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 <div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:10px;padding:14px;text-align:center;">
                   <p style="font-size:20px;margin:0 0 4px;">📞</p>
                   <p style="color:#6b21a8;font-size:11px;font-weight:700;margin:0;">Support</p>
-                  <p style="color:#7e22ce;font-size:10px;margin:4px 0 0;">05 23 30 28 29</p>
+                  <p style="color:#7e22ce;font-size:10px;margin:4px 0 0;">+212 679 825 646</p>
                 </div>
               </td>
             </tr>

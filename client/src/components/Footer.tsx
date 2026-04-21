@@ -123,10 +123,9 @@ export default function Footer() {
               <li className="flex items-start gap-3 group">
                 <Phone size={18} className="mt-0.5 flex-shrink-0 text-accent group-hover:scale-110 transition-transform" />
                 <div className="flex flex-col">
-                  <a href="tel:+212523302829" className="text-gray-300 hover:text-accent transition-colors text-sm font-semibold">
+                  <a href="tel:+212679825646" className="text-gray-300 hover:text-accent transition-colors text-sm font-semibold">
                     {t('footer.phone')}
                   </a>
-                  <span className="text-xs text-gray-400">{t('footer.fax')}</span>
                 </div>
               </li>
               <li className="flex items-start gap-3 group">

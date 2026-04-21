@@ -186,8 +186,8 @@ export default function Contact() {
                 {
                   icon: Phone,
                   title: t('contact.info.phone'),
-                  value: '05 23 30 28 29',
-                  href: 'tel:+212523302829',
+                  value: '+212 679 825 646',
+                  href: 'tel:+212679825646',
                 },
                 {
                   icon: MapPin,

@@ -80,8 +80,7 @@ export function generateOrganizationSchema() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'Sales',
-      telephone: '+212523302829',
-      faxNumber: '+212523302833',
+      telephone: '+212679825646',
       email: 'info@somatisme.ma',
     },
     sameAs: [
@@ -106,7 +105,7 @@ export function generateLocalBusinessSchema() {
       addressLocality: 'Mohammedia',
       addressCountry: 'MA',
     },
-    telephone: '+212523302829',
+    telephone: '+212679825646',
     email: 'info@somatisme.ma',
     url: siteConfig.url,
     priceRange: '$$',
