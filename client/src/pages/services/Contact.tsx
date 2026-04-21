@@ -530,7 +530,7 @@ export default function Contact() {
             className="mt-16 rounded-3xl overflow-hidden border-2 border-accent/20 shadow-2xl shadow-accent/10 h-[400px] relative"
           >
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3319.4441551046!2d-7.3871439!3d33.684534!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzPCsDQxJzA0LjMiTiA3wrAyMycxMy43Ilc!5e0!3m2!1sfr!2sma!4v1713600000000!5m2!1sfr!2sma" 
+              src="https://maps.google.com/maps?q=33.680634,-7.401105&z=16&output=embed&hl=fr" 
               width="100%" 
               height="100%" 
               style={{ border: 0 }} 
