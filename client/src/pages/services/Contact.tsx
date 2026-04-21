@@ -530,7 +530,7 @@ export default function Contact() {
             className="mt-16 rounded-3xl overflow-hidden border-2 border-accent/20 shadow-2xl shadow-accent/10 h-[400px] relative"
           >
             <iframe 
-              src="https://maps.google.com/maps?q=33.680634,-7.401105&z=16&output=embed&hl=fr" 
+              src="https://maps.google.com/maps?q=33.6805959,-7.401109&z=19&output=embed&hl=fr" 
               width="100%" 
               height="100%" 
               style={{ border: 0 }} 
