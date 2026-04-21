@@ -1,3 +1,4 @@
+try { process.loadEnvFile('.env'); } catch { /* .env not found, use system env */ }
 import express from "express";
 import { createServer } from "http";
 import path from "path";
