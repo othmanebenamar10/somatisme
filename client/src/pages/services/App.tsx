@@ -21,7 +21,6 @@ import Contact from "./Contact";
 import Privacy from "./Privacy";
 import Terms from "./Terms";
 import Products from "../../pages/shop/Products";
-import Invoice from "../../pages/shop/Invoice";
 import WhatsAppButton from "../../components/WhatsAppButton";
 
 
@@ -51,7 +50,6 @@ function Router() {
       <Route path="/projects" component={Projects} />
       <Route path="/contact" component={Contact} />
       <Route path="/products" component={Products} />
-      <Route path="/invoice" component={Invoice} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
       <Route path="/404" component={NotFound} />
