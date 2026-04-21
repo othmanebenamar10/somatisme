@@ -107,7 +107,14 @@ export default function Contact() {
         }),
       });
 
-      const data = await response.json();
+      let data: Record<string, string> = {};
+      try {
+        data = await response.json();
+      } catch {
+        console.error('[CONTACT] Response not JSON, status:', response.status);
+        toast.error(`Erreur serveur (${response.status}). Veuillez réessayer.`);
+        return;
+      }
 
       if (response.ok) {
         toast.success(data.message || t('contact.form.success'));
@@ -118,8 +125,8 @@ export default function Contact() {
         toast.error(data.error || t('contact.form.error'));
       }
     } catch (error) {
-      toast.error(t('contact.form.error'));
-      console.error('Form submission error:', error);
+      console.error('[CONTACT] Fetch error:', error);
+      toast.error('Impossible de joindre le serveur. Vérifiez votre connexion.');
     } finally {
       setIsSubmitting(false);
     }
