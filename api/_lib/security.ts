@@ -1,7 +1,16 @@
 /**
  * Shared security utilities for Vercel serverless API functions
  */
-import type { NextApiRequest, NextApiResponse } from 'next';
+type ApiRequest = {
+  method?: string;
+  headers: Record<string, string | string[] | undefined>;
+  body?: Record<string, unknown>;
+  socket?: { remoteAddress?: string };
+};
+type ApiResponse = {
+  setHeader(name: string, value: string): ApiResponse;
+  status(code: number): { json(data: unknown): void; end(): void };
+};
 
 // ── In-memory rate limiter (per function instance) ──────────────────────────
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
@@ -61,7 +70,7 @@ export function isValidPhone(phone: unknown): boolean {
 }
 
 // ── Get real client IP ───────────────────────────────────────────────────────
-export function getClientIp(req: NextApiRequest): string {
+export function getClientIp(req: ApiRequest): string {
   const forwarded = req.headers['x-forwarded-for'];
   if (typeof forwarded === 'string') {
     return forwarded.split(',')[0].trim();
@@ -70,7 +79,7 @@ export function getClientIp(req: NextApiRequest): string {
 }
 
 // ── CORS headers for own domain only ────────────────────────────────────────
-export function setCorsHeaders(res: NextApiResponse): void {
+export function setCorsHeaders(res: ApiResponse): void {
   const allowed = process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
     : 'https://somatisme.vercel.app';
@@ -81,7 +90,7 @@ export function setCorsHeaders(res: NextApiResponse): void {
 
 // ── Generic secure error response (never expose internals) ──────────────────
 export function sendError(
-  res: NextApiResponse,
+  res: ApiResponse,
   status: number,
   message: string
 ): void {

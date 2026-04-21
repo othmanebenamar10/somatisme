@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
 import {
   checkRateLimit,
   escapeHtml,
@@ -10,7 +9,7 @@ import {
   verifyRecaptcha,
 } from './_lib/security';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: any, res: any) {
   setCorsHeaders(res);
 
   if (req.method === 'OPTIONS') return res.status(204).end();
