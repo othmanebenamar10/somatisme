@@ -1,12 +1,31 @@
 import nodemailer from 'nodemailer';
 
+const _rl = new Map<string, { count: number; resetAt: number }>();
+function rateLimit(ip: string, max = 5, windowMs = 60_000): boolean {
+  const now = Date.now();
+  const e = _rl.get(ip);
+  if (!e || now > e.resetAt) { _rl.set(ip, { count: 1, resetAt: now + windowMs }); return true; }
+  if (e.count >= max) return false;
+  e.count++; return true;
+}
+function getIp(req: any): string {
+  const fwd = req.headers['x-forwarded-for'];
+  return (typeof fwd === 'string' ? fwd.split(',')[0].trim() : null) || req.socket?.remoteAddress || 'unknown';
+}
+
 export default async function handler(req: any, res: any) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'https://somatisme.vercel.app';
+  res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const ip = getIp(req);
+  if (!rateLimit(ip)) return res.status(429).json({ error: 'Trop de requêtes. Réessayez dans une minute.' });
 
   try {
     const body = req.body || {};
@@ -124,6 +143,6 @@ export default async function handler(req: any, res: any) {
 
   } catch (error: any) {
     console.error('[CONTACT] Error:', error?.message || error);
-    return res.status(500).json({ error: error?.message || 'Erreur lors de l\'envoi' });
+    return res.status(500).json({ error: 'Erreur lors de l\'envoi du message.' });
   }
 }

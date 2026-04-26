@@ -1,9 +1,33 @@
 import Stripe from 'stripe';
 
+const _rl = new Map<string, { count: number; resetAt: number }>();
+function rateLimit(ip: string, max = 10, windowMs = 60_000): boolean {
+  const now = Date.now();
+  const e = _rl.get(ip);
+  if (!e || now > e.resetAt) { _rl.set(ip, { count: 1, resetAt: now + windowMs }); return true; }
+  if (e.count >= max) return false;
+  e.count++; return true;
+}
+function getIp(req: any): string {
+  const fwd = req.headers['x-forwarded-for'];
+  return (typeof fwd === 'string' ? fwd.split(',')[0].trim() : null) || req.socket?.remoteAddress || 'unknown';
+}
+
 export default async function handler(req: any, res: any) {
+  const origin = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'https://somatisme.vercel.app';
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  const ip = getIp(req);
+  if (!rateLimit(ip)) return res.status(429).json({ error: 'Too many requests' });
 
   try {
     const { items, customerInfo } = req.body;
@@ -51,7 +75,6 @@ export default async function handler(req: any, res: any) {
     return res.status(200).json({ sessionId: session.id });
   } catch (error) {
     console.error('Stripe checkout error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return res.status(500).json({ error: errorMessage });
+    return res.status(500).json({ error: 'Erreur lors de la création de la session de paiement.' });
   }
 }
