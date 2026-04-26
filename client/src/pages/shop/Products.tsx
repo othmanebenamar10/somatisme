@@ -956,12 +956,14 @@ Paiement a la livraison.`;
                 
                 {/* Search input */}
                 <div className="relative">
-                  <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-accent h-6 w-6 group-hover:scale-110 transition-transform" />
-                  <Input
+                  <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-cyan-500 h-6 w-6 group-hover:scale-110 transition-transform z-10" />
+                  <input
+                    type="text"
                     placeholder={language === 'ar' ? 'ابحث عن منتج...' : 'Rechercher un produit...'}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-16 pr-6 py-4 bg-background/50 border-2 border-accent/30 rounded-2xl text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all text-lg font-medium"
+                    style={{ color: '#1e293b', backgroundColor: '#ffffff' }}
+                    className="w-full pl-16 pr-10 py-4 border-2 border-cyan-400/40 rounded-2xl placeholder-gray-400 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all text-lg font-medium shadow-sm"
                   />
                   {searchQuery && (
                     <motion.button
