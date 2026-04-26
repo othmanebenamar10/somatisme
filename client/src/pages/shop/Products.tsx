@@ -183,6 +183,7 @@ export default function Products() {
   const [orderFormOpenTime, setOrderFormOpenTime] = useState(0); // Timing check
   const { getToken: getRecaptchaToken } = useRecaptcha();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sortBy, setSortBy] = useState<'default' | 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc'>('default');
 
   const fadeInUp = {
     initial: { opacity: 0, y: 20 },
@@ -202,18 +203,26 @@ export default function Products() {
     transition: { duration: 0.5 },
   };
 
-  const filteredProducts = products.filter((product) => {
-    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-    const searchLower = searchQuery.toLowerCase();
-    const matchesSearch = searchQuery === '' || 
-      product.name.toLowerCase().includes(searchLower) ||
-      product.nameAr.toLowerCase().includes(searchLower) ||
-      product.description.toLowerCase().includes(searchLower) ||
-      product.descriptionAr.toLowerCase().includes(searchLower) ||
-      product.brand.toLowerCase().includes(searchLower) ||
-      product.category.toLowerCase().includes(searchLower);
-    return matchesCategory && matchesSearch;
-  });
+  const filteredProducts = products
+    .filter((product) => {
+      const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch = searchQuery === '' ||
+        product.name.toLowerCase().includes(searchLower) ||
+        product.nameAr.toLowerCase().includes(searchLower) ||
+        product.description.toLowerCase().includes(searchLower) ||
+        product.descriptionAr.toLowerCase().includes(searchLower) ||
+        product.brand.toLowerCase().includes(searchLower) ||
+        product.category.toLowerCase().includes(searchLower);
+      return matchesCategory && matchesSearch;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'name-asc') return a.name.localeCompare(b.name);
+      if (sortBy === 'name-desc') return b.name.localeCompare(a.name);
+      if (sortBy === 'price-asc') return a.price - b.price;
+      if (sortBy === 'price-desc') return b.price - a.price;
+      return 0;
+    });
 
   const addToCart = (product: Product) => {
     setCart([...cart, product]);
@@ -993,6 +1002,26 @@ Paiement a la livraison.`;
                     </button>
                   </motion.div>
                 ))}
+              </motion.div>
+
+              {/* Sort Dropdown */}
+              <motion.div
+                {...fadeInUp}
+                transition={{ delay: 0.4 }}
+                className="relative"
+              >
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                  className="appearance-none pl-4 pr-10 py-3 rounded-xl font-semibold text-sm bg-background/50 border-2 border-cyan-400/30 text-foreground hover:border-cyan-400/60 focus:border-cyan-400 focus:outline-none transition-all cursor-pointer"
+                >
+                  <option value="default">{language === 'ar' ? 'الترتيب' : 'Trier par'}</option>
+                  <option value="name-asc">{language === 'ar' ? 'الاسم أ→ي' : 'Nom A→Z'}</option>
+                  <option value="name-desc">{language === 'ar' ? 'الاسم ي→أ' : 'Nom Z→A'}</option>
+                  <option value="price-asc">{language === 'ar' ? 'السعر ↑' : 'Prix ↑'}</option>
+                  <option value="price-desc">{language === 'ar' ? 'السعر ↓' : 'Prix ↓'}</option>
+                </select>
+                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-cyan-500 text-xs">▼</span>
               </motion.div>
 
               {/* Cart Button - Premium */}
