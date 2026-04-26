@@ -943,95 +943,54 @@ Paiement a la livraison.`;
         <div className="absolute bottom-0 left-0 w-56 h-56 bg-secondary/10 rounded-full blur-[100px] opacity-50"></div>
 
         <div className="container relative z-10">
-          <div className="bg-gradient-to-br from-card/80 to-card/40 border border-accent/20 rounded-3xl p-8 backdrop-blur-sm hover:border-accent/40 transition-all">
-            <div className="flex flex-col lg:flex-row gap-8 items-center justify-between">
-              {/* Search Bar - Premium */}
-              <motion.div
-                {...fadeInLeft}
-                transition={{ delay: 0.1 }}
-                className="relative flex-1 w-full max-w-2xl group"
-              >
-                {/* Glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-accent to-secondary rounded-2xl blur opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                
-                {/* Search input */}
-                <div className="relative">
-                  <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-cyan-500 h-6 w-6 group-hover:scale-110 transition-transform z-10" />
-                  <input
-                    type="text"
-                    placeholder={language === 'ar' ? 'ابحث عن منتج...' : 'Rechercher un produit...'}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ color: '#1e293b', backgroundColor: '#ffffff' }}
-                    className="w-full pl-16 pr-10 py-4 border-2 border-cyan-400/40 rounded-2xl placeholder-gray-400 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all text-lg font-medium shadow-sm"
-                  />
-                  {searchQuery && (
-                    <motion.button
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-accent transition-colors"
-                    >
-                      ✕
-                    </motion.button>
-                  )}
-                </div>
-              </motion.div>
-              {/* Category Filters - Premium */}
-              <motion.div
-                {...fadeInUp}
-                transition={{ delay: 0.2 }}
-                className="flex gap-3 flex-wrap justify-center lg:justify-start"
-              >
-                {categories.map((category, index) => (
-                  <motion.div
-                    key={category.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + index * 0.05 }}
-                    whileHover={{ scale: 1.08 }}
-                    whileTap={{ scale: 0.92 }}
+          <div className="bg-gradient-to-br from-card/80 to-card/40 border border-accent/20 rounded-3xl p-6 backdrop-blur-sm hover:border-accent/40 transition-all space-y-5">
+
+            {/* ROW 1 : Search + Sort + Cart */}
+            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+
+              {/* Search Bar */}
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 h-5 w-5 z-10 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder={language === 'ar' ? 'ابحث عن منتج...' : 'Rechercher un produit...'}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ color: '#1e293b', backgroundColor: '#ffffff' }}
+                  className="w-full pl-12 pr-10 py-3 border-2 border-cyan-400/40 rounded-xl placeholder-gray-400 focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all text-base font-medium shadow-sm"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-cyan-500 transition-colors text-lg leading-none"
                   >
-                    <button
-                      onClick={() => setSelectedCategory(category.id)}
-                      className={`px-6 py-3 rounded-xl font-bold uppercase tracking-wide text-sm transition-all duration-300 ${
-                        selectedCategory === category.id
-                          ? 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-lg shadow-cyan-500/50'
-                          : 'bg-background/50 border-2 border-cyan-400/30 text-foreground hover:border-cyan-400/60 hover:bg-cyan-400/10'
-                      }`}
-                    >
-                      {language === 'ar' ? category.nameAr : category.name}
-                    </button>
-                  </motion.div>
-                ))}
-              </motion.div>
+                    ✕
+                  </button>
+                )}
+              </div>
 
               {/* Sort Dropdown */}
-              <motion.div
-                {...fadeInUp}
-                transition={{ delay: 0.4 }}
-                className="relative"
-              >
+              <div className="relative shrink-0">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                  className="appearance-none pl-4 pr-10 py-3 rounded-xl font-semibold text-sm bg-background/50 border-2 border-cyan-400/30 text-foreground hover:border-cyan-400/60 focus:border-cyan-400 focus:outline-none transition-all cursor-pointer"
+                  style={{ color: '#1e293b', backgroundColor: '#ffffff' }}
+                  className="appearance-none w-full sm:w-auto pl-4 pr-9 py-3 border-2 border-cyan-400/40 rounded-xl text-sm font-semibold focus:border-cyan-500 focus:outline-none transition-all cursor-pointer shadow-sm"
                 >
                   <option value="default">{language === 'ar' ? 'الترتيب' : 'Trier par'}</option>
                   <option value="name-asc">{language === 'ar' ? 'الاسم أ→ي' : 'Nom A→Z'}</option>
                   <option value="name-desc">{language === 'ar' ? 'الاسم ي→أ' : 'Nom Z→A'}</option>
-                  <option value="price-asc">{language === 'ar' ? 'السعر ↑' : 'Prix ↑'}</option>
-                  <option value="price-desc">{language === 'ar' ? 'السعر ↓' : 'Prix ↓'}</option>
+                  <option value="price-asc">{language === 'ar' ? 'السعر ↑' : 'Prix croissant'}</option>
+                  <option value="price-desc">{language === 'ar' ? 'السعر ↓' : 'Prix décroissant'}</option>
                 </select>
                 <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-cyan-500 text-xs">▼</span>
-              </motion.div>
+              </div>
 
-              {/* Cart Button - Premium */}
+              {/* Cart Button */}
               <motion.div
-                {...fadeInUp}
-                transition={{ delay: 0.5 }}
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.92 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="shrink-0"
               >
                 <button
                   onClick={() => setShowCart(!showCart)}
@@ -1052,6 +1011,24 @@ Paiement a la livraison.`;
                 </button>
               </motion.div>
             </div>
+
+            {/* ROW 2 : Category filters */}
+            <div className="flex gap-2 flex-wrap justify-center">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`px-5 py-2 rounded-xl font-semibold text-sm transition-all duration-200 ${
+                    selectedCategory === category.id
+                      ? 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-md shadow-cyan-500/40'
+                      : 'bg-white border-2 border-cyan-400/30 text-slate-700 hover:border-cyan-400 hover:bg-cyan-50'
+                  }`}
+                >
+                  {language === 'ar' ? category.nameAr : category.name}
+                </button>
+              ))}
+            </div>
+
           </div>
         </div>
       </motion.section>
