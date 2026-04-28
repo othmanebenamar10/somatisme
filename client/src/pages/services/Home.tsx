@@ -58,20 +58,19 @@ export default function Home() {
   };
 
   const partnersData = [
-    { name: 'Safran', url: 'https://www.safran-group.com', logoUrl: 'https://logo.clearbit.com/safran-group.com' },
-    { name: 'ADF', url: '#', logoUrl: 'https://ui-avatars.com/api/?name=ADF&background=0e7490&color=fff&bold=true&size=200' },
-    { name: 'Scantech Australia', url: 'https://www.scantech.com.au', logoUrl: 'https://logo.clearbit.com/scantech.com.au' },
-    { name: 'HMI', url: '#', logoUrl: 'https://ui-avatars.com/api/?name=HMI&background=0e7490&color=fff&bold=true&size=200' },
-    { name: 'OCP', url: 'https://www.ocpgroup.ma', logoUrl: 'https://logo.clearbit.com/ocpgroup.ma' },
-    { name: 'Bimbo', url: 'https://www.grupobimbo.com', logoUrl: 'https://logo.clearbit.com/grupobimbo.com' },
-    { name: 'Somasteel', url: '#', logoUrl: 'https://ui-avatars.com/api/?name=Somasteel&background=334155&color=fff&bold=true&size=200' },
-    { name: 'Sonasid', url: 'https://www.sonasid.ma', logoUrl: 'https://logo.clearbit.com/sonasid.ma' },
-    { name: 'Somachame', url: '#', logoUrl: 'https://ui-avatars.com/api/?name=Somachame&background=334155&color=fff&bold=true&size=200' },
-    { name: 'Danone', url: 'https://www.danone.com', logoUrl: 'https://logo.clearbit.com/danone.com' },
-    { name: 'Coca-Cola', url: 'https://www.coca-cola.com', logoUrl: 'https://logo.clearbit.com/coca-cola.com' },
-    { name: 'P&G', url: 'https://www.pg.com', logoUrl: '/pg.png' },
-    { name: 'Fater', url: '#', logoUrl: '/brands/FATER.png' },
-    { name: 'Leaderfood', url: '#', logoUrl: 'https://ui-avatars.com/api/?name=Leaderfood&background=166534&color=fff&bold=true&size=200' },
+    { name: 'Safran', logoUrl: '/brands/safran.png' },
+    { name: 'ADF', logoUrl: '/brands/ADF.png' },
+    { name: 'Scantech Australia', logoUrl: '/brands/Scantech Australia.png' },
+    { name: 'OCP', logoUrl: '/brands/ocp.png' },
+    { name: 'Bimbo', logoUrl: '/brands/bimbo.png' },
+    { name: 'Somasteel', logoUrl: '/brands/somasteel.png' },
+    { name: 'Sonasid', logoUrl: '/brands/sonasid.png' },
+    { name: 'Somachame', logoUrl: '/brands/Somachame.png' },
+    { name: 'Danone', logoUrl: '/brands/danone.png' },
+    { name: 'Coca-Cola', logoUrl: '/brands/Coca-cola.png' },
+    { name: 'P&G', logoUrl: '/pg.png' },
+    { name: 'Fater', logoUrl: '/brands/FATER.png' },
+    { name: 'Leaderfood', logoUrl: '/brands/Leaderfood.png' },
   ];
 
   return (

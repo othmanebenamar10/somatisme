@@ -15,20 +15,19 @@ export default function About() {
   const { t } = useLanguage();
 
   const partners = [
-    { name: 'Safran', url: 'https://www.safran-group.com', desc: 'Groupe international de haute technologie dans l\'aéronautique et la défense.', logoUrl: 'https://logo.clearbit.com/safran-group.com' },
-    { name: 'ADF', url: '#', desc: 'Partenaire industriel spécialisé dans les équipements de process.', logoUrl: 'https://ui-avatars.com/api/?name=ADF&background=0e7490&color=fff&bold=true&size=200' },
-    { name: 'Scantech Australia', url: 'https://www.scantech.com.au', desc: 'Leader mondial des analyseurs en ligne pour l\'industrie minière et cimentière.', logoUrl: 'https://logo.clearbit.com/scantech.com.au' },
-    { name: 'HMI', url: '#', desc: 'Solutions d\'interface homme-machine et automatisation industrielle.', logoUrl: 'https://ui-avatars.com/api/?name=HMI&background=0e7490&color=fff&bold=true&size=200' },
-    { name: 'OCP', url: 'https://www.ocpgroup.ma', desc: 'Office Chérifien des Phosphates – Leader mondial du phosphate et dérivés.', logoUrl: 'https://logo.clearbit.com/ocpgroup.ma' },
-    { name: 'Bimbo', url: 'https://www.grupobimbo.com', desc: 'Multinationale de boulangerie industrielle, présente au Maroc.', logoUrl: 'https://logo.clearbit.com/grupobimbo.com' },
-    { name: 'Somasteel', url: '#', desc: 'Sidérurgie et transformation de l\'acier au Maroc.', logoUrl: 'https://ui-avatars.com/api/?name=Somasteel&background=334155&color=fff&bold=true&size=200' },
-    { name: 'Sonasid', url: 'https://www.sonasid.ma', desc: 'Société Nationale de Sidérurgie – Premier producteur d\'acier au Maroc.', logoUrl: 'https://logo.clearbit.com/sonasid.ma' },
-    { name: 'Somachame', url: '#', desc: 'Industrie chimique et traitement de surface au Maroc.', logoUrl: 'https://ui-avatars.com/api/?name=Somachame&background=334155&color=fff&bold=true&size=200' },
-    { name: 'Danone', url: 'https://www.danone.com', desc: 'Multinationale agroalimentaire – Produits laitiers et nutrition.', logoUrl: 'https://logo.clearbit.com/danone.com' },
-    { name: 'Coca-Cola', url: 'https://www.coca-cola.com', desc: 'Leader mondial des boissons – Embouteillage et process industriel.', logoUrl: 'https://logo.clearbit.com/coca-cola.com' },
-    { name: 'P&G', url: 'https://www.pg.com', desc: 'Leader mondial des produits de grande consommation et d\'hygiène.', logoUrl: '/pg.png' },
-    { name: 'Fater', url: '#', desc: 'Partenaire industriel en produits d\'hygiène et santé.', logoUrl: '/brands/FATER.png' },
-    { name: 'Leaderfood', url: '#', desc: 'Industrie agroalimentaire au Maroc – transformation et conditionnement.', logoUrl: 'https://ui-avatars.com/api/?name=Leaderfood&background=166534&color=fff&bold=true&size=200' },
+    { name: 'Safran', url: 'https://www.safran-group.com', sector: 'Aéronautique & Défense', desc: 'Groupe international de haute technologie dans l\'aéronautique, la défense et la sécurité. Présence mondiale avec des équipements de haute précision.', logoUrl: '/brands/safran.png' },
+    { name: 'ADF', url: '#', sector: 'Équipements Industriels', desc: 'Partenaire industriel spécialisé dans la conception et la fourniture d\'équipements de process pour l\'industrie.', logoUrl: '/brands/ADF.png' },
+    { name: 'Scantech Australia', url: 'https://www.scantech.com.au', sector: 'Analyse & Instrumentation', desc: 'Leader mondial des analyseurs en ligne pour l\'industrie minière, cimentière et des matériaux en vrac. Technologie de pointe pour le contrôle qualité.', logoUrl: '/brands/Scantech Australia.png' },
+    { name: 'OCP', url: 'https://www.ocpgroup.ma', sector: 'Mines & Phosphates', desc: 'Office Chérifien des Phosphates – Leader mondial de la production et transformation de phosphate. Acteur clé de l\'industrie marocaine.', logoUrl: '/brands/ocp.png' },
+    { name: 'Bimbo', url: 'https://www.grupobimbo.com', sector: 'Agroalimentaire', desc: 'Multinationale de boulangerie industrielle, présente dans plus de 33 pays dont le Maroc. Production à grande échelle nécessitant une automatisation avancée.', logoUrl: '/brands/bimbo.png' },
+    { name: 'Somasteel', url: '#', sector: 'Sidérurgie', desc: 'Entreprise marocaine spécialisée dans la sidérurgie et la transformation de l\'acier. Production de profilés et structures métalliques pour l\'industrie.', logoUrl: '/brands/somasteel.png' },
+    { name: 'Sonasid', url: 'https://www.sonasid.ma', sector: 'Sidérurgie', desc: 'Société Nationale de Sidérurgie – Premier producteur d\'acier au Maroc. Filiale d\'ArcelorMittal, référence de l\'industrie métallurgique nationale.', logoUrl: '/brands/sonasid.png' },
+    { name: 'Somachame', url: '#', sector: 'Industrie Chimique', desc: 'Industrie chimique et traitement de surface au Maroc. Fabrication et traitement de produits chimiques industriels pour divers secteurs.', logoUrl: '/brands/Somachame.png' },
+    { name: 'Danone', url: 'https://www.danone.com', sector: 'Agroalimentaire', desc: 'Multinationale agroalimentaire de référence – Produits laitiers, eaux et nutrition médicale. Ligne de production automatisée à haut débit.', logoUrl: '/brands/danone.png' },
+    { name: 'Coca-Cola', url: 'https://www.coca-cola.ma', sector: 'Boissons', desc: 'Leader mondial des boissons rafraîchissantes. Embouteillage et process industriel à grande cadence nécessitant des solutions d\'automatisation fiables.', logoUrl: '/brands/Coca-cola.png' },
+    { name: 'P&G', url: 'https://www.pg.com', sector: 'Grande Consommation', desc: 'Procter & Gamble – Leader mondial des produits de grande consommation, hygiène et beauté. Lignes de production hautement automatisées.', logoUrl: '/pg.png' },
+    { name: 'Fater', url: '#', sector: 'Hygiène & Santé', desc: 'Partenaire industriel en produits d\'hygiène et santé. Conception et fabrication de produits d\'absorption pour le marché africain et mondial.', logoUrl: '/brands/FATER.png' },
+    { name: 'Leaderfood', url: '#', sector: 'Agroalimentaire', desc: 'Industrie agroalimentaire marocaine – Transformation, conditionnement et distribution de produits alimentaires sur le marché national.', logoUrl: '/brands/Leaderfood.png' },
   ];
 
   return (
@@ -297,35 +296,45 @@ export default function About() {
             {partners.map((partner, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -10 }}
-                className="card-premium p-8 group text-center"
+                transition={{ delay: index * 0.07 }}
+                whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(6,182,212,0.12)' }}
+                className="card-premium p-7 group flex flex-col gap-5"
               >
-                <div className="w-24 h-24 mx-auto bg-muted rounded-2xl flex items-center justify-center mb-6 group-hover:bg-accent/10 transition-all duration-500 border border-transparent group-hover:border-accent/20 p-4">
-                  <img
-                    src={partner.logoUrl}
-                    alt={partner.name}
-                    className="max-h-full max-w-full object-contain grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all"
-                    onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(partner.name)}&background=ea580c&color=fff&bold=true&size=200`; }}
-                    title={partner.name}
-                  />
+                {/* Logo + sector badge */}
+                <div className="flex items-center gap-4">
+                  <div className="w-20 h-20 shrink-0 bg-white rounded-2xl flex items-center justify-center border border-border group-hover:border-cyan-400/40 transition-all p-3 shadow-sm">
+                    <img
+                      src={partner.logoUrl}
+                      alt={partner.name}
+                      className="max-h-full max-w-full object-contain"
+                      onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(partner.name)}&background=0e7490&color=fff&bold=true&size=200`; }}
+                    />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-foreground group-hover:text-cyan-400 transition-colors leading-tight">{partner.name}</h3>
+                    <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-cyan-500/10 text-cyan-500 border border-cyan-500/20">{partner.sector}</span>
+                  </div>
                 </div>
 
-                <div className="mb-4">
-                  <h3 className="text-lg font-bold text-foreground group-hover:text-accent transition-colors">
-                    {partner.name}
-                  </h3>
-                  {partner.url !== '#' && (
-                    <a href={partner.url} target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline inline-flex items-center gap-1 mt-1">
-                      {partner.url.replace('https://', '').replace('http://', '')} <Globe size={12} />
-                    </a>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed italic">
-                  {partner.desc}
-                </p>
+                {/* Description */}
+                <p className="text-sm text-muted-foreground leading-relaxed flex-1">{partner.desc}</p>
+
+                {/* Website link */}
+                {partner.url !== '#' ? (
+                  <a
+                    href={partner.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-xs font-semibold text-cyan-500 hover:text-cyan-400 transition-colors mt-auto"
+                  >
+                    <Globe size={13} />
+                    {partner.url.replace('https://www.', '').replace('https://', '')}
+                  </a>
+                ) : (
+                  <span className="text-xs text-muted-foreground/50 mt-auto">Site web non disponible</span>
+                )}
               </motion.div>
             ))}
           </div>
