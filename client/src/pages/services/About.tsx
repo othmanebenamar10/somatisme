@@ -57,11 +57,11 @@ export default function About() {
               <span className="text-cyan-400 font-bold text-sm uppercase tracking-widest">Notre Histoire</span>
             </motion.div>
 
-            <h1 className="text-7xl md:text-8xl font-black text-white mb-8 leading-tight">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white mb-8 leading-tight">
               À Propos de <br />
               <span className="bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-400 bg-clip-text text-transparent">SOMATISME</span>
             </h1>
-            <p className="text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
               {t('about.hero.subtitle')}
             </p>
           </motion.div>
@@ -69,7 +69,7 @@ export default function About() {
       </section>
 
       {/* Secteurs d'activité - INDUSTRIAL PROFESSIONAL DESIGN */}
-      <section className="py-32 relative overflow-hidden bg-background">
+      <section className="py-16 sm:py-24 lg:py-32 relative overflow-hidden bg-background">
         <div className="absolute inset-0 opacity-30" style={{
           backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(6, 182, 212, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(45, 55, 72, 0.15) 0%, transparent 50%)'
         }}></div>
@@ -80,8 +80,8 @@ export default function About() {
             whileInView={{ opacity: 1, y: 0 }}
             className="text-center mb-20"
           >
-            <h2 className="text-6xl md:text-7xl font-black text-foreground mb-6">{t('about.sectors.title')}</h2>
-            <p className="text-2xl text-muted-foreground max-w-3xl mx-auto">{t('about.sectors.subtitle')}</p>
+            <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-foreground mb-6">{t('about.sectors.title')}</h2>
+            <p className="text-base sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">{t('about.sectors.subtitle')}</p>
           </motion.div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">

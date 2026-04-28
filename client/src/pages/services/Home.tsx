@@ -91,7 +91,7 @@ export default function Home() {
         }}></div>
 
         <div className="container relative z-10 py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center">
             {/* Left Content - NEW STYLE */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
@@ -115,7 +115,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.8 }}
-                className="text-6xl md:text-7xl lg:text-8xl font-black text-white leading-tight"
+                className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight"
               >
                 {t('home.hero.title')}
                 <br />
@@ -127,7 +127,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.8 }}
-                className="text-xl text-gray-200 max-w-2xl leading-relaxed"
+                className="text-base sm:text-xl text-gray-200 max-w-2xl leading-relaxed"
               >
                 {t('home.hero.desc')}
               </motion.p>
@@ -165,7 +165,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6, duration: 0.8 }}
-                className="flex gap-12 pt-8 border-t border-white/10"
+                className="flex flex-wrap gap-6 sm:gap-12 pt-8 border-t border-white/10"
               >
                 {[
                   { value: '50+', label: t('home.hero.stats.projects') },
@@ -208,7 +208,7 @@ export default function Home() {
               <motion.div
                 animate={{ y: [0, -15, 0] }}
                 transition={{ duration: 5, repeat: Infinity }}
-                className="absolute -bottom-8 -left-8 bg-gradient-to-br from-cyan-500/90 to-cyan-600 p-6 rounded-2xl max-w-xs shadow-2xl"
+                className="hidden sm:block absolute -bottom-8 -left-8 bg-gradient-to-br from-cyan-500/90 to-cyan-600 p-6 rounded-2xl max-w-xs shadow-2xl"
               >
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
@@ -223,7 +223,7 @@ export default function Home() {
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                className="absolute -top-4 -right-4 w-32 h-32 border-2 border-accent/30 rounded-full"
+                className="hidden sm:block absolute -top-4 -right-4 w-32 h-32 border-2 border-accent/30 rounded-full"
               ></motion.div>
             </motion.div>
           </div>
@@ -242,8 +242,8 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <h2 className="text-5xl font-black text-white mb-4">{t('about.partners.title')}</h2>
-            <p className="text-xl text-gray-200 max-w-2xl mx-auto">{t('about.partners.subtitle')}</p>
+            <h2 className="text-3xl sm:text-5xl font-black text-white mb-4">{t('about.partners.title')}</h2>
+            <p className="text-base sm:text-xl text-gray-200 max-w-2xl mx-auto">{t('about.partners.subtitle')}</p>
           </motion.div>
         </div>
 
@@ -251,7 +251,7 @@ export default function Home() {
           <motion.div
             animate={{ x: ["0%", "-50%"] }}
             transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-            className="flex flex-none gap-24 pr-24 items-center"
+            className="flex flex-none gap-12 pr-12 sm:gap-24 sm:pr-24 items-center"
           >
             {[...partnersData, ...partnersData].map((partner, index) => (
               <motion.div
@@ -286,8 +286,8 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="text-center mb-20"
           >
-            <h2 className="text-6xl md:text-7xl font-black text-foreground mb-6">{t('home.expertise.title')}</h2>
-            <p className="text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-foreground mb-6">{t('home.expertise.title')}</h2>
+            <p className="text-base sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               {t('home.expertise.subtitle')}
             </p>
           </motion.div>

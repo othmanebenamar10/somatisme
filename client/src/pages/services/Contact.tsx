@@ -160,11 +160,11 @@ export default function Contact() {
               <span className="text-accent font-bold text-sm uppercase tracking-widest">Nous Contacter</span>
             </motion.div>
 
-            <h1 className="text-7xl md:text-8xl font-black text-white mb-8 leading-tight">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white mb-8 leading-tight">
               Parlons de Votre <br />
               <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">Projet</span>
             </h1>
-            <p className="text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
               {t('contact.hero.subtitle')}
             </p>
           </motion.div>

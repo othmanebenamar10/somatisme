@@ -37,7 +37,7 @@ export default function Terms() {
               <span className="text-accent font-bold text-sm uppercase tracking-widest">Termes & Conditions</span>
             </motion.div>
 
-            <h1 className="text-6xl md:text-7xl font-black text-white mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight">
               Conditions <br />
               <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">d'Utilisation</span>
             </h1>

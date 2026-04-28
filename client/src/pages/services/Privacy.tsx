@@ -37,7 +37,7 @@ export default function Privacy() {
               <span className="text-accent font-bold text-sm uppercase tracking-widest">Sécurité & Confidentialité</span>
             </motion.div>
 
-            <h1 className="text-6xl md:text-7xl font-black text-white mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight">
               Politique de <br />
               <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">Confidentialité</span>
             </h1>
