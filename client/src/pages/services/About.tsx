@@ -15,12 +15,20 @@ export default function About() {
   const { t } = useLanguage();
 
   const partners = [
-    { name: 'Procter & Gamble', url: 'https://www.pg.ma', desc: 'Leader mondial des produits de grande consommation.', logoUrl: '/pg.png' },
-    { name: 'Smart Strategies', url: 'https://www.smartstrategies.ma', desc: 'Société spécialisée dans l\'industrie de la sidérurgie.', logoUrl: '/brands/Smart-Strategies.png' },
-    { name: 'Espace Metal', url: 'http://www.espacemetal.net/', desc: 'Chaudronnerie, charpente métallique et tuyauterie.', logoUrl: '/brands/Espace-Metal.png' },
-    { name: 'Comaprom', url: '#', desc: 'Produits métallurgiques et industrie du tube soudé.', logoUrl: '/brands/Comaprom.png' },
-    { name: 'Electroprint', url: '#', desc: 'Solutions avancées de marquage et impression industrielle.', logoUrl: '/brands/Electroprint.png' },
-    { name: 'FATER', url: '#', desc: 'Partenaire industriel majeur en produits d\'hygiène et santé.', logoUrl: '/brands/FATER.png' },
+    { name: 'Safran', url: 'https://www.safran-group.com', desc: 'Groupe international de haute technologie dans l\'aéronautique et la défense.', logoUrl: 'https://logo.clearbit.com/safran-group.com' },
+    { name: 'ADF', url: '#', desc: 'Partenaire industriel spécialisé dans les équipements de process.', logoUrl: 'https://ui-avatars.com/api/?name=ADF&background=0e7490&color=fff&bold=true&size=200' },
+    { name: 'Scantech Australia', url: 'https://www.scantech.com.au', desc: 'Leader mondial des analyseurs en ligne pour l\'industrie minière et cimentière.', logoUrl: 'https://logo.clearbit.com/scantech.com.au' },
+    { name: 'HMI', url: '#', desc: 'Solutions d\'interface homme-machine et automatisation industrielle.', logoUrl: 'https://ui-avatars.com/api/?name=HMI&background=0e7490&color=fff&bold=true&size=200' },
+    { name: 'OCP', url: 'https://www.ocpgroup.ma', desc: 'Office Chérifien des Phosphates – Leader mondial du phosphate et dérivés.', logoUrl: 'https://logo.clearbit.com/ocpgroup.ma' },
+    { name: 'Bimbo', url: 'https://www.grupobimbo.com', desc: 'Multinationale de boulangerie industrielle, présente au Maroc.', logoUrl: 'https://logo.clearbit.com/grupobimbo.com' },
+    { name: 'Somasteel', url: '#', desc: 'Sidérurgie et transformation de l\'acier au Maroc.', logoUrl: 'https://ui-avatars.com/api/?name=Somasteel&background=334155&color=fff&bold=true&size=200' },
+    { name: 'Sonasid', url: 'https://www.sonasid.ma', desc: 'Société Nationale de Sidérurgie – Premier producteur d\'acier au Maroc.', logoUrl: 'https://logo.clearbit.com/sonasid.ma' },
+    { name: 'Somachame', url: '#', desc: 'Industrie chimique et traitement de surface au Maroc.', logoUrl: 'https://ui-avatars.com/api/?name=Somachame&background=334155&color=fff&bold=true&size=200' },
+    { name: 'Danone', url: 'https://www.danone.com', desc: 'Multinationale agroalimentaire – Produits laitiers et nutrition.', logoUrl: 'https://logo.clearbit.com/danone.com' },
+    { name: 'Coca-Cola', url: 'https://www.coca-cola.com', desc: 'Leader mondial des boissons – Embouteillage et process industriel.', logoUrl: 'https://logo.clearbit.com/coca-cola.com' },
+    { name: 'P&G', url: 'https://www.pg.com', desc: 'Leader mondial des produits de grande consommation et d\'hygiène.', logoUrl: '/pg.png' },
+    { name: 'Fater', url: '#', desc: 'Partenaire industriel en produits d\'hygiène et santé.', logoUrl: '/brands/FATER.png' },
+    { name: 'Leaderfood', url: '#', desc: 'Industrie agroalimentaire au Maroc – transformation et conditionnement.', logoUrl: 'https://ui-avatars.com/api/?name=Leaderfood&background=166534&color=fff&bold=true&size=200' },
   ];
 
   return (
