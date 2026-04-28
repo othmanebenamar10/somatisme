@@ -150,7 +150,7 @@ export default function Footer() {
               whileInView={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
-              © {currentYear} SOMATISME. {t('footer.copyright')}
+              {t('footer.copyright')}
             </motion.p>
             <motion.div
               initial={{ opacity: 0 }}
