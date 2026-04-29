@@ -193,8 +193,8 @@ export default function Contact() {
                 {
                   icon: Phone,
                   title: t('contact.info.phone'),
-                  value: '+212 679 825 646',
-                  href: 'tel:+212679825646',
+                  value: '06 46 12 12 74',
+                  href: 'tel:+212646121274',
                 },
                 {
                   icon: MapPin,

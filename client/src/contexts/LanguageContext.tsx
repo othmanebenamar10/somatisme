@@ -86,7 +86,7 @@ const translations = {
     "cta.home.subtitle": "Contactez nos experts pour discuter de vos besoins spécifiques et découvrir comment nos solutions peuvent optimiser vos processus industriels.",
     "cta.home.button": "Nous contacter maintenant",
     "footer.tagline": "Solutions d'automatisme industriel, régulation et installation électrique pour l'industrie.",
-    "footer.phone": "+212 679 825 646",
+    "footer.phone": "06 46 12 12 74",
     "footer.fax": "",
     "footer.email": "info@somatisme.ma",
     "footer.address": "Rue résistance residence Nassime GH 12 Appt N°1, Mohammedia",

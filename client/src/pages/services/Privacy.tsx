@@ -161,7 +161,7 @@ export default function Privacy() {
             >
               <h2 className="text-3xl font-bold bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent mb-4">📧 Contact</h2>
               <p className="text-muted-foreground leading-relaxed">
-                Pour toute question concernant cette politique de confidentialité ou l'utilisation de vos données, vous pouvez nous contacter à : <span className="text-accent font-semibold">somatisme@gmail.com</span> ou par téléphone au <span className="text-accent font-semibold">+212 679 825 646</span>.
+                Pour toute question concernant cette politique de confidentialité ou l'utilisation de vos données, vous pouvez nous contacter à : <span className="text-accent font-semibold">somatisme@gmail.com</span> ou par téléphone au <span className="text-accent font-semibold">06 46 12 12 74</span>.
               </p>
             </motion.div>
 

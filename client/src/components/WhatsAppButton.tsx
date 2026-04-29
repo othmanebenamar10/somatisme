@@ -12,7 +12,7 @@ export default function WhatsAppButton() {
     setIsVisible(true);
   }, []);
 
-  const phoneNumber = '212679825646'; // User's WhatsApp number
+  const phoneNumber = '212646121274'; // User's WhatsApp number
 
   const generateMessage = () => {
     let message = 'Bonjour SOMATISME,\n\n';

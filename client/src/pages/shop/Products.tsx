@@ -295,7 +295,7 @@ export default function Products() {
     doc.setTextColor(203, 213, 225);
     doc.setFont('helvetica', 'normal');
     doc.text('Équipements • Régulation • Installation Électrique', 15, 37);
-    doc.text('+212 679 825 646  |  somatisme@gmail.com  |  www.somatisme.ma', 15, 43);
+    doc.text('06 46 12 12 74  |  somatisme@gmail.com  |  www.somatisme.ma', 15, 43);
     
     // === INVOICE TITLE BLOCK ===
     doc.setFillColor(...lightGray);
@@ -391,7 +391,7 @@ export default function Products() {
     doc.text('Equipements Industriels', 120, 124);
     doc.text('Rue Résistance Nassime GH12 Appt 1', 120, 129);
     doc.text('Mohammedia, Maroc', 120, 134);
-    doc.text('+212 679 825 646', 120, 139);
+    doc.text('06 46 12 12 74', 120, 139);
     doc.text('contact@somatisme.ma', 120, 144);
 
     // === PRODUCTS TABLE ===
@@ -454,7 +454,7 @@ export default function Products() {
     doc.text('Le paiement est du a la livraison.', 15, y + 14);
     doc.text('Delai de livraison selon disponibilite.', 15, y + 19);
     doc.text('Garantie selon le type de produit.', 15, y + 24);
-    doc.text('Contact: +212 679 825 646', 15, y + 29);
+    doc.text('Contact: 06 46 12 12 74', 15, y + 29);
 
     // Right: Totals card
     doc.setFillColor(...lightGray);
@@ -510,7 +510,7 @@ export default function Products() {
     doc.setFontSize(7);
     doc.setTextColor(203, 213, 225);
     doc.setFont('helvetica', 'normal');
-    doc.text('Équipements Industriels  |  +212 679 825 646  |  somatisme@gmail.com', 105, 286, { align: 'center' });
+    doc.text('Équipements Industriels  |  06 46 12 12 74  |  somatisme@gmail.com', 105, 286, { align: 'center' });
     
     // Website
     doc.setTextColor(...accentColor);
@@ -607,7 +607,7 @@ export default function Products() {
       // Contact line
       doc.setFontSize(7.5);
       doc.setTextColor(160, 180, 205);
-      doc.text('+212 679 825 646  |  somatisme@gmail.com  |  www.somatisme.ma', 12, 44);
+      doc.text('06 46 12 12 74  |  somatisme@gmail.com  |  www.somatisme.ma', 12, 44);
 
       // Checksum / secure
       doc.setFontSize(6.5);
@@ -712,7 +712,7 @@ export default function Products() {
       doc.text('Equipements Industriels', col2, infoY + 17);
       doc.text('Rue Résistance Nassime GH12 Appt 1', col2, infoY + 23);
       doc.text('Mohammedia, Maroc', col2, infoY + 29);
-      doc.text('+212 679 825 646', col2, infoY + 35);
+      doc.text('06 46 12 12 74', col2, infoY + 35);
       doc.text('contact@somatisme.ma', col2, infoY + 41);
 
       // ══════════════════════════════════════════
@@ -776,7 +776,7 @@ export default function Products() {
       doc.text('Le paiement est du a la livraison.', col1, botY + 14);
       doc.text('Delai de livraison selon disponibilite.', col1, botY + 20);
       doc.text('Garantie selon le type de produit.', col1, botY + 26);
-      doc.text('Contact: +212 679 825 646', col1, botY + 32);
+      doc.text('Contact: 06 46 12 12 74', col1, botY + 32);
 
       // Totals (right)
       const totX = 105;
@@ -822,7 +822,7 @@ export default function Products() {
       doc.setFontSize(7);
       doc.setTextColor(160, 178, 200);
       doc.setFont('helvetica', 'normal');
-      doc.text('Equipements Industriels  |  +212 679 825 646  |  somatisme@gmail.com', 105, fY + 14, { align: 'center' });
+      doc.text('Equipements Industriels  |  06 46 12 12 74  |  somatisme@gmail.com', 105, fY + 14, { align: 'center' });
 
       doc.setTextColor(...C.cyan);
       doc.setFont('helvetica', 'bold');
@@ -879,7 +879,7 @@ Facture PDF generee et telechargee.
 Confirmation dans les 24h.
 Paiement a la livraison.`;
       
-      const whatsappUrl = `https://wa.me/212679825646?text=${encodeURIComponent(orderMessage)}`;
+      const whatsappUrl = `https://wa.me/212646121274?text=${encodeURIComponent(orderMessage)}`;
       window.open(whatsappUrl, '_blank');
       
       toast.success('Commande envoyée avec succès. Email de confirmation envoyé.');
