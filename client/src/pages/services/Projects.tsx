@@ -21,7 +21,7 @@ export default function Projects() {
       category: 'Qualité',
       tech: 'ISO 9001, Audit qualité, Documentation process, Formation personnel, Tests logiciels, QA Lead',
       result: 'Conformité process assurée, prévention des défauts, confiance client renforcée',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.22.55 PM.jpeg',
+      image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800',
     },
     {
       title: 'Installation et modification unité poudre — Bostik',
@@ -29,7 +29,7 @@ export default function Projects() {
       category: 'Automatisme',
       tech: 'Automatismes industriels, Modification ligne process, Instrumentation, Mise en service',
       result: 'Ligne de production modernisée, capacité de production optimisée, conformité process',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.22.55 PM (1).jpeg',
+      image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800',
     },
     {
       title: 'Installation de logiciel de qualité — Fater',
@@ -37,7 +37,7 @@ export default function Projects() {
       category: 'Qualité',
       tech: 'Logiciel qualité, Traçabilité, KPI production, Formation équipes, Intégration SCADA',
       result: 'Traçabilité complète, réduction des non-conformités, amélioration continue assurée',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.22.55 PM (2).jpeg',
+      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800',
     },
     {
       title: 'Installation HMI Siemens et Rockwell',
@@ -45,7 +45,7 @@ export default function Projects() {
       category: 'Automatisme',
       tech: 'HMI Siemens TP/KTP, Rockwell PanelView, WinCC, FactoryTalk, API S7 & ControlLogix',
       result: 'Interface opérateur intuitive, supervision facilitée, réduction des erreurs de manipulation',
-      image: '/projects/WhatsApp Image 2026-04-19 at 11.22.55 PM (3).jpeg',
+      image: 'https://images.unsplash.com/photo-1565043589221-1a6fd9ae45c7?auto=format&fit=crop&q=80&w=800',
     },
   ];
 
@@ -134,7 +134,7 @@ export default function Projects() {
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-bold px-8 py-4 rounded-xl inline-flex items-center justify-center gap-2 min-h-48 shadow-lg shadow-cyan-500/30 w-full"
+                      className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-bold px-6 py-3 rounded-xl inline-flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/30 w-full"
                     >
                       {t('services.more')}
                       <ArrowRight size={16} className="ml-2" />
