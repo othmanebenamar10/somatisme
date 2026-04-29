@@ -16,7 +16,8 @@ import Maintenance from "./Maintenance";
 import Conseil from "./Conseil";
 import Realisation from "./Realisation";
 import Formation from "./Formation";
-import Projects from "./Projects";
+import Projects from './Projects';
+import ProjectDetail from './ProjectDetail';
 import Contact from "./Contact";
 import Privacy from "./Privacy";
 import Terms from "./Terms";
@@ -48,6 +49,7 @@ function Router() {
       <Route path="/services/maintenance" component={Maintenance} />
       <Route path="/services/formation" component={Formation} />
       <Route path="/projects" component={Projects} />
+      <Route path="/projects/:slug" component={ProjectDetail} />
       <Route path="/contact" component={Contact} />
       <Route path="/products" component={Products} />
       <Route path="/privacy" component={Privacy} />
