@@ -14,7 +14,7 @@ export const SECURITY_CONFIG = {
   RATE_LIMIT_MAX_REQUESTS: 100, // 100 requests per window
   
   // Security Headers
-  CONTENT_SECURITY_POLICY: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
+  CONTENT_SECURITY_POLICY: "default-src 'self'; script-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https:; frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/ https://www.google.com/maps/ https://maps.google.com/; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;",
   
   // Encryption
   ENCRYPTION_KEY: process.env.ENCRYPTION_KEY || crypto.randomBytes(32).toString('hex'),
@@ -93,11 +93,13 @@ export const securityHeaders = helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'", "https://www.google.com/recaptcha/", "https://www.gstatic.com/recaptcha/"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       imgSrc: ["'self'", "data:", "blob:", "https:"],
-      fontSrc: ["'self'", "data:"],
-      connectSrc: ["'self'", "https:"],
+      fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
+      connectSrc: ["'self'", "https://www.google.com/recaptcha/", "https://www.gstatic.com/recaptcha/", "https:"],
+      frameSrc: ["'self'", "https://www.google.com/recaptcha/", "https://recaptcha.google.com/", "https://www.google.com/maps/", "https://maps.google.com/"],
+      objectSrc: ["'none'"],
       frameAncestors: ["'none'"],
       baseUri: ["'self'"],
       formAction: ["'self'"],

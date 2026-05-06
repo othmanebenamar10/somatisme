@@ -23,6 +23,7 @@ import Privacy from "./Privacy";
 import Terms from "./Terms";
 import Products from "../../pages/shop/Products";
 import WhatsAppButton from "../../components/WhatsAppButton";
+import { generateLocalBusinessSchema } from "../../lib/seo";
 
 
 function ScrollToTop() {
@@ -67,6 +68,23 @@ function Router() {
 // - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
 
 function App() {
+  useEffect(() => {
+    const scriptId = "structured-data-local-business";
+    if (document.getElementById(scriptId)) {
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.id = scriptId;
+    script.type = "application/ld+json";
+    script.text = JSON.stringify(generateLocalBusinessSchema());
+    document.head.appendChild(script);
+
+    return () => {
+      script.remove();
+    };
+  }, []);
+
   return (
     <ErrorBoundary>
       <ThemeProvider

@@ -10,11 +10,12 @@
 export const cspHeaders = {
   'Content-Security-Policy': [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
+    "script-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: https: blob:",
     "font-src 'self' https://fonts.gstatic.com",
-    "connect-src 'self' https:",
+    "connect-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https:",
+    "frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/ https://www.google.com/maps/ https://maps.google.com/",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
@@ -67,9 +68,7 @@ export const validationRules = {
  * Sanitize user input to prevent XSS
  */
 export function sanitizeInput(input: string): string {
-  const div = document.createElement('div');
-  div.textContent = input;
-  return div.innerHTML;
+  return escapeHtml(input);
 }
 
 /**
