@@ -6,7 +6,6 @@ import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import { Resend } from "resend";
 import { connectToDatabase } from "./db";
 import ContactSubmission from "./models/ContactSubmission";
 import {
