@@ -205,8 +205,8 @@ export default function Contact() {
                 {
                   icon: Mail,
                   title: t('contact.info.email'),
-                  value: 'info@somatisme.ma',
-                  href: 'mailto:info@somatisme.ma',
+                  value: 'somatisme@gmail.com',
+                  href: 'mailto:somatisme@gmail.com',
                 },
               ].map((item, index) => (
                 <motion.a

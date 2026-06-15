@@ -13,7 +13,9 @@ import {
   sanitizePlainText,
   sendError,
   verifyRecaptcha,
-} from './_lib/security';
+} from './_lib/security.js';
+
+const ADMIN_EMAIL = process.env.EMAIL_TO || 'somatisme@gmail.com';
 
 function getTransporter() {
   return nodemailer.createTransport({
@@ -273,7 +275,7 @@ export default async function handler(req: any, res: any) {
 
     await transporter.sendMail({
       from: `"SOMATISME" <${process.env.SMTP_USER}>`,
-      to: process.env.EMAIL_TO || process.env.SMTP_USER,
+      to: ADMIN_EMAIL,
       replyTo: orderForm.email,
       subject: adminSubject,
       html: adminHtml,

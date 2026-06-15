@@ -327,7 +327,7 @@ sudo certbot renew --dry-run
 ## 📞 Support
 
 Pour toute question ou problème :
-- 📧 Email : info@somatisme.ma
+- 📧 Email : somatisme@gmail.com
 - 📱 Téléphone : 05 23 30 28 29
 - 🌐 Site : https://somatisme.com
 

@@ -184,13 +184,13 @@ connectToDatabase().catch(error => {
 
       await transporter.sendMail({
         from: `"SOMATISME" <${process.env.SMTP_USER}>`,
-        to: process.env.EMAIL_TO || "info@somatisme.ma",
+        to: process.env.EMAIL_TO || "somatisme@gmail.com",
         replyTo: email,
         subject: `[Contact] ${subject} — ${name}`,
         html: htmlContent,
       });
 
-      console.log("[EMAIL] Contact email sent to", process.env.EMAIL_TO || "info@somatisme.ma");
+      console.log("[EMAIL] Contact email sent to", process.env.EMAIL_TO || "somatisme@gmail.com");
       auditLogger("EMAIL_SENT", { ip, email });
       res.json({ success: true, message: "Votre message a été envoyé avec succès !" });
     } catch (error) {

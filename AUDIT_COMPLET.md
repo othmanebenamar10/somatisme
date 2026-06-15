@@ -291,6 +291,6 @@ Tous les éléments sont en place :
 ## 📞 SUPPORT
 
 Pour toute question ou problème :
-- 📧 Email : info@somatisme.ma
+- 📧 Email : somatisme@gmail.com
 - 📱 Téléphone : +212 679 825 646
 - 🌐 Site : https://somatisme.vercel.app

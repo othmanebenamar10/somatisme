@@ -88,7 +88,7 @@ const translations = {
     "footer.tagline": "Solutions d'automatisme industriel, régulation et installation électrique pour l'industrie.",
     "footer.phone": "06 79 82 56 46",
     "footer.fax": "",
-    "footer.email": "info@somatisme.ma",
+    "footer.email": "somatisme@gmail.com",
     "footer.address": "Rue résistance residence Nassime GH 12 Appt N°1, Mohammedia",
     "footer.copyright": "© 2026 SOMATISME. Tous droits réservés.",
     "footer.privacy": "Politique de confidentialité",

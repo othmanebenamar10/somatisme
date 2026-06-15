@@ -392,7 +392,7 @@ export default function Products() {
     doc.text('Rue Résistance Nassime GH12 Appt 1', 120, 129);
     doc.text('Mohammedia, Maroc', 120, 134);
     doc.text('06 79 82 56 46', 120, 139);
-    doc.text('contact@somatisme.ma', 120, 144);
+    doc.text('somatisme@gmail.com', 120, 144);
 
     // === PRODUCTS TABLE ===
     const tableY = 155;
@@ -713,7 +713,7 @@ export default function Products() {
       doc.text('Rue Résistance Nassime GH12 Appt 1', col2, infoY + 23);
       doc.text('Mohammedia, Maroc', col2, infoY + 29);
       doc.text('06 79 82 56 46', col2, infoY + 35);
-      doc.text('contact@somatisme.ma', col2, infoY + 41);
+      doc.text('somatisme@gmail.com', col2, infoY + 41);
 
       // ══════════════════════════════════════════
       // PRODUCTS TABLE

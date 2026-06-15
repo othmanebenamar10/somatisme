@@ -51,7 +51,7 @@ export default function InvoiceTemplate({
           <p className="text-sm text-gray-600">Régulation, Installation Électrique, Maintenance</p>
           <div className="mt-4 text-sm">
             <p className="font-semibold">Contact:</p>
-            <p>Email: info@somatisme.ma</p>
+            <p>Email: somatisme@gmail.com</p>
             <p>Tél: +212 679 825 646</p>
           </div>
         </div>
@@ -140,7 +140,7 @@ export default function InvoiceTemplate({
       <div className="border-t pt-8 text-center text-sm text-gray-600">
         <p className="font-semibold mb-2">Conditions de paiement:</p>
         <p>Paiement dû à réception pour les paiements en face-à-face</p>
-        <p>Pour toute question concernant cette facture, contactez-nous à info@somatisme.ma</p>
+        <p>Pour toute question concernant cette facture, contactez-nous à somatisme@gmail.com</p>
         <p className="mt-4">Merci de votre confiance!</p>
       </div>
     </div>

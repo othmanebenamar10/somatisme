@@ -241,7 +241,7 @@ Le site est optimisé pour le **Français**. L'architecture de traduction via `L
 ## 📞 Support & Maintenance
 
 Pour les questions ou problèmes :
-- 📧 Email : info@somatisme.ma
+- 📧 Email : somatisme@gmail.com
 - 📱 Téléphone : 05 23 30 28 29
 - 🌐 Site : https://somatisme.ma
 

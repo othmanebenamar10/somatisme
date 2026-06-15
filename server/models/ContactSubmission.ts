@@ -124,7 +124,7 @@ const ContactSubmissionSchema: Schema = new Schema(
 );
 
 // Security: Pre-save middleware for additional validation
-ContactSubmissionSchema.pre('save', function (next) {
+ContactSubmissionSchema.pre('save', function (this: IContactSubmission) {
   // Check for suspicious patterns
   const suspiciousPatterns = [
     /<script/i,
@@ -143,8 +143,6 @@ ContactSubmissionSchema.pre('save', function (next) {
     this.status = 'spam';
     this.riskScore = 100;
   }
-
-  next();
 });
 
 // Security: Add text index for search functionality

@@ -23,10 +23,10 @@
 ```
 SMTP_HOST = smtp.gmail.com
 SMTP_PORT = 587
-SMTP_USER = votre_email@gmail.com
+SMTP_USER = somatisme@gmail.com
 SMTP_PASS = (le mot de passe d'application généré)
-EMAIL_FROM = "SOMATISME" <votre_email@gmail.com>
-EMAIL_TO = info@somatisme.ma
+EMAIL_FROM = "SOMATISME" <somatisme@gmail.com>
+EMAIL_TO = somatisme@gmail.com
 ```
 
 6. Cliquez "Save" pour chaque variable
@@ -46,7 +46,7 @@ EMAIL_TO = info@somatisme.ma
 1. Allez sur https://somatisme.vercel.app/contact
 2. Remplissez le formulaire de contact
 3. Cliquez "Envoyer"
-4. Vérifiez que vous recevez un email à `info@somatisme.ma`
+4. Vérifiez que vous recevez un email à `somatisme@gmail.com`
 
 ## 🔒 Sécurité
 

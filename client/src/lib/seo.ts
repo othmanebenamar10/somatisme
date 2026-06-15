@@ -82,7 +82,7 @@ export function generateOrganizationSchema() {
       '@type': 'ContactPoint',
       contactType: 'Sales',
       telephone: '+212679825646',
-      email: 'info@somatisme.ma',
+      email: 'somatisme@gmail.com',
     },
     sameAs: [
       siteConfig.links.linkedin,
@@ -107,7 +107,7 @@ export function generateLocalBusinessSchema() {
       addressCountry: 'MA',
     },
     telephone: '+212679825646',
-    email: 'info@somatisme.ma',
+    email: 'somatisme@gmail.com',
     url: siteConfig.url,
     priceRange: '$$',
   };

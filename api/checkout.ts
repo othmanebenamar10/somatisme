@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { checkRateLimit, getClientIp, handleCors, sanitizePlainText, sendError } from './_lib/security';
+import { checkRateLimit, getClientIp, handleCors, sanitizePlainText, sendError } from './_lib/security.js';
 
 export default async function handler(req: any, res: any) {
   const cors = handleCors(req, res, ['POST', 'OPTIONS']);
