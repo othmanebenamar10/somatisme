@@ -116,7 +116,7 @@ export default async function handler(req: any, res: any) {
     const isHuman = await verifyRecaptcha(recaptchaToken, 0.3);
 
     if (!isHuman) {
-      console.warn(`[ORDER] Security check failed (low score or invalid token) for IP: ${ip}`);
+      console.warn(`[ORDER] Security check failed for IP: ${ip}. Token: ${recaptchaToken ? 'Present' : 'Missing'}`);
       return sendError(res, 403, 'Verification de securite echouee');
     }
 
