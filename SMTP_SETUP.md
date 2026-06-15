@@ -56,6 +56,7 @@ Le site utilise Google reCAPTCHA v3 pour protéger les formulaires.
 2. Créez une nouvelle clé de type **reCAPTCHA v3**.
 3. Ajoutez vos domaines : `somatisme.ma` et `somatisme.vercel.app`.
 4. Copiez la **Clé secrète** et ajoutez-la sur Vercel dans la variable `RECAPTCHA_SECRET_KEY`.
+5. Copiez la **Clé du site** et ajoutez-la sur Vercel dans la variable `VITE_RECAPTCHA_SITE_KEY`.
 
 ## � Sécurité
 

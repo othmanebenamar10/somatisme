@@ -109,11 +109,11 @@ export default async function handler(req: any, res: any) {
       return sendError(res, 400, 'Invalid PDF attachment');
     }
 
-    const isHuman = await verifyRecaptcha(recaptchaToken, 0.3);
-
     if (!process.env.RECAPTCHA_SECRET_KEY) {
-      console.error('[SECURITY] RECAPTCHA_SECRET_KEY is not configured');
+      console.error('[SECURITY] RECAPTCHA_SECRET_KEY is missing in environment variables');
     }
+
+    const isHuman = await verifyRecaptcha(recaptchaToken, 0.3);
 
     if (!isHuman) {
       console.warn(`[ORDER] Security check failed (low score or invalid token) for IP: ${ip}`);

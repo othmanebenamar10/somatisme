@@ -83,11 +83,11 @@ export default async function handler(req: any, res: any) {
       return sendError(res, 400, 'Numero de telephone invalide');
     }
 
-    const isHuman = await verifyRecaptcha(recaptchaToken, 0.4);
-    
     if (!process.env.RECAPTCHA_SECRET_KEY) {
-      console.error('[SECURITY] RECAPTCHA_SECRET_KEY is not configured');
+      console.error('[SECURITY] RECAPTCHA_SECRET_KEY is missing in environment variables');
     }
+
+    const isHuman = await verifyRecaptcha(recaptchaToken, 0.4);
 
     if (!isHuman) {
       console.warn(`[CONTACT] Security check failed (low score or invalid token) for IP: ${ip}`);
