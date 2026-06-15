@@ -109,18 +109,6 @@ export default async function handler(req: any, res: any) {
       return sendError(res, 400, 'Invalid PDF attachment');
     }
 
-    if (!process.env.RECAPTCHA_SECRET_KEY) {
-      console.error('[SECURITY] RECAPTCHA_SECRET_KEY is not configured on Vercel Dashboard');
-      return sendError(res, 500, 'Security configuration error');
-    }
-
-    const isHuman = await verifyRecaptcha(recaptchaToken, 0.3);
-
-    if (!isHuman) {
-      console.warn(`[ORDER] Security check failed for IP: ${ip}. Token: ${recaptchaToken ? 'Present' : 'Missing'}`);
-      return sendError(res, 403, 'Verification de securite echouee');
-    }
-
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
       console.error('[EMAIL] SMTP credentials not configured');
       return sendError(res, 500, 'Email service unavailable');
