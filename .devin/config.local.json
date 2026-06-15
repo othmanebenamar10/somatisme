@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Exec(ls)",
+      "Exec(dir)",
+      "Exec(git status)"
+    ]
+  }
+}
