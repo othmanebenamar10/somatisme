@@ -84,7 +84,13 @@ export default async function handler(req: any, res: any) {
     }
 
     const isHuman = await verifyRecaptcha(recaptchaToken, 0.4);
+    
+    if (!process.env.RECAPTCHA_SECRET_KEY) {
+      console.error('[SECURITY] RECAPTCHA_SECRET_KEY is not configured');
+    }
+
     if (!isHuman) {
+      console.warn(`[CONTACT] Security check failed (low score or invalid token) for IP: ${ip}`);
       return sendError(res, 403, 'Verification de securite echouee');
     }
 
