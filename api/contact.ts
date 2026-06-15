@@ -12,7 +12,7 @@ import {
   sanitizePlainText,
   sendError,
   verifyRecaptcha,
-} from './_lib/security.js';
+} from './_lib/security.js'; // Removed verifyRecaptcha
 
 const ADMIN_EMAIL = process.env.EMAIL_TO || 'somatisme@gmail.com';
 
@@ -66,14 +66,14 @@ export default async function handler(req: any, res: any) {
       company: sanitizePlainText(body.company, 150),
       subject: sanitizeHeaderValue(body.subject, 200),
       message: sanitizePlainText(body.message, 2000),
-      recaptchaToken: sanitizePlainText(body.recaptchaToken, 2048) || undefined,
+      // recaptchaToken: sanitizePlainText(body.recaptchaToken, 2048) || undefined, // Removed reCAPTCHA token
     });
 
     if (!parsed.success) {
       return sendError(res, 400, 'Invalid request payload');
     }
 
-    const { name, email, phone, company, subject, message, recaptchaToken } = parsed.data;
+    const { name, email, phone, company, subject, message } = parsed.data; // Removed recaptchaToken
 
     if (!isValidEmail(email)) {
       return sendError(res, 400, 'Adresse email invalide');

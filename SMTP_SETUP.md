@@ -27,7 +27,6 @@ SMTP_USER = somatisme@gmail.com
 SMTP_PASS = (le mot de passe d'application généré)
 EMAIL_FROM = "SOMATISME" <somatisme@gmail.com>
 EMAIL_TO = somatisme@gmail.com
-RECAPTCHA_SECRET_KEY = (votre_cle_secrete_google_recaptcha_v3)
 ```
 
 6. Cliquez "Save" pour chaque variable

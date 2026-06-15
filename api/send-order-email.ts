@@ -13,7 +13,7 @@ import {
   sanitizePlainText,
   sendError,
   verifyRecaptcha,
-} from './_lib/security.js';
+} from './_lib/security.js'; // Removed verifyRecaptcha
 
 const ADMIN_EMAIL = process.env.EMAIL_TO || 'somatisme@gmail.com';
 
@@ -79,14 +79,14 @@ export default async function handler(req: any, res: any) {
       cartTotal: Number(body.cartTotal),
       pdfBase64: typeof body.pdfBase64 === 'string' ? body.pdfBase64 : undefined,
       invoiceNumber: sanitizeHeaderValue(body.invoiceNumber, 60),
-      recaptchaToken: sanitizePlainText(body.recaptchaToken, 2048) || undefined,
+      // recaptchaToken: sanitizePlainText(body.recaptchaToken, 2048) || undefined, // Removed reCAPTCHA token
     });
 
     if (!parsed.success) {
       return sendError(res, 400, 'Invalid request payload');
     }
 
-    const { orderForm, orderItems, cartTotal, pdfBase64, invoiceNumber, recaptchaToken } = parsed.data;
+    const { orderForm, orderItems, cartTotal, pdfBase64, invoiceNumber } = parsed.data; // Removed recaptchaToken
 
     if (!isValidEmail(orderForm.email)) {
       return sendError(res, 400, 'Adresse email invalide');
