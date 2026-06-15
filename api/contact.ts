@@ -84,7 +84,8 @@ export default async function handler(req: any, res: any) {
     }
 
     if (!process.env.RECAPTCHA_SECRET_KEY) {
-      console.error('[SECURITY] RECAPTCHA_SECRET_KEY is missing in environment variables');
+      console.error('[SECURITY] RECAPTCHA_SECRET_KEY is not configured on Vercel Dashboard');
+      return sendError(res, 500, 'Security configuration error');
     }
 
     const isHuman = await verifyRecaptcha(recaptchaToken, 0.4);
