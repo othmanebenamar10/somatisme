@@ -9,6 +9,7 @@ import {
   isSafePdfBase64,
   isValidEmail,
   isValidPhone,
+  logApiRequest,
   orderSchema,
   sanitizeHeaderValue,
   sanitizePlainText,
@@ -40,6 +41,7 @@ function getTransporter() {
 }
 
 export default async function handler(req: any, res: any) {
+  logApiRequest(req, res);
   const cors = handleCors(req, res, ['POST', 'OPTIONS']);
   if (!cors.ok) {
     return sendError(res, 403, 'Origin not allowed');

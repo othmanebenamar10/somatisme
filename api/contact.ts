@@ -8,6 +8,7 @@ import {
   isLikelyBot,
   isValidEmail,
   isValidPhone,
+  logApiRequest,
   sanitizeHeaderValue,
   sanitizePlainText,
   sendError,
@@ -37,6 +38,7 @@ function getTransporter() {
 }
 
 export default async function handler(req: any, res: any) {
+  logApiRequest(req, res);
   const cors = handleCors(req, res, ['POST', 'OPTIONS']);
   if (!cors.ok) {
     return sendError(res, 403, 'Origin not allowed');

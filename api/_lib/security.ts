@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { randomUUID } from 'node:crypto';
 
 type ApiRequest = {
   method?: string;
@@ -67,6 +68,30 @@ export function getClientIp(req: ApiRequest): string {
   }
 
   return req.socket?.remoteAddress || 'unknown';
+}
+
+/** Logs metadata only; request bodies and query strings may contain personal data. */
+export function logApiRequest(req: any, res: any): void {
+  if (typeof res.getHeader === 'function' && res.getHeader('X-Request-ID')) return;
+
+  const requestId = randomUUID();
+  const startedAt = Date.now();
+  res.setHeader?.('X-Request-ID', requestId);
+  res.once?.('finish', () => {
+    const status = Number(res.statusCode || 200);
+    const entry = {
+      timestamp: new Date().toISOString(),
+      level: status >= 500 ? 'error' : status >= 400 ? 'warn' : 'info',
+      event: 'http.request',
+      requestId,
+      method: String(req.method || 'UNKNOWN'),
+      path: String(req.url || '/').split('?')[0],
+      status,
+      durationMs: Date.now() - startedAt,
+    };
+    const write = status >= 500 ? console.error : status >= 400 ? console.warn : console.log;
+    write(JSON.stringify(entry));
+  });
 }
 
 export function applySecurityHeaders(res: ApiResponse): void {

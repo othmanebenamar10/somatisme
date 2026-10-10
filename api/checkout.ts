@@ -1,9 +1,10 @@
 import Stripe from 'stripe';
 import { randomUUID } from 'node:crypto';
 import { getProductById } from '../shared/products.js';
-import { checkRateLimit, getAllowedOrigins, getClientIp, handleCors, isValidEmail, sanitizePlainText, sendError } from './_lib/security.js';
+import { checkRateLimit, getAllowedOrigins, getClientIp, handleCors, isValidEmail, logApiRequest, sanitizePlainText, sendError } from './_lib/security.js';
 
 export default async function handler(req: any, res: any) {
+  logApiRequest(req, res);
   const cors = handleCors(req, res, ['POST', 'OPTIONS']);
   if (!cors.ok) {
     return sendError(res, 403, 'Origin not allowed');

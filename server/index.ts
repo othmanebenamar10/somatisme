@@ -9,6 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import { randomUUID } from 'node:crypto';
 
 const { default: apiRouter } = await import('./routes/api');
 
@@ -38,6 +39,27 @@ app.use(helmet({
   },
 }));
 app.use(express.json({ limit: '2mb', strict: true }));
+app.use('/api', (req, res, next) => {
+  const requestId = randomUUID();
+  const startedAt = performance.now();
+  res.setHeader('X-Request-ID', requestId);
+  res.once('finish', () => {
+    const status = res.statusCode;
+    const entry = {
+      timestamp: new Date().toISOString(),
+      level: status >= 500 ? 'error' : status >= 400 ? 'warn' : 'info',
+      event: 'http.request',
+      requestId,
+      method: req.method,
+      path: req.path,
+      status,
+      durationMs: Math.round(performance.now() - startedAt),
+    };
+    const write = status >= 500 ? console.error : status >= 400 ? console.warn : console.log;
+    write(JSON.stringify(entry));
+  });
+  next();
+});
 app.use('/api', rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 100,

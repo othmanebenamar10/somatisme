@@ -12,77 +12,39 @@ interface SEOConfig {
 
 export function useSEO(config: SEOConfig) {
   useEffect(() => {
-    // Set title
     document.title = `${config.title} | SOMATISME`;
 
-    // Set meta description
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', config.description);
-    } else {
-      const meta = document.createElement('meta');
-      meta.name = 'description';
-      meta.content = config.description;
-      document.head.appendChild(meta);
-    }
-
-    // Set keywords
-    if (config.keywords) {
-      const metaKeywords = document.querySelector('meta[name="keywords"]');
-      if (metaKeywords) {
-        metaKeywords.setAttribute('content', config.keywords);
-      } else {
+    const setMeta = (selector: string, attribute: 'name' | 'property', key: string, value: string) => {
+      let element = document.head.querySelector<HTMLMetaElement>(selector);
+      if (!element) {
         const meta = document.createElement('meta');
-        meta.name = 'keywords';
-        meta.content = config.keywords;
-        document.head.appendChild(meta);
-      }
+        meta.setAttribute(attribute, key);
+      document.head.appendChild(meta);
+        element = meta;
+    }
+      element.setAttribute('content', value);
+    };
+
+    setMeta('meta[name="description"]', 'name', 'description', config.description);
+    if (config.keywords) {
+      setMeta('meta[name="keywords"]', 'name', 'keywords', config.keywords);
     }
 
-    // Set OG tags
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) {
-      ogTitle.setAttribute('content', config.ogTitle || config.title);
-    } else {
-      const meta = document.createElement('meta');
-      meta.setAttribute('property', 'og:title');
-      meta.content = config.ogTitle || config.title;
-      document.head.appendChild(meta);
-    }
-
-    const ogDescription = document.querySelector('meta[property="og:description"]');
-    if (ogDescription) {
-      ogDescription.setAttribute('content', config.ogDescription || config.description);
-    } else {
-      const meta = document.createElement('meta');
-      meta.setAttribute('property', 'og:description');
-      meta.content = config.ogDescription || config.description;
-      document.head.appendChild(meta);
-    }
+    setMeta('meta[property="og:title"]', 'property', 'og:title', config.ogTitle || config.title);
+    setMeta('meta[property="og:description"]', 'property', 'og:description', config.ogDescription || config.description);
 
     if (config.ogImage) {
-      const ogImage = document.querySelector('meta[property="og:image"]');
-      if (ogImage) {
-        ogImage.setAttribute('content', config.ogImage);
-      } else {
-        const meta = document.createElement('meta');
-        meta.setAttribute('property', 'og:image');
-        meta.content = config.ogImage;
-        document.head.appendChild(meta);
-      }
+      setMeta('meta[property="og:image"]', 'property', 'og:image', config.ogImage);
     }
 
-    // Set canonical
-    if (config.canonical) {
-      const canonical = document.querySelector('link[rel="canonical"]');
-      if (canonical) {
-        canonical.setAttribute('href', config.canonical);
-      } else {
-        const link = document.createElement('link');
-        link.rel = 'canonical';
-        link.href = config.canonical;
-        document.head.appendChild(link);
-      }
+    const canonicalURL = config.canonical || `https://somatisme.ma${window.location.pathname}`;
+    let canonical = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
     }
-  }, [config]);
+    canonical.href = canonicalURL;
+    setMeta('meta[property="og:url"]', 'property', 'og:url', canonicalURL);
+  }, [config.title, config.description, config.keywords, config.ogTitle, config.ogDescription, config.ogImage, config.canonical]);
 }
