@@ -580,7 +580,7 @@ Merci de confirmer la disponibilité et les modalités de livraison.`;
       <Header />
 
       {/* Hero Header - INDUSTRIAL PROFESSIONAL DESIGN */}
-      <section className="relative min-h-[60vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-slate-800 to-primary">
+      <section className="relative min-h-[50vh] sm:min-h-[60vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-slate-800 to-primary">
         {/* Animated Orbs */}
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
         <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
@@ -602,11 +602,11 @@ Merci de confirmer la disponibilité et les modalités de livraison.`;
               <span className="text-accent font-bold text-sm uppercase tracking-widest">{language === 'ar' ? 'منتجاتنا' : 'Nos Produits'}</span>
             </motion.div>
 
-            <h1 className="text-7xl md:text-8xl font-black text-white mb-8 leading-tight">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white mb-6 sm:mb-8 leading-tight">
               {language === 'ar' ? 'المنتجات' : 'Équipements'} <br />
               <span className="bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-400 bg-clip-text text-transparent">{language === 'ar' ? 'الصناعية' : 'Industriels'}</span>
             </h1>
-            <p className="text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
               {language === 'ar' ? 'أفضل المعدات الصناعية' : 'Équipements industriels de qualité professionnelle'}
             </p>
           </motion.div>
@@ -623,7 +623,7 @@ Merci de confirmer la disponibilité et les modalités de livraison.`;
         <div className="absolute bottom-0 left-0 w-56 h-56 bg-secondary/10 rounded-full blur-[100px] opacity-50"></div>
 
         <div className="container relative z-10">
-          <div className="bg-gradient-to-br from-card/80 to-card/40 border border-accent/20 rounded-3xl p-6 backdrop-blur-sm hover:border-accent/40 transition-all space-y-5">
+          <div className="bg-gradient-to-br from-card/80 to-card/40 border border-accent/20 rounded-3xl p-4 sm:p-6 backdrop-blur-sm hover:border-accent/40 transition-all space-y-5">
 
             {/* ROW 1 : Search + Sort + Cart */}
             <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
@@ -731,12 +731,13 @@ Merci de confirmer la disponibilité et les modalités de livraison.`;
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl max-h-[90vh] bg-gradient-to-br from-card via-card to-card/90 border border-cyan-400/20 rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden"
+            className="fixed left-1/2 top-1/2 w-[calc(100%-1rem)] max-w-2xl max-h-[90vh] -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-card via-card to-card/90 border border-cyan-400/20 rounded-2xl sm:rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden"
+            style={{ maxHeight: 'calc(100dvh - 1rem)' }}
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white p-6 flex justify-between items-center">
+            <div className="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white p-4 sm:p-6 flex justify-between items-center">
               <div>
-                <h3 className="text-2xl font-black">
+                <h3 className="text-xl sm:text-2xl font-black">
                   {language === 'ar' ? 'سلة التسوق' : 'Panier'}
                 </h3>
                 <p className="text-xs text-white/70 mt-1">
@@ -754,7 +755,7 @@ Merci de confirmer la disponibilité et les modalités de livraison.`;
             </div>
 
             {/* Content - 2 Column Layout */}
-            <div className="flex-1 overflow-hidden flex flex-col lg:flex-row gap-6 p-6">
+            <div className="flex-1 min-h-0 overflow-hidden flex flex-col lg:flex-row gap-4 sm:gap-6 p-4 sm:p-6">
               {/* Left: Products List */}
               <div className="flex-1 overflow-y-auto space-y-3 pr-2">
                 {cart.length === 0 ? (
@@ -960,7 +961,7 @@ Merci de confirmer la disponibilité et les modalités de livraison.`;
           )}
 
           {totalPages > 1 && (
-            <nav className="mt-10 flex items-center justify-center gap-4" aria-label="Pages de produits">
+            <nav className="mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4" aria-label="Pages de produits">
               <Button type="button" variant="outline" disabled={currentPage === 1} onClick={() => setCurrentPage((page) => page - 1)}>
                 Précédent
               </Button>

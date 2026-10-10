@@ -38,7 +38,7 @@ export default function ProjectDetail() {
       <Header />
 
       {/* Hero */}
-      <section className="relative min-h-[60vh] flex items-end overflow-hidden">
+      <section className="relative min-h-[45vh] sm:min-h-[60vh] flex items-end overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${project.image})` }}

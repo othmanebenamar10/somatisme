@@ -144,7 +144,7 @@ export default function Contact() {
       <Header />
 
       {/* Hero Section - RADICAL NEW DESIGN */}
-      <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-slate-800 to-primary">
+      <section className="relative min-h-[55vh] sm:min-h-[60vh] md:min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-slate-800 to-primary">
         {/* Animated Orbs */}
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
         <div className="absolute bottom-0 right-1/3 w-80 h-80 bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
@@ -166,7 +166,7 @@ export default function Contact() {
               <span className="text-accent font-bold text-sm uppercase tracking-widest">Nous Contacter</span>
             </motion.div>
 
-            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white mb-8 leading-tight">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 sm:mb-8 leading-tight">
               Parlons de Votre <br />
               <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">Projet</span>
             </h1>

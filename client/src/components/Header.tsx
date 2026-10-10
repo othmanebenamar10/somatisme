@@ -51,7 +51,7 @@ export default function Header() {
       <div className="absolute top-0 right-0 w-40 h-40 bg-accent/5 rounded-full blur-3xl -z-10 animate-pulse"></div>
       <div className="absolute top-0 left-1/2 w-32 h-32 bg-secondary/5 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
 
-      <div className="container flex items-center justify-between h-24">
+      <div className="container flex items-center justify-between h-20 sm:h-24">
         {/* Logo - SPECTACULAR */}
         <Link href="/">
           <motion.a 
@@ -92,7 +92,7 @@ export default function Header() {
             {/* Text with animations */}
             <div className="flex flex-col gap-0.5">
               <motion.span 
-                className="text-2xl md:text-3xl font-black bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent leading-tight"
+                className="text-xl sm:text-2xl md:text-3xl font-black bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent leading-tight"
                 animate={{ backgroundPosition: ['0% center', '100% center'] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
@@ -188,10 +188,13 @@ export default function Header() {
 
         {/* Mobile Menu Button - SPECTACULAR */}
         <motion.button
+          type="button"
           onClick={toggleMenu}
           whileHover={{ scale: 1.15, rotate: 90 }}
           whileTap={{ scale: 0.85 }}
           className="lg:hidden p-2 hover:bg-accent/10 rounded-lg transition-colors border-2 border-accent/30 hover:border-accent/60"
+          aria-label={isOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+          aria-expanded={isOpen}
         >
           <motion.div
             animate={{ rotate: isOpen ? 180 : 0 }}
@@ -221,6 +224,7 @@ export default function Header() {
               {navItems.map((item, index) => (
                 <Link key={index} href={item.href}>
                   <motion.a
+                    onClick={() => setIsOpen(false)}
                     variants={itemVariants}
                     whileHover={{ x: 8, color: '#ea580c' }}
                     whileTap={{ scale: 0.95 }}
@@ -251,6 +255,8 @@ export default function Header() {
             >
               <Link href="/contact">
                 <motion.button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="w-full px-8 py-4 rounded-xl font-bold uppercase tracking-wide text-sm text-white bg-gradient-to-r from-accent to-orange-500 shadow-lg shadow-accent/50 flex items-center justify-center gap-2 group"

@@ -37,9 +37,9 @@ export default function Footer() {
       {/* Top accent line */}
       <div className="h-1 bg-gradient-to-r from-accent via-secondary to-accent"></div>
 
-      <div className="container relative z-10 py-20">
+      <div className="container relative z-10 py-14 sm:py-20">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-12 md:mb-16">
           {/* Company Info - Premium */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
