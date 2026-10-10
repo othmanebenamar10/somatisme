@@ -1,16 +1,26 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { motion } from 'framer-motion';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, X } from 'lucide-react';
 
 export default function WhatsAppButton() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
 
   useEffect(() => {
     // Show button immediately on page load
     setIsVisible(true);
   }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsOpen(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [isOpen]);
 
   const phoneNumber = '212679825646'; // User's WhatsApp number
 
@@ -36,13 +46,15 @@ export default function WhatsAppButton() {
     return `Bonjour l’équipe SOMATISME,\n\nJe vous contacte au sujet de ${context}\n\nPouvez-vous me répondre ici pour que nous en discutions ?\n\nMerci.`;
   };
 
+  const message = generateMessage();
+  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
   return (
     <>
       {isVisible && (
-        <motion.a
-          href={`https://wa.me/${phoneNumber}?text=${encodeURIComponent(generateMessage())}`}
-          target="_blank"
-          rel="noopener noreferrer"
+        <motion.button
+          type="button"
+          onClick={() => setIsOpen(true)}
           initial={{ opacity: 0, scale: 0, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0, y: 20 }}
@@ -51,6 +63,8 @@ export default function WhatsAppButton() {
           whileTap={{ scale: 0.95 }}
           className="fixed bottom-8 right-8 z-50 w-16 h-16 rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white shadow-2xl shadow-green-500/50 hover:shadow-green-500/70 transition-all flex items-center justify-center group"
           aria-label="WhatsApp"
+          aria-haspopup="dialog"
+          aria-expanded={isOpen}
         >
           {/* Pulsing ring */}
           <motion.div
@@ -72,7 +86,74 @@ export default function WhatsAppButton() {
             Discuter sur WhatsApp
             <div className="absolute left-full top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-900"></div>
           </motion.div>
-        </motion.a>
+        </motion.button>
+      )}
+
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setIsOpen(false);
+          }}
+        >
+          <motion.section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="whatsapp-dialog-title"
+            initial={{ opacity: 0, y: 16, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            className="w-full max-w-lg overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+          >
+            <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5">
+              <div>
+                <h2 id="whatsapp-dialog-title" className="text-lg font-bold text-slate-900">
+                  Votre message WhatsApp
+                </h2>
+                <p className="mt-1 text-sm text-slate-600">
+                  Voici le message qui sera préparé pour l’équipe SOMATISME.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+                aria-label="Fermer"
+                autoFocus
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="px-6 py-5">
+              <div className="max-h-56 overflow-y-auto whitespace-pre-wrap rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700">
+                {message}
+              </div>
+              <p className="mt-3 text-xs leading-5 text-slate-500">
+                WhatsApp s’ouvrira avec ce texte prêt à envoyer. Vous pourrez le modifier, puis confirmer l’envoi dans WhatsApp.
+              </p>
+            </div>
+
+            <div className="flex flex-col-reverse gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+              >
+                Annuler
+              </button>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsOpen(false)}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Continuer sur WhatsApp
+              </a>
+            </div>
+          </motion.section>
+        </div>
       )}
     </>
   );
