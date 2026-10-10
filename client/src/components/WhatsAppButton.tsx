@@ -37,17 +37,13 @@ export default function WhatsAppButton() {
     return message;
   };
 
-  const handleClick = () => {
-    const message = generateMessage();
-    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
-  };
-
   return (
     <>
       {isVisible && (
-        <motion.button
-          onClick={handleClick}
+        <motion.a
+          href={`https://wa.me/${phoneNumber}?text=${encodeURIComponent(generateMessage())}`}
+          target="_blank"
+          rel="noopener noreferrer"
           initial={{ opacity: 0, scale: 0, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0, y: 20 }}
@@ -77,7 +73,7 @@ export default function WhatsAppButton() {
             Discuter sur WhatsApp
             <div className="absolute left-full top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-900"></div>
           </motion.div>
-        </motion.button>
+        </motion.a>
       )}
     </>
   );
