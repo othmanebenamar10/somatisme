@@ -15,26 +15,25 @@ export default function WhatsAppButton() {
   const phoneNumber = '212679825646'; // User's WhatsApp number
 
   const generateMessage = () => {
-    let message = 'Bonjour SOMATISME,\n\n';
-    
-    // Add context based on current page
-    if (location === '/products') {
-      message += 'Je suis intéressé par vos produits industriels.\n';
-      message += 'Pourriez-vous me donner plus d\'informations sur vos équipements ?\n';
-    } else if (location === '/services') {
-      message += 'Je souhaite en savoir plus sur vos services industriels.\n';
-      message += 'Quels services pouvez-vous me proposer ?\n';
-    } else if (location === '/contact') {
-      message += 'Je souhaite vous contacter pour un projet.\n';
-    } else if (location === '/projects') {
-      message += 'J\'ai vu vos projets réalisés et je suis impressionné.\n';
-      message += 'Pourriez-vous me faire une proposition ?\n';
-    } else {
-      message += 'Je suis intéressé par vos solutions d\'automatisme industriel.\n';
-    }
-    
-    message += '\nMerci de votre réponse.';
-    return message;
+    const page = location.replace(/\/+$/, '') || '/';
+    const contextByPage: Record<string, string> = {
+      '/products': 'vos équipements industriels. Pourriez-vous me renseigner sur les caractéristiques, le prix et la disponibilité d’un produit ?',
+      '/services': 'vos services industriels. J’aimerais vous présenter mon besoin et connaître les solutions que vous proposez.',
+      '/services/automation': 'vos solutions d’automatisme industriel. J’aimerais vous présenter mon besoin et échanger avec un spécialiste.',
+      '/services/regulation': 'vos solutions de régulation et d’instrumentation. J’aimerais vous présenter mon besoin et échanger avec un spécialiste.',
+      '/services/electrical': 'vos services d’électricité industrielle. J’aimerais vous présenter mon projet et échanger avec un spécialiste.',
+      '/services/maintenance': 'vos services de maintenance industrielle. J’aimerais vous présenter mon besoin et connaître vos disponibilités.',
+      '/services/conseil': 'vos services de conseil industriel. J’aimerais vous présenter mon projet et connaître votre accompagnement.',
+      '/services/formation': 'vos formations techniques. J’aimerais connaître les sujets proposés et les prochaines disponibilités.',
+      '/services/realisation': 'vos réalisations industrielles. J’aimerais échanger avec vous au sujet de mon projet.',
+      '/contact': 'un projet industriel. J’aimerais échanger avec votre équipe pour vous expliquer mon besoin.',
+      '/projects': 'vos réalisations industrielles. J’aimerais savoir si vous pouvez m’accompagner sur un projet similaire.',
+    };
+    const context = page.startsWith('/projects/')
+      ? 'l’un de vos projets industriels. J’aimerais échanger avec vous au sujet d’un besoin similaire.'
+      : contextByPage[page] || 'une solution d’automatisme industriel. J’aimerais vous présenter mon besoin et recevoir vos conseils.';
+
+    return `Bonjour l’équipe SOMATISME,\n\nJe vous contacte au sujet de ${context}\n\nPouvez-vous me répondre ici pour que nous en discutions ?\n\nMerci.`;
   };
 
   return (
