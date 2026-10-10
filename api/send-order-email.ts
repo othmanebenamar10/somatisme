@@ -167,15 +167,17 @@ export default async function handler(req: any, res: any) {
       return sendError(res, 400, 'Invalid PDF attachment');
     }
 
-    if (!process.env.RECAPTCHA_SECRET_KEY) {
-      console.error('[SECURITY] RECAPTCHA_SECRET_KEY is missing in environment variables');
-    }
-
-    const isHuman = await verifyRecaptcha(recaptchaToken, 0.3, 'order_submit');
-
-    if (!isHuman) {
-      console.warn(`[ORDER] Security check failed (low score or invalid token) for IP: ${ip}`);
-      return sendError(res, 403, 'Verification de securite echouee');
+    if (recaptchaToken) {
+      const isHuman = await verifyRecaptcha(recaptchaToken, 0.3, 'order_submit');
+      if (!isHuman) {
+        console.warn(`[ORDER] reCAPTCHA verification failed for IP: ${ip}`);
+        return sendError(res, 403, 'Verification de securite echouee');
+      }
+    } else if (process.env.RECAPTCHA_SECRET_KEY) {
+      // Keep orders usable if Google's script is blocked or the public site key
+      // is missing from the build. The honeypot, completion-time check and
+      // rate limit above still apply; any token that is supplied is verified.
+      console.warn(`[ORDER] reCAPTCHA token unavailable; using fallback protections for IP: ${ip}`);
     }
 
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
