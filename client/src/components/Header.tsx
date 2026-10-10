@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { Menu, X, Zap, Sparkles, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Menu, X, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
+import BrandLogo from '@/components/BrandLogo';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -52,61 +52,17 @@ export default function Header() {
       <div className="absolute top-0 left-1/2 w-32 h-32 bg-secondary/5 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
 
       <div className="container flex items-center justify-between h-20 sm:h-24">
-        {/* Logo - SPECTACULAR */}
+        {/* Brand */}
         <Link href="/">
           <motion.a 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.92 }}
-            className="flex items-center gap-3 hover:opacity-90 transition-opacity group"
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            className="hover:opacity-85 transition-opacity"
           >
-            {/* Icon with multiple glow layers */}
-            <motion.div 
-              className="relative"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            >
-              {/* Outer glow */}
-              <motion.div 
-                className="absolute inset-0 bg-gradient-to-r from-accent to-secondary rounded-lg blur-lg opacity-0 group-hover:opacity-100"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              ></motion.div>
-              
-              {/* Middle glow */}
-              <div className="absolute inset-0 bg-gradient-to-r from-accent to-secondary rounded-lg blur opacity-60 group-hover:opacity-100 transition-opacity"></div>
-              
-              {/* Icon container */}
-              <div className="relative px-3 py-2 bg-background rounded-lg">
-                <motion.div
-                  animate={{ y: [0, -3, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <Zap size={28} className="text-accent" />
-                </motion.div>
-              </div>
-            </motion.div>
-
-            {/* Text with animations */}
-            <div className="flex flex-col gap-0.5">
-              <motion.span 
-                className="text-xl sm:text-2xl md:text-3xl font-black bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent leading-tight"
-                animate={{ backgroundPosition: ['0% center', '100% center'] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                SOMATISME
-              </motion.span>
-              <motion.span 
-                className="text-xs font-bold text-accent uppercase tracking-widest flex items-center gap-1"
-                animate={{ x: [0, 2, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <Sparkles size={12} />
-                Automatisation
-              </motion.span>
-            </div>
+            <BrandLogo />
           </motion.a>
         </Link>
 

@@ -1,7 +1,8 @@
 import { Link } from 'wouter';
-import { Mail, Phone, MapPin, Linkedin, Zap, ArrowRight } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
+import BrandLogo from '@/components/BrandLogo';
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -50,17 +51,9 @@ export default function Footer() {
             <Link href="/">
               <motion.a
                 whileHover={{ scale: 1.05 }}
-                className="inline-flex items-center gap-2 group"
+                className="inline-flex items-center group"
               >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-accent to-secondary rounded-lg blur opacity-75 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="relative px-3 py-2 bg-primary rounded-lg">
-                    <Zap size={20} className="text-accent" />
-                  </div>
-                </div>
-                <span className="text-xl font-black bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">
-                  SOMATISME
-                </span>
+                <BrandLogo inverse />
               </motion.a>
             </Link>
             <p className="text-sm text-gray-300 leading-relaxed">
