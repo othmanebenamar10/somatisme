@@ -91,15 +91,18 @@ export default async function handler(req: any, res: any) {
       return sendError(res, 400, 'Numero de telephone invalide');
     }
 
-    if (!process.env.RECAPTCHA_SECRET_KEY) {
-      console.error('[SECURITY] RECAPTCHA_SECRET_KEY is missing in environment variables');
-    }
-
-    const isHuman = await verifyRecaptcha(recaptchaToken, 0.4, 'contact_form');
-
-    if (!isHuman) {
-      console.warn(`[CONTACT] Security check failed (low score or invalid token) for IP: ${ip}`);
-      return sendError(res, 403, 'Verification de securite echouee');
+    if (recaptchaToken) {
+      const isHuman = await verifyRecaptcha(recaptchaToken, 0.4, 'contact_form');
+      if (!isHuman) {
+        console.warn(`[CONTACT] reCAPTCHA verification failed for IP: ${ip}`);
+        return sendError(res, 403, 'La vérification anti-spam a échoué. Veuillez réessayer.');
+      }
+    } else if (process.env.RECAPTCHA_SECRET_KEY) {
+      // A missing browser token can happen when Google's script is blocked or
+      // the public VITE_RECAPTCHA_SITE_KEY was not included in the build. Keep
+      // the form usable; the honeypot, minimum completion time and rate limit
+      // above remain active. Any token that is supplied is still verified.
+      console.warn(`[CONTACT] reCAPTCHA token unavailable; using fallback protections for IP: ${ip}`);
     }
 
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
