@@ -3,7 +3,6 @@ import { Link } from 'wouter';
 import { Menu, X, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
-import BrandLogo from '@/components/BrandLogo';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -62,7 +61,11 @@ export default function Header() {
             whileTap={{ scale: 0.98 }}
             className="hover:opacity-85 transition-opacity"
           >
-            <BrandLogo />
+            <img
+              src="/logo-somatisme-green.png"
+              alt="SOMATISME — Automatisme industriel"
+              className="h-11 w-auto max-w-[48vw] object-contain sm:h-12"
+            />
           </motion.a>
         </Link>
 

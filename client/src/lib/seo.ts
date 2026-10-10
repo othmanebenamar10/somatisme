@@ -70,7 +70,7 @@ export function generateOrganizationSchema() {
     '@type': 'Organization',
     name: 'SOMATISME',
     url: siteConfig.url,
-    logo: `${siteConfig.url}/logo.png`,
+    logo: `${siteConfig.url}/logo-somatisme-green.png`,
     description: siteConfig.description,
     address: {
       '@type': 'PostalAddress',

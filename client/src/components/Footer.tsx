@@ -2,7 +2,6 @@ import { Link } from 'wouter';
 import { Mail, Phone, MapPin, Linkedin, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
-import BrandLogo from '@/components/BrandLogo';
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -53,7 +52,11 @@ export default function Footer() {
                 whileHover={{ scale: 1.05 }}
                 className="inline-flex items-center group"
               >
-                <BrandLogo inverse />
+                <img
+                  src="/logo-somatisme-green.png"
+                  alt="SOMATISME — Automatisme industriel"
+                  className="h-14 w-auto max-w-full object-contain"
+                />
               </motion.a>
             </Link>
             <p className="text-sm text-gray-300 leading-relaxed">
