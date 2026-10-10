@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'wouter';
+import { Button } from '@/components/ui/button';
 import { ArrowRight, Zap, Wrench, Cpu, Shield } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,7 +9,7 @@ import { useSEO } from '@/hooks/useSEO';
 
 /**
  * SOMATISME - Page d'Accueil
- * Design: Minimalisme Technologique Ã‰purÃ©
+ * Design: Minimalisme Technologique Épuré
  * Couleurs: Bleu profond (#0F172A), Cyan Premium (#06B6D4)
  */
 
@@ -17,11 +18,44 @@ export default function Home() {
 
   useSEO({
     title: 'Automatisme Industriel & Solutions Techniques',
-    description: 'SOMATISME : Solutions d\'automatisme industriel, rÃ©gulation, installation Ã©lectrique et maintenance. Expertise B2B pour l\'industrie.',
-    keywords: 'automatisme industriel, rÃ©gulation, installation Ã©lectrique, maintenance industrielle, solutions techniques',
+    description: 'SOMATISME : Solutions d\'automatisme industriel, régulation, installation électrique et maintenance. Expertise B2B pour l\'industrie.',
+    keywords: 'automatisme industriel, régulation, installation électrique, maintenance industrielle, solutions techniques',
     ogTitle: 'SOMATISME - Solutions d\'Automatisme Industriel',
-    ogDescription: 'Solutions complÃ¨tes d\'automatisme industriel, rÃ©gulation et maintenance pour les entreprises B2B.',
+    ogDescription: 'Solutions complètes d\'automatisme industriel, régulation et maintenance pour les entreprises B2B.',
   });
+
+  const fadeInUp = {
+    initial: { opacity: 0, y: 30 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.7 },
+  };
+
+  const fadeInLeft = {
+    initial: { opacity: 0, x: -40 },
+    animate: { opacity: 1, x: 0 },
+    transition: { duration: 0.8 },
+  };
+
+  const fadeInRight = {
+    initial: { opacity: 0, x: 40 },
+    animate: { opacity: 1, x: 0 },
+    transition: { duration: 0.8 },
+  };
+
+  const staggerContainer = {
+    animate: {
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.3,
+      },
+    },
+  };
+
+  const scaleIn = {
+    initial: { opacity: 0, scale: 0.95 },
+    animate: { opacity: 1, scale: 1 },
+    transition: { duration: 0.6 },
+  };
 
   const partnersData = [
     { name: 'Safran', logoUrl: '/brands/safran.png' },
@@ -43,61 +77,202 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      <section className="relative overflow-hidden bg-slate-900 text-white">
-        <div className="container grid min-h-[620px] grid-cols-1 items-center gap-12 py-16 md:py-20 lg:grid-cols-2">
-          <div className="max-w-2xl">
-            <p className="mb-6 inline-flex border-l-2 border-cyan-400 pl-3 text-sm font-semibold tracking-wide text-cyan-300">{t('home.hero.badge')}</p>
-            <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-              {t('home.hero.title')} <span className="text-cyan-300">{t('home.hero.title.accent')}</span>
-            </h1>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">{t('home.hero.desc')}</p>
-            <div className="mt-9 flex flex-wrap gap-3">
-              <Link href="/contact">
-                <a className="inline-flex items-center gap-2 rounded-md bg-cyan-600 px-6 py-3.5 font-semibold text-white transition-colors hover:bg-cyan-500">
-                  {t('home.hero.cta.quote')} <ArrowRight size={18} />
-                </a>
-              </Link>
-              <Link href="/services">
-                <a className="rounded-md border border-slate-500 px-6 py-3.5 font-semibold text-white transition-colors hover:border-white">{t('home.hero.cta.discover')}</a>
-              </Link>
-            </div>
-            <div className="mt-12 grid max-w-lg grid-cols-3 gap-5 border-t border-slate-700 pt-6">
-              {[
-                { value: '50+', label: t('home.hero.stats.projects') },
-                { value: '15+', label: t('home.hero.stats.experience') },
-                { value: '100%', label: t('home.hero.stats.satisfaction') },
-              ].map((stat) => (
-                <div key={stat.label}>
-                  <p className="text-2xl font-bold text-white">{stat.value}</p>
-                  <p className="mt-1 text-xs leading-5 text-slate-400">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="relative">
-            <img src="/somatisme.png" alt="Équipement et solutions d’automatisme industriel" className="aspect-[4/3] w-full rounded-lg object-cover" />
-            <div className="mt-3 flex items-center gap-2 text-sm text-slate-400"><span className="h-px w-8 bg-cyan-400" />{t('home.hero.card.title')}</div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Section - INDUSTRIAL PROFESSIONAL DESIGN 2026 */}
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-primary via-slate-800 to-primary">
+        {/* Animated Background Orbs */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
+        <div className="absolute top-1/2 right-0 w-72 h-72 bg-cyan-500/15 rounded-full blur-[100px] animate-pulse" style={{ animation: 'float 12s ease-in-out infinite 4s' }}></div>
 
-      <section className="border-b border-slate-200 bg-slate-50 py-14">
-        <div className="container">
-          <div className="mb-8">
-            <p className="text-sm font-semibold uppercase tracking-wide text-cyan-700">{t('about.partners.title')}</p>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{t('about.partners.subtitle')}</p>
-          </div>
-          <div className="grid grid-cols-2 items-center gap-4 sm:grid-cols-4 lg:grid-cols-7">
-            {partnersData.map((partner) => (
-              <div key={partner.name} className="flex h-16 items-center justify-center rounded-md border border-slate-200 bg-white px-3">
-                <img src={partner.logoUrl} alt={partner.name} title={partner.name} className="max-h-10 max-w-full object-contain" />
+        {/* Grid Pattern Overlay */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: 'linear-gradient(0deg, transparent 24%, rgba(255,255,255,.05) 25%, rgba(255,255,255,.05) 26%, transparent 27%, transparent 74%, rgba(255,255,255,.05) 75%, rgba(255,255,255,.05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255,255,255,.05) 25%, rgba(255,255,255,.05) 26%, transparent 27%, transparent 74%, rgba(255,255,255,.05) 75%, rgba(255,255,255,.05) 76%, transparent 77%, transparent)',
+          backgroundSize: '50px 50px'
+        }}></div>
+
+        <div className="container relative z-10 py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center">
+            {/* Left Content - NEW STYLE */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: 'easeOut' }}
+              className="space-y-10"
+            >
+              {/* Badge */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/20 border border-cyan-400/40 backdrop-blur-sm"
+              >
+                <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+                <span className="text-cyan-400 font-bold text-sm uppercase tracking-widest">{t('home.hero.badge')}</span>
+              </motion.div>
+
+              {/* Main Title */}
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+                className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight"
+              >
+                {t('home.hero.title')}
+                <br />
+                <span className="bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-400 bg-clip-text text-transparent">{t('home.hero.title.accent')}</span>
+              </motion.h1>
+
+              {/* Description */}
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.8 }}
+                className="text-base sm:text-xl text-gray-200 max-w-2xl leading-relaxed"
+              >
+                {t('home.hero.desc')}
+              </motion.p>
+
+              {/* CTA Buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="flex flex-col sm:flex-row gap-6 pt-4"
+              >
+                <Link href="/contact">
+                  <motion.button
+                    whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(234, 88, 12, 0.4)' }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white font-bold rounded-xl flex items-center gap-2 shadow-lg hover:shadow-2xl transition-all"
+                  >
+                    {t('home.hero.cta.quote')}
+                    <ArrowRight size={20} />
+                  </motion.button>
+                </Link>
+                <Link href="/services">
+                  <motion.button
+                    whileHover={{ scale: 1.05, borderColor: 'rgba(234, 88, 12, 0.8)' }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-8 py-4 border-2 border-cyan-400/50 text-white font-bold rounded-xl hover:bg-cyan-400/10 transition-all"
+                  >
+                    {t('home.hero.cta.discover')}
+                  </motion.button>
+                </Link>
+              </motion.div>
+
+              {/* Stats Row */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.8 }}
+                className="flex flex-wrap gap-6 sm:gap-12 pt-8 border-t border-white/10"
+              >
+                {[
+                  { value: '50+', label: t('home.hero.stats.projects') },
+                  { value: '15+', label: t('home.hero.stats.experience') },
+                  { value: '100%', label: t('home.hero.stats.satisfaction') },
+                ].map((stat, index) => (
+                  <motion.div
+                    key={index}
+                    whileHover={{ y: -5 }}
+                    className="group"
+                  >
+                    <p className="text-4xl font-black bg-gradient-to-r from-cyan-400 to-cyan-300 bg-clip-text text-transparent mb-2">{stat.value}</p>
+                    <p className="text-sm text-gray-300 group-hover:text-cyan-400 transition-colors">{stat.label}</p>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </motion.div>
+
+            {/* Right Visual - NEW STYLE */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, x: 40 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ delay: 0.3, duration: 0.9 }}
+              className="relative"
+            >
+              {/* Glowing Background Shape */}
+              <div className="absolute -inset-8 bg-gradient-to-r from-cyan-500/20 via-cyan-400/20 to-cyan-500/20 rounded-3xl blur-3xl opacity-50"></div>
+
+              {/* Main Image */}
+              <div className="relative rounded-3xl overflow-hidden border-2 border-cyan-400/30 backdrop-blur-sm">
+                <img
+                  src="/somatisme.png"
+                  alt="Automatisme industriel"
+                  className="w-full h-auto object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/50 via-transparent to-transparent"></div>
               </div>
-            ))}
+
+              {/* Floating Stats Cards */}
+              <motion.div
+                animate={{ y: [0, -15, 0] }}
+                transition={{ duration: 5, repeat: Infinity }}
+                className="hidden sm:block absolute -bottom-8 -left-8 bg-gradient-to-br from-cyan-500/90 to-cyan-600 p-6 rounded-2xl max-w-xs shadow-2xl"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                    <Zap size={24} className="text-white" />
+                  </div>
+                  <p className="text-sm font-bold text-white">{t('home.hero.card.title')}</p>
+                </div>
+                <p className="text-xs text-white/80">{t('home.hero.card.desc')}</p>
+              </motion.div>
+
+              {/* Corner Accent */}
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                className="hidden sm:block absolute -top-4 -right-4 w-32 h-32 border-2 border-accent/30 rounded-full"
+              ></motion.div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Services overview */}
+      {/* Partners Ticker Section - RADICAL NEW DESIGN */}
+      <section className="py-24 overflow-hidden relative bg-gradient-to-r from-primary/50 via-secondary/30 to-primary/50">
+        <div className="absolute inset-0 opacity-20" style={{
+          backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(234, 88, 12, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.3) 0%, transparent 50%)'
+        }}></div>
+
+        <div className="container mb-16 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-center"
+          >
+            <h2 className="text-3xl sm:text-5xl font-black text-white mb-4">{t('about.partners.title')}</h2>
+            <p className="text-base sm:text-xl text-gray-200 max-w-2xl mx-auto">{t('about.partners.subtitle')}</p>
+          </motion.div>
+        </div>
+
+        <div className="relative flex overflow-hidden">
+          <motion.div
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+            className="flex flex-none gap-12 pr-12 sm:gap-24 sm:pr-24 items-center"
+          >
+            {[...partnersData, ...partnersData].map((partner, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.15, filter: 'drop-shadow(0 0 20px rgba(234, 88, 12, 0.6))' }}
+                className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-all duration-300"
+              >
+                <img
+                  src={partner.logoUrl}
+                  alt={partner.name}
+                  className="h-24 w-auto object-contain max-w-[220px]"
+                  onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(partner.name)}&background=ea580c&color=fff&bold=true&size=200`; }}
+                  title={partner.name}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Services Overview Section - RADICAL NEW DESIGN */}
       <section className="py-32 relative overflow-hidden bg-background">
         <div className="absolute inset-0 opacity-30" style={{
           backgroundImage: 'linear-gradient(45deg, transparent 30%, rgba(234, 88, 12, 0.1) 50%, transparent 70%), linear-gradient(-45deg, transparent 30%, rgba(168, 85, 247, 0.1) 50%, transparent 70%)',
@@ -313,6 +488,3 @@ export default function Home() {
     </div>
   );
 }
-
-
-
