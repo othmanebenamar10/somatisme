@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import nodemailer, { type Transporter } from 'nodemailer';
 import {
   checkRateLimit,
   contactSchema,
@@ -16,7 +16,7 @@ import {
 } from './_lib/security.js';
 
 const ADMIN_EMAIL = process.env.EMAIL_TO || 'somatisme@gmail.com';
-let transporter: nodemailer.Transporter | undefined;
+let transporter: Transporter | undefined;
 
 function getTransporter() {
   if (!transporter) {

@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import nodemailer, { type Transporter } from 'nodemailer';
 import { getProductById } from '../shared/products.js';
 import {
   checkRateLimit,
@@ -19,7 +19,7 @@ import {
 
 const ADMIN_EMAIL = process.env.EMAIL_TO || 'somatisme@gmail.com';
 const acceptedOrders = new Map<string, { fingerprint: string; expiresAt: number }>();
-let transporter: nodemailer.Transporter | undefined;
+let transporter: Transporter | undefined;
 
 function getTransporter() {
   if (!transporter) {
