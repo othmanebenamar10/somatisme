@@ -198,13 +198,12 @@ export default function Products() {
         phone: toInternationalPhone(phoneCountryIso, orderForm.phone),
       };
 
-      // Generate invoice and get PDF as base64
+      // Generate a clear order summary PDF for the customer and admin.
       const doc = new jsPDF();
       const timestamp = Date.now();
-      const invoiceNumber = invoiceNumberRef.current || `INV-${timestamp}-${crypto.randomUUID().replaceAll('-', '').slice(0, 12).toUpperCase()}`;
+      const invoiceNumber = invoiceNumberRef.current || `CMD-${timestamp}-${crypto.randomUUID().replaceAll('-', '').slice(0, 8).toUpperCase()}`;
       invoiceNumberRef.current = invoiceNumber;
       const date = new Date().toLocaleDateString('fr-FR');
-      const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR');
 
       // Colors
       const C = {
@@ -266,31 +265,31 @@ export default function Products() {
       doc.setFillColor(...C.light);
       doc.roundedRect(12, 65, 186, 38, 3, 3, 'F');
 
-      // "FACTURE" large text
+      // Order summary title
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(24);
+      doc.setFontSize(19);
       doc.setTextColor(...C.text);
-      doc.text('FACTURE', 20, 82);
+      doc.text('RECAPITULATIF DE COMMANDE', 20, 82);
 
       // "À PAYER" cyan badge
       doc.setFillColor(...C.cyan);
-      doc.roundedRect(20, 86, 32, 8, 2, 2, 'F');
+      doc.roundedRect(20, 86, 48, 8, 2, 2, 'F');
       doc.setFontSize(7);
       doc.setTextColor(...C.white);
       doc.setFont('helvetica', 'bold');
-      doc.text('À PAYER', 28, 91.5);
+      doc.text('A CONFIRMER', 22, 91.5);
 
       // Invoice number (right side of block)
       doc.setFontSize(7);
       doc.setTextColor(...C.muted);
       doc.setFont('helvetica', 'normal');
-      doc.text('N FACTURE', 105, 72);
+      doc.text('REFERENCE', 105, 72);
       doc.setFontSize(8.5);
       doc.setTextColor(...C.text);
       doc.setFont('helvetica', 'bold');
       doc.text(invoiceNumber, 105, 79);
 
-      // Date / Echeance
+      // Date
       doc.setFontSize(7.5);
       doc.setTextColor(...C.muted);
       doc.setFont('helvetica', 'normal');
@@ -302,10 +301,6 @@ export default function Products() {
       doc.setFontSize(7.5);
       doc.setTextColor(...C.muted);
       doc.setFont('helvetica', 'normal');
-      doc.text('ECHEANCE', 155, 89);
-      doc.setTextColor(...C.text);
-      doc.setFont('helvetica', 'bold');
-      doc.text(dueDate, 155, 96);
 
       // ══════════════════════════════════════════
       // TWO COLUMNS: FACTURE À  |  DE
@@ -318,7 +313,7 @@ export default function Products() {
       doc.setFontSize(8);
       doc.setTextColor(...C.cyan);
       doc.setFont('helvetica', 'bold');
-      doc.text('FACTURE A', col1, infoY);
+      doc.text('CLIENT', col1, infoY);
       doc.setDrawColor(...C.cyan);
       doc.setLineWidth(0.6);
       doc.line(col1, infoY + 1.5, col1 + 30, infoY + 1.5);
@@ -379,7 +374,21 @@ export default function Products() {
 
       // Product rows
       let rY = tY + 10;
-      orderItems.forEach((item: any, idx: number) => {
+      cart.forEach((item, idx) => {
+        if (rY > 235) {
+          doc.addPage();
+          rY = 20;
+          doc.setFillColor(...C.navy);
+          doc.rect(12, rY, 186, 10, 'F');
+          doc.setFontSize(8);
+          doc.setTextColor(...C.white);
+          doc.setFont('helvetica', 'bold');
+          doc.text('DESCRIPTION', 28, rY + 7);
+          doc.text('QTE', 118, rY + 7);
+          doc.text('PRIX U.', 140, rY + 7);
+          doc.text('TOTAL', 174, rY + 7);
+          rY += 10;
+        }
         const bg: [number, number, number] = idx % 2 === 0 ? C.white : C.light;
         doc.setFillColor(...bg);
         doc.rect(12, rY, 186, 10, 'F');
@@ -393,12 +402,12 @@ export default function Products() {
         const nm = item.name.length > 44 ? item.name.substring(0, 44) + '...' : item.name;
         doc.text(nm, 28, rY + 7);
 
-        doc.text('1', 120, rY + 7);
+        doc.text(String(item.quantity), 120, rY + 7);
         doc.text(`${item.price} MAD`, 138, rY + 7);
 
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(...C.text);
-        doc.text(`${item.price} MAD`, 196, rY + 7, { align: 'right' });
+        doc.text(`${item.price * item.quantity} MAD`, 196, rY + 7, { align: 'right' });
 
         rY += 10;
       });
@@ -406,6 +415,10 @@ export default function Products() {
       // ══════════════════════════════════════════
       // NOTES & CONDITIONS  +  TOTALS
       // ══════════════════════════════════════════
+      if (rY > 215) {
+        doc.addPage();
+        rY = 25;
+      }
       const botY = rY + 10;
 
       // Notes (left)
@@ -417,11 +430,11 @@ export default function Products() {
       doc.setFontSize(7.5);
       doc.setTextColor(...C.sub);
       doc.setFont('helvetica', 'normal');
-      doc.text('Merci pour votre commande.', col1, botY + 8);
-      doc.text('Le paiement est du a la livraison.', col1, botY + 14);
-      doc.text('Delai de livraison selon disponibilite.', col1, botY + 20);
-      doc.text('Garantie selon le type de produit.', col1, botY + 26);
-      doc.text('Contact: +212 6 79 82 56 46', col1, botY + 32);
+      doc.text('Merci pour votre demande.', col1, botY + 8);
+      doc.text('Notre equipe confirmera la disponibilite', col1, botY + 14);
+      doc.text('et les modalites avant validation.', col1, botY + 20);
+      doc.text('Ce document est un recapitulatif,', col1, botY + 26);
+      doc.text('pas une facture.', col1, botY + 32);
 
       // Totals (right)
       const totX = 105;
@@ -433,24 +446,29 @@ export default function Products() {
       doc.text(`${cartSubtotal} MAD`, 196, botY + 8, { align: 'right' });
 
       doc.setTextColor(...C.sub);
-      doc.text('TVA (20%)', totX, botY + 16);
+      doc.text('Livraison estimative', totX, botY + 16);
       doc.setTextColor(...C.text);
-      doc.text(`${tva} MAD`, 196, botY + 16, { align: 'right' });
+      doc.text(`${shippingFee} MAD`, 196, botY + 16, { align: 'right' });
+
+      doc.setTextColor(...C.sub);
+      doc.text('TVA (20%)', totX, botY + 24);
+      doc.setTextColor(...C.text);
+      doc.text(`${tva} MAD`, 196, botY + 24, { align: 'right' });
 
       // Separator
       doc.setDrawColor(210, 220, 230);
       doc.setLineWidth(0.3);
-      doc.line(totX, botY + 20, 198, botY + 20);
+      doc.line(totX, botY + 28, 198, botY + 28);
 
       // TOTAL box
       doc.setFillColor(...C.navy);
-      doc.roundedRect(totX, botY + 23, 93, 14, 2, 2, 'F');
+      doc.roundedRect(totX, botY + 31, 93, 14, 2, 2, 'F');
       doc.setFontSize(10);
       doc.setTextColor(...C.white);
       doc.setFont('helvetica', 'bold');
-      doc.text('TOTAL', totX + 5, botY + 32);
+      doc.text('TOTAL ESTIMATIF', totX + 5, botY + 40);
       doc.setFontSize(12);
-      doc.text(`${cartTotal} MAD`, 196, botY + 32, { align: 'right' });
+      doc.text(`${cartTotal} MAD`, 196, botY + 40, { align: 'right' });
 
       // ══════════════════════════════════════════
       // FOOTER
@@ -506,31 +524,31 @@ export default function Products() {
         return;
       }
 
-      // Download the invoice only after the server accepts the order.
+      // Download the order summary only after the server accepts the request.
       try {
-        doc.save(`Facture_${invoiceNumber}_SOMATISME.pdf`);
-      } catch (invoiceError) {
-        console.error('Invoice download failed:', invoiceError);
-        toast.error('Commande enregistrée, mais le téléchargement de la facture a échoué.');
+        doc.save(`Commande_${invoiceNumber}_SOMATISME.pdf`);
+      } catch (pdfError) {
+        console.error('Order summary download failed:', pdfError);
+        toast.error('Demande enregistrée, mais le téléchargement du récapitulatif a échoué.');
       }
 
       // Send order via WhatsApp with clean format
-      const orderMessage = `NOUVELLE COMMANDE SOMATISME
+      const orderMessage = `Bonjour SOMATISME, je viens d'envoyer une demande de commande depuis votre site.
 
-INFORMATIONS CLIENT:
-Nom: ${orderForm.name}
-Email: ${orderForm.email}
-Telephone: ${internationalOrderForm.phone}
-${orderForm.company ? `Entreprise: ${orderForm.company}\n` : ''}${orderForm.address ? `Adresse: ${orderForm.address}\n` : ''}
-PRODUITS COMMANDES:
-${orderItems.map((item, idx) => `${idx + 1}. ${item.name} - ${item.price} MAD`).join('\n')}
+Reference : ${invoiceNumber}
+Nom : ${orderForm.name}
+Telephone : ${internationalOrderForm.phone}
+Email : ${orderForm.email}
+${orderForm.company ? `Entreprise : ${orderForm.company}\n` : ''}${orderForm.address ? `Adresse : ${orderForm.address}\n` : ''}
+Articles :
+${cart.map((item) => `• ${item.name} — ${item.quantity} × ${item.price} MAD = ${item.price * item.quantity} MAD`).join('\n')}
 
-TOTAL: ${cartTotal} MAD
-${orderForm.message ? `\nMessage: ${orderForm.message}` : ''}
-
-Facture PDF generee et telechargee.
-Confirmation dans les 24h.
-Paiement a la livraison.`;
+Sous-total : ${cartSubtotal} MAD
+Livraison : ${shippingFee} MAD
+TVA : ${tva} MAD
+Total estimatif : ${cartTotal} MAD
+${orderForm.message ? `\nMessage : ${orderForm.message}\n` : ''}
+Merci de confirmer la disponibilité et les modalités de livraison.`;
       
       const whatsappUrl = `https://wa.me/212679825646?text=${encodeURIComponent(orderMessage)}`;
       if (whatsappWindow) {
@@ -1021,7 +1039,7 @@ Paiement a la livraison.`;
                   </p>
                   <ul className="text-xs text-foreground space-y-1.5">
                     <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'الدفع عبر WhatsApp' : 'Paiement via WhatsApp'}</li>
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'فاتورة manuelle envoyée par email' : 'Facture manuelle envoyée par email'}</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'سيتم إرسال ملخص الطلب عبر البريد الإلكتروني' : 'Récapitulatif de commande envoyé par email'}</li>
                     <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'Coordonner avec nous pour le rendez-vous' : 'Coordonner avec nous pour le rendez-vous'}</li>
                   </ul>
                 </div>

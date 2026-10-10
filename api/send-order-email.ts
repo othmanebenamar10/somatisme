@@ -130,7 +130,9 @@ export default async function handler(req: any, res: any) {
 
     const verifiedItems = trustedItems.filter((item): item is NonNullable<typeof item> => item !== null);
     const subtotal = verifiedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const calculatedTotal = subtotal + Math.round(subtotal * 0.02) + Math.round(subtotal * 0.2);
+    const shippingFee = Math.round(subtotal * 0.02);
+    const taxAmount = Math.round(subtotal * 0.2);
+    const calculatedTotal = subtotal + shippingFee + taxAmount;
 
     if (Math.abs(calculatedTotal - cartTotal) > 0.01) {
       return sendError(res, 400, 'Le total de la commande a changé. Actualisez votre panier.');
@@ -188,14 +190,14 @@ export default async function handler(req: any, res: any) {
       month: 'long',
       day: 'numeric',
     });
-    const orderNumber = `CMD-${Date.now().toString().slice(-6)}`;
+    const orderNumber = invoiceNumber;
 
     const customerSubject = sanitizeHeaderValue(
-      `Confirmation de votre commande SOMATISME - ${invoiceNumber}`,
+      `Demande de commande reçue - SOMATISME - ${invoiceNumber}`,
       160
     );
     const adminSubject = sanitizeHeaderValue(
-      `NOUVELLE COMMANDE - ${orderForm.name} - ${invoiceNumber}`,
+      `NOUVELLE DEMANDE - ${orderForm.name} - ${invoiceNumber}`,
       160
     );
 
@@ -203,8 +205,8 @@ export default async function handler(req: any, res: any) {
       .map(
         (item, idx) => `
           <div style="padding:14px 18px;border-bottom:1px solid #1e293b;display:flex;justify-content:space-between;">
-            <span style="color:#cbd5e1;font-size:14px;">${idx + 1}. ${escapeHtml(item.name)}</span>
-            <span style="color:#06b6d4;font-size:14px;font-weight:700;">${item.price} MAD</span>
+            <span style="color:#cbd5e1;font-size:14px;">${idx + 1}. ${escapeHtml(item.name)} — ${item.quantity} × ${item.price} MAD</span>
+            <span style="color:#06b6d4;font-size:14px;font-weight:700;">${item.price * item.quantity} MAD</span>
           </div>`
       )
       .join('');
@@ -217,20 +219,25 @@ export default async function handler(req: any, res: any) {
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
         <tr><td style="background:linear-gradient(135deg,#1e3a5f 0%,#0e7490 100%);border-radius:16px 16px 0 0;padding:40px;text-align:center;">
-          <h1 style="color:#ffffff;font-size:24px;font-weight:700;margin:0 0 8px;">Commande confirmee</h1>
+          <h1 style="color:#ffffff;font-size:24px;font-weight:700;margin:0 0 8px;">Demande bien reçue</h1>
           <p style="color:#94a3b8;font-size:14px;margin:0;">Ref: <strong style="color:#06b6d4;">${escapeHtml(orderNumber)}</strong> - ${date}</p>
         </td></tr>
         <tr><td style="background:#ffffff;padding:40px;">
           <p style="color:#1e293b;font-size:16px;margin:0 0 24px;">Bonjour <strong>${escapeHtml(orderForm.name)}</strong>,</p>
-          <p style="color:#475569;font-size:14px;line-height:1.7;margin:0 0 30px;">Merci pour votre commande. Notre equipe vous contactera dans les 24 heures pour confirmer la livraison.</p>
+          <p style="color:#475569;font-size:14px;line-height:1.7;margin:0 0 30px;">Merci pour votre demande. Notre équipe vérifie la disponibilité des articles et les modalités de livraison. Votre commande sera confirmée après validation avec vous.</p>
           <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:24px;">
             <div style="background:#1e3a5f;padding:14px 20px;">
               <p style="color:#ffffff;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin:0;">Produits commandes</p>
             </div>
             <div style="padding:20px;">
               ${itemsHtml}
+              <div style="padding:14px 0 0;color:#475569;font-size:14px;line-height:1.8;">
+                <div style="display:flex;justify-content:space-between;"><span>Sous-total</span><span>${subtotal} MAD</span></div>
+                <div style="display:flex;justify-content:space-between;"><span>Livraison estimative</span><span>${shippingFee} MAD</span></div>
+                <div style="display:flex;justify-content:space-between;"><span>TVA (20%)</span><span>${taxAmount} MAD</span></div>
+              </div>
               <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 0 0;">
-                <p style="color:#1e293b;font-size:16px;font-weight:700;margin:0;">TOTAL</p>
+                <p style="color:#1e293b;font-size:16px;font-weight:700;margin:0;">TOTAL ESTIMATIF</p>
                 <p style="color:#0e7490;font-size:22px;font-weight:800;margin:0;">${calculatedTotal} MAD</p>
               </div>
             </div>
@@ -250,7 +257,7 @@ export default async function handler(req: any, res: any) {
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
         <tr><td style="background:linear-gradient(135deg,#1e3a5f 0%,#0e7490 100%);border-radius:16px 16px 0 0;padding:40px;text-align:center;">
-          <h1 style="color:#ffffff;font-size:26px;font-weight:700;margin:0 0 8px;">Nouvelle commande</h1>
+          <h1 style="color:#ffffff;font-size:26px;font-weight:700;margin:0 0 8px;">Nouvelle demande de commande</h1>
           <div style="background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);border-radius:20px;display:inline-block;padding:4px 16px;margin-top:8px;">
             <span style="color:#fca5a5;font-size:12px;font-weight:700;">ACTION REQUISE</span>
           </div>
@@ -295,8 +302,13 @@ export default async function handler(req: any, res: any) {
           <p style="color:#64748b;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px;">Produits commandes</p>
           <div style="background:#0f172a;border:1px solid #334155;border-radius:10px;overflow:hidden;margin-bottom:28px;">
             ${itemsHtml}
+            <div style="padding:14px 18px 0;color:#cbd5e1;font-size:14px;line-height:1.8;">
+              <div style="display:flex;justify-content:space-between;"><span>Sous-total</span><span>${subtotal} MAD</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Livraison estimative</span><span>${shippingFee} MAD</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>TVA (20%)</span><span>${taxAmount} MAD</span></div>
+            </div>
             <div style="padding:16px 18px;background:#0c1929;display:flex;justify-content:space-between;align-items:center;">
-              <span style="color:#94a3b8;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Total</span>
+              <span style="color:#94a3b8;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Total estimatif</span>
               <span style="color:#06b6d4;font-size:24px;font-weight:800;">${calculatedTotal} MAD</span>
             </div>
           </div>
@@ -314,7 +326,7 @@ export default async function handler(req: any, res: any) {
 
     const attachments = pdfBase64
       ? [{
-          filename: `Facture_${sanitizeHeaderValue(invoiceNumber, 40)}_SOMATISME.pdf`,
+          filename: `Commande_${sanitizeHeaderValue(invoiceNumber, 40)}_SOMATISME.pdf`,
           content: pdfBase64,
           encoding: 'base64',
           contentType: 'application/pdf',
@@ -328,14 +340,18 @@ export default async function handler(req: any, res: any) {
       subject: adminSubject,
       html: adminHtml,
       text: [
-        'Nouvelle commande',
+        'Nouvelle demande de commande',
         `Nom: ${orderForm.name}`,
         `Email: ${orderForm.email}`,
         `Telephone: ${orderForm.phone}`,
         `Entreprise: ${orderForm.company || '-'}`,
         `Adresse: ${orderForm.address || '-'}`,
-        `Facture: ${invoiceNumber}`,
-        `Total: ${calculatedTotal} MAD`,
+        `Recapitulatif de commande: ${invoiceNumber}`,
+        ...trustedOrderItems.map((item) => `${item.name}: ${item.quantity} x ${item.price} MAD = ${item.price * item.quantity} MAD`),
+        `Sous-total: ${subtotal} MAD`,
+        `Livraison estimative: ${shippingFee} MAD`,
+        `TVA (20%): ${taxAmount} MAD`,
+        `Total estimatif: ${calculatedTotal} MAD`,
       ].join('\n'),
       attachments,
     });
@@ -350,10 +366,14 @@ export default async function handler(req: any, res: any) {
       subject: customerSubject,
       html: customerHtml,
       text: [
-        'Confirmation de commande SOMATISME',
+        'Demande de commande recue - SOMATISME',
         `Reference: ${orderNumber}`,
-        `Facture: ${invoiceNumber}`,
-        `Total: ${calculatedTotal} MAD`,
+        `Recapitulatif de commande: ${invoiceNumber}`,
+        ...trustedOrderItems.map((item) => `${item.name}: ${item.quantity} x ${item.price} MAD = ${item.price * item.quantity} MAD`),
+        `Sous-total: ${subtotal} MAD`,
+        `Livraison estimative: ${shippingFee} MAD`,
+        `TVA (20%): ${taxAmount} MAD`,
+        `Total estimatif: ${calculatedTotal} MAD`,
       ].join('\n'),
       attachments,
       });
@@ -367,8 +387,8 @@ export default async function handler(req: any, res: any) {
     return res.status(200).json({
       success: true,
       message: customerEmailSent
-        ? 'Commande reçue. Confirmation envoyée par email.'
-        : 'Commande reçue. La confirmation email n’a pas pu être envoyée pour le moment.',
+        ? 'Votre demande est reçue. Un récapitulatif vous a été envoyé par email.'
+        : 'Votre demande est reçue, mais le récapitulatif email n’a pas pu être envoyé pour le moment.',
     });
   } catch (error: any) {
     console.error('[ERROR] Order email error:', error?.message || error);
