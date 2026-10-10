@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -162,12 +162,29 @@ const categories = [
   { id: 'equipment', name: 'Équipements Divers', nameAr: 'معدات متنوعة' },
 ];
 
+interface CartItem extends Product {
+  quantity: number;
+}
+
 export default function Products() {
   const { t } = useLanguage();
   const [language, setLanguage] = useState<'fr' | 'ar'>('fr');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [cart, setCart] = useState<Product[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('somatisme_cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // useEffect used from global if needed, but react is imported at top
+  useEffect(() => {
+    localStorage.setItem('somatisme_cart', JSON.stringify(cart));
+  }, [cart]);
+  
   const [showCart, setShowCart] = useState(false);
   const [showOrderDialog, setShowOrderDialog] = useState(false);
   const [cartStep, setCartStep] = useState<'summary' | 'form'>('summary'); // Step-by-step checkout
@@ -225,14 +242,23 @@ export default function Products() {
     });
 
   const addToCart = (product: Product) => {
-    setCart([...cart, product]);
+    setCart((prevCart) => {
+      const existing = prevCart.find((item) => item.id === product.id);
+      if (existing) {
+        return prevCart.map((item) =>
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      }
+      return [...prevCart, { ...product, quantity: 1 }];
+    });
+    toast.success(language === 'ar' ? 'تم إضافة المنتج إلى السلة' : 'Produit ajouté au panier');
   };
 
   const removeFromCart = (index: number) => {
     setCart(cart.filter((_, i) => i !== index));
   };
 
-  const cartSubtotal = cart.reduce((total, item) => total + item.price, 0);
+  const cartSubtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   const shippingFee = Math.round(cartSubtotal * 0.02); // 2% shipping fee
   const tva = Math.round(cartSubtotal * 0.20); // 20% TVA
   const cartTotal = cartSubtotal + shippingFee + tva;
@@ -548,7 +574,7 @@ export default function Products() {
         name: language === 'ar' ? item.nameAr : item.name,
         description: language === 'ar' ? item.descriptionAr : item.description,
         price: item.price,
-        quantity: 1
+        quantity: item.quantity
       }));
 
       // Generate invoice and get PDF as base64
