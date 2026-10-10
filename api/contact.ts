@@ -15,17 +15,25 @@ import {
 } from './_lib/security.js';
 
 const ADMIN_EMAIL = process.env.EMAIL_TO || 'somatisme@gmail.com';
+let transporter: nodemailer.Transporter | undefined;
 
 function getTransporter() {
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT || '587', 10),
-    secure: process.env.SMTP_PORT === '465',
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
+  if (!transporter) {
+    const port = Number.parseInt(process.env.SMTP_PORT || '587', 10);
+    transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port,
+      secure: port === 465,
+      pool: true,
+      maxConnections: 2,
+      maxMessages: 100,
+      connectionTimeout: 8_000,
+      greetingTimeout: 8_000,
+      socketTimeout: 15_000,
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+    });
+  }
+  return transporter;
 }
 
 export default async function handler(req: any, res: any) {
@@ -87,7 +95,7 @@ export default async function handler(req: any, res: any) {
       console.error('[SECURITY] RECAPTCHA_SECRET_KEY is missing in environment variables');
     }
 
-    const isHuman = await verifyRecaptcha(recaptchaToken, 0.4);
+    const isHuman = await verifyRecaptcha(recaptchaToken, 0.4, 'contact_form');
 
     if (!isHuman) {
       console.warn(`[CONTACT] Security check failed (low score or invalid token) for IP: ${ip}`);

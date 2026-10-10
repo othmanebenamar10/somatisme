@@ -122,6 +122,11 @@ export function checkRateLimit(
 
   if (!entry || now > entry.resetAt) {
     rateLimitStore.set(key, { count: 1, resetAt: now + windowMs });
+    if (rateLimitStore.size > 5_000) {
+      for (const [storedKey, storedEntry] of rateLimitStore) {
+        if (storedEntry.resetAt <= now) rateLimitStore.delete(storedKey);
+      }
+    }
     return { allowed: true, retryAfterSeconds: Math.ceil(windowMs / 1000) };
   }
 
@@ -190,7 +195,8 @@ export function isValidPhone(phone: unknown): boolean {
     return false;
   }
 
-  return /^[\d\s\-+()]{7,20}$/.test(phone);
+  const digits = phone.replace(/\D/g, '');
+  return /^[\d\s\-+().]{7,24}$/.test(phone) && digits.length >= 7 && digits.length <= 15;
 }
 
 export function isLikelyBot(payload: Record<string, unknown>, minDurationMs: number): boolean {
@@ -208,7 +214,8 @@ export function isLikelyBot(payload: Record<string, unknown>, minDurationMs: num
 
 export async function verifyRecaptcha(
   token: string | null | undefined,
-  minScore = 0.5
+  minScore = 0.5,
+  expectedAction?: string
 ): Promise<boolean> {
   const secretKey = process.env.RECAPTCHA_SECRET_KEY;
   if (!secretKey) {
@@ -224,6 +231,7 @@ export async function verifyRecaptcha(
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(token)}`,
+      signal: AbortSignal.timeout(8_000),
     });
 
     if (!response.ok) {
@@ -236,7 +244,9 @@ export async function verifyRecaptcha(
       action?: string;
     };
 
-    return data.success === true && (data.score ?? 1) >= minScore;
+    return data.success === true
+      && (data.score ?? 1) >= minScore
+      && (!expectedAction || data.action === expectedAction);
   } catch {
     return false;
   }
@@ -284,9 +294,8 @@ export const orderSchema = z.object({
     message: z.string().max(1000).optional().default(''),
   }),
   orderItems: z.array(z.object({
-    name: z.string().min(1).max(200),
-    price: z.number().finite().min(0).max(10_000_000),
-    quantity: z.number().int().min(1).max(100).optional().default(1),
+    productId: z.string().min(1).max(40),
+    quantity: z.number().int().min(1).max(100),
   })).min(1).max(50),
   cartTotal: z.number().finite().positive().max(10_000_000),
   pdfBase64: z.string().optional(),

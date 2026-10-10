@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { useRecaptcha } from '@/hooks/useRecaptcha';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
+import CountryPhoneInput from '@/components/CountryPhoneInput';
+import { toInternationalPhone } from '@/data/phoneCountries';
 
 /**
  * SOMATISME - Page Contact
@@ -16,6 +18,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Contact() {
   const { t } = useLanguage();
+  const [phoneCountryIso, setPhoneCountryIso] = useState('MA');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -46,7 +49,8 @@ export default function Contact() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (formData.email && !emailRegex.test(formData.email)) errors.email = 'Email invalide';
       if (formData.phone) {
-        const phoneRegex = /^(06\d{8}|(\+212|00212)\d{9})$/;
+        // Allows optional leading + and digits/spaces
+        const phoneRegex = /^\+?[0-9\s\-()]{7,20}$/;
         if (!phoneRegex.test(formData.phone)) errors.phone = 'Téléphone invalide';
       }
     }
@@ -102,8 +106,10 @@ export default function Contact() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
+          phone: toInternationalPhone(phoneCountryIso, formData.phone),
           recaptchaToken,
           _duration: Date.now() - formStartTime,
+          website: botField,
         }),
       });
 
@@ -193,7 +199,7 @@ export default function Contact() {
                 {
                   icon: Phone,
                   title: t('contact.info.phone'),
-                  value: '06 79 82 56 46',
+                  value: '+212 6 79 82 56 46',
                   href: 'tel:+212679825646',
                 },
                 {
@@ -344,17 +350,13 @@ export default function Contact() {
                       <label className="block text-sm font-semibold text-foreground mb-2">
                         {t('contact.form.phone')}
                       </label>
-                      <div className="relative group">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-accent transition-colors" size={18} />
-                        <Input
-                          type="tel"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          placeholder={t('contact.form.phone.placeholder')}
-                          className={`pl-10 bg-background/50 border-border focus:border-accent/50 focus:ring-accent/20 transition-all h-12 rounded-xl ${formErrors.phone ? 'border-destructive' : ''}`}
-                        />
-                      </div>
+                      <CountryPhoneInput
+                        id="contact-phone"
+                        value={formData.phone}
+                        countryIso={phoneCountryIso}
+                        onValueChange={(phone) => setFormData((previous) => ({ ...previous, phone }))}
+                        onCountryIsoChange={setPhoneCountryIso}
+                      />
                       {formErrors.phone && <p className="text-xs text-destructive mt-1">{formErrors.phone}</p>}
                     </div>
                     <div>
@@ -450,7 +452,7 @@ export default function Contact() {
                     {formData.phone && (
                       <div className="flex justify-between items-start">
                         <span className="text-sm text-muted-foreground">Téléphone:</span>
-                        <span className="font-semibold text-foreground">{formData.phone}</span>
+                        <span className="font-semibold text-foreground">{toInternationalPhone(phoneCountryIso, formData.phone)}</span>
                       </div>
                     )}
                     {formData.company && (

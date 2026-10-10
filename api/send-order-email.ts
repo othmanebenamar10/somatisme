@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { getProductById } from '../shared/products.js';
 import {
   checkRateLimit,
   escapeHtml,
@@ -16,17 +17,26 @@ import {
 } from './_lib/security.js';
 
 const ADMIN_EMAIL = process.env.EMAIL_TO || 'somatisme@gmail.com';
+const acceptedOrders = new Map<string, { fingerprint: string; expiresAt: number }>();
+let transporter: nodemailer.Transporter | undefined;
 
 function getTransporter() {
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT || '587', 10),
-    secure: process.env.SMTP_PORT === '465',
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
+  if (!transporter) {
+    const port = Number.parseInt(process.env.SMTP_PORT || '587', 10);
+    transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port,
+      secure: port === 465,
+      pool: true,
+      maxConnections: 2,
+      maxMessages: 100,
+      connectionTimeout: 8_000,
+      greetingTimeout: 8_000,
+      socketTimeout: 15_000,
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+    });
+  }
+  return transporter;
 }
 
 export default async function handler(req: any, res: any) {
@@ -71,9 +81,8 @@ export default async function handler(req: any, res: any) {
       },
       orderItems: Array.isArray(body.orderItems)
         ? body.orderItems.map((item: any) => ({
-            name: sanitizePlainText(item?.name, 200),
-            price: Number(item?.price),
-            quantity: Number(item?.quantity || 1),
+            productId: sanitizePlainText(item?.productId, 40),
+            quantity: Number(item?.quantity),
           }))
         : [],
       cartTotal: Number(body.cartTotal),
@@ -96,14 +105,59 @@ export default async function handler(req: any, res: any) {
       return sendError(res, 400, 'Numero de telephone invalide');
     }
 
-    const calculatedTotal = orderItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
+    const quantitiesByProduct = new Map<string, number>();
+    for (const item of orderItems) {
+      quantitiesByProduct.set(item.productId, (quantitiesByProduct.get(item.productId) || 0) + item.quantity);
+    }
+
+    const trustedItems = orderItems.map((item) => {
+      const product = getProductById(item.productId);
+      if (!product || (quantitiesByProduct.get(item.productId) || 0) > product.stock) {
+        return null;
+      }
+      return {
+        name: product.name,
+        price: product.price,
+        quantity: item.quantity,
+      };
+    });
+
+    if (trustedItems.some((item) => item === null)) {
+      return sendError(res, 400, 'Produit indisponible ou quantité invalide');
+    }
+
+    const verifiedItems = trustedItems.filter((item): item is NonNullable<typeof item> => item !== null);
+    const subtotal = verifiedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const calculatedTotal = subtotal + Math.round(subtotal * 0.02) + Math.round(subtotal * 0.2);
 
     if (Math.abs(calculatedTotal - cartTotal) > 0.01) {
-      return sendError(res, 400, 'Order total mismatch');
+      return sendError(res, 400, 'Le total de la commande a changé. Actualisez votre panier.');
     }
+
+    const orderFingerprint = [
+      orderForm.name,
+      orderForm.email,
+      orderForm.phone,
+      orderForm.company,
+      orderForm.address,
+      orderForm.message,
+      calculatedTotal,
+      orderItems.map((item) => `${item.productId}:${item.quantity}`).sort().join(','),
+    ].join('|');
+    const now = Date.now();
+    for (const [key, entry] of acceptedOrders) {
+      if (entry.expiresAt <= now) acceptedOrders.delete(key);
+    }
+    const existingOrder = acceptedOrders.get(invoiceNumber);
+    if (existingOrder) {
+      if (existingOrder.fingerprint !== orderFingerprint) {
+        return sendError(res, 409, 'Cette référence de commande est déjà utilisée.');
+      }
+      return res.status(200).json({ success: true, message: 'Commande déjà enregistrée.' });
+    }
+
+    // The catalog and all prices come from the server-side catalog, never the browser payload.
+    const trustedOrderItems = verifiedItems;
 
     if (pdfBase64 && !isSafePdfBase64(pdfBase64)) {
       return sendError(res, 400, 'Invalid PDF attachment');
@@ -113,7 +167,7 @@ export default async function handler(req: any, res: any) {
       console.error('[SECURITY] RECAPTCHA_SECRET_KEY is missing in environment variables');
     }
 
-    const isHuman = await verifyRecaptcha(recaptchaToken, 0.3);
+    const isHuman = await verifyRecaptcha(recaptchaToken, 0.3, 'order_submit');
 
     if (!isHuman) {
       console.warn(`[ORDER] Security check failed (low score or invalid token) for IP: ${ip}`);
@@ -143,7 +197,7 @@ export default async function handler(req: any, res: any) {
       160
     );
 
-    const itemsHtml = orderItems
+    const itemsHtml = trustedOrderItems
       .map(
         (item, idx) => `
           <div style="padding:14px 18px;border-bottom:1px solid #1e293b;display:flex;justify-content:space-between;">
@@ -175,7 +229,7 @@ export default async function handler(req: any, res: any) {
               ${itemsHtml}
               <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 0 0;">
                 <p style="color:#1e293b;font-size:16px;font-weight:700;margin:0;">TOTAL</p>
-                <p style="color:#0e7490;font-size:22px;font-weight:800;margin:0;">${cartTotal} MAD</p>
+                <p style="color:#0e7490;font-size:22px;font-weight:800;margin:0;">${calculatedTotal} MAD</p>
               </div>
             </div>
           </div>
@@ -241,7 +295,7 @@ export default async function handler(req: any, res: any) {
             ${itemsHtml}
             <div style="padding:16px 18px;background:#0c1929;display:flex;justify-content:space-between;align-items:center;">
               <span style="color:#94a3b8;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Total</span>
-              <span style="color:#06b6d4;font-size:24px;font-weight:800;">${cartTotal} MAD</span>
+              <span style="color:#06b6d4;font-size:24px;font-weight:800;">${calculatedTotal} MAD</span>
             </div>
           </div>
           ${orderForm.message ? `
@@ -267,20 +321,6 @@ export default async function handler(req: any, res: any) {
 
     await transporter.sendMail({
       from: `"SOMATISME" <${process.env.SMTP_USER}>`,
-      to: orderForm.email,
-      subject: customerSubject,
-      html: customerHtml,
-      text: [
-        'Confirmation de commande SOMATISME',
-        `Reference: ${orderNumber}`,
-        `Facture: ${invoiceNumber}`,
-        `Total: ${cartTotal} MAD`,
-      ].join('\n'),
-      attachments,
-    });
-
-    await transporter.sendMail({
-      from: `"SOMATISME" <${process.env.SMTP_USER}>`,
       to: ADMIN_EMAIL,
       replyTo: orderForm.email,
       subject: adminSubject,
@@ -293,14 +333,40 @@ export default async function handler(req: any, res: any) {
         `Entreprise: ${orderForm.company || '-'}`,
         `Adresse: ${orderForm.address || '-'}`,
         `Facture: ${invoiceNumber}`,
-        `Total: ${cartTotal} MAD`,
+        `Total: ${calculatedTotal} MAD`,
       ].join('\n'),
       attachments,
     });
 
+    acceptedOrders.set(invoiceNumber, { fingerprint: orderFingerprint, expiresAt: now + 24 * 60 * 60 * 1000 });
+
+    let customerEmailSent = true;
+    try {
+      await transporter.sendMail({
+      from: `"SOMATISME" <${process.env.SMTP_USER}>`,
+      to: orderForm.email,
+      subject: customerSubject,
+      html: customerHtml,
+      text: [
+        'Confirmation de commande SOMATISME',
+        `Reference: ${orderNumber}`,
+        `Facture: ${invoiceNumber}`,
+        `Total: ${calculatedTotal} MAD`,
+      ].join('\n'),
+      attachments,
+      });
+    } catch (emailError: any) {
+      customerEmailSent = false;
+      console.error('[ORDER] Admin received the order, but customer confirmation failed:', emailError?.message || emailError);
+    }
+
+
+
     return res.status(200).json({
       success: true,
-      message: 'Commande recue. Confirmation envoyee par email.',
+      message: customerEmailSent
+        ? 'Commande reçue. Confirmation envoyée par email.'
+        : 'Commande reçue. La confirmation email n’a pas pu être envoyée pour le moment.',
     });
   } catch (error: any) {
     console.error('[ERROR] Order email error:', error?.message || error);

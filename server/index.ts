@@ -1,88 +1,61 @@
-try { process.loadEnvFile('.env'); } catch { /* .env not found, use system env */ }
-import express from "express";
-import { createServer } from "http";
-import path from "path";
-import { fileURLToPath } from "url";
-import nodemailer from "nodemailer";
-import helmet from "helmet";
-import rateLimit from "express-rate-limit";
-import { connectToDatabase } from "./db";
-import ContactSubmission from "./models/ContactSubmission";
-import {
-  securityHeaders,
-  rateLimiter,
-  ipAccessControl,
-  apiKeyAuth,
-  pathProtection,
-  sanitizeInput,
-  auditLogger
-} from "./security";
-import apiRouter from "./routes/api";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Security: IP whitelist (add trusted IPs here)
-const TRUSTED_IPS = process.env.TRUSTED_IPS?.split(",") || [];
-const BLOCKED_IPS = process.env.BLOCKED_IPS?.split(",") || [];
-
-// Security: Audit logging function
-function logAudit(action: string, ip: string, details: any): void {
-  const timestamp = new Date().toISOString();
-  const logEntry = {
-    timestamp,
-    action,
-    ip,
-    details,
-  };
-  console.log("[AUDIT]", JSON.stringify(logEntry));
-  
-  // In production, you might want to send this to a secure logging service
-  // or store in a separate audit collection in MongoDB
+try {
+  process.loadEnvFile('.env');
+} catch {
+  // Environment variables may be supplied by the deployment platform.
 }
+
+import express from 'express';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+
+const { default: apiRouter } = await import('./routes/api');
 
 const app = express();
+const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
+const staticPath = process.env.NODE_ENV === 'production'
+  ? path.resolve(currentDirectory, 'public')
+  : path.resolve(currentDirectory, '..', 'dist', 'public');
 
-// Military-grade security middleware
-app.use(securityHeaders);
-app.use(rateLimiter);
-app.use(ipAccessControl);
-app.use(pathProtection);
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", 'https://www.google.com/recaptcha/', 'https://www.gstatic.com/recaptcha/'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+      fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
+      connectSrc: ["'self'", 'https://www.google.com/recaptcha/', 'https://www.gstatic.com/recaptcha/', 'https:'],
+      frameSrc: ["'self'", 'https://www.google.com/recaptcha/', 'https://recaptcha.google.com/', 'https://www.google.com/maps/', 'https://maps.google.com/'],
+      objectSrc: ["'none'"],
+      frameAncestors: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+    },
+  },
+}));
+app.use(express.json({ limit: '2mb', strict: true }));
+app.use('/api', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+}));
+app.use('/api', apiRouter);
+app.use(express.static(staticPath, {
+  etag: true,
+  maxAge: 0,
+  immutable: false,
+  index: false,
+}));
+app.get('*', (_req, res) => res.sendFile(path.join(staticPath, 'index.html')));
 
-// Middleware
-app.use(express.json({ limit: "10kb" })); // Limit body size to prevent large payload attacks
-
-// Serve static files from dist/public in production
-const staticPath =
-  process.env.NODE_ENV === "production"
-    ? path.resolve(__dirname, "public")
-    : path.resolve(__dirname, "..", "dist", "public");
-
-app.use(express.static(staticPath));
-
-// Initialize database connection (optional - won't block startup)
-connectToDatabase().catch(error => {
-  console.error("Failed to connect to database:", error);
-});
-
-  // API Routes
-  app.use("/api", apiRouter);
-
-// Handle client-side routing - serve index.html for all routes
-app.get("*", (_req, res) => {
-  res.sendFile(path.join(staticPath, "index.html"));
-});
-
-// Start server only if not in Vercel environment
-if (process.env.VERCEL !== "1") {
-  const port = process.env.PORT || 3000;
-  const server = createServer(app);
-  
-  server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}/`);
-    console.log(`Security: Helmet enabled, Rate limiting active`);
-  });
+if (process.env.VERCEL !== '1') {
+  const port = Number(process.env.PORT || 3000);
+  app.listen(port, () => console.log(`Somatisme server listening on port ${port}`));
 }
 
-// Export app for Vercel
 export default app;

@@ -1,5 +1,7 @@
 import Stripe from 'stripe';
-import { checkRateLimit, getClientIp, handleCors, sanitizePlainText, sendError } from './_lib/security.js';
+import { randomUUID } from 'node:crypto';
+import { getProductById } from '../shared/products.js';
+import { checkRateLimit, getAllowedOrigins, getClientIp, handleCors, isValidEmail, sanitizePlainText, sendError } from './_lib/security.js';
 
 export default async function handler(req: any, res: any) {
   const cors = handleCors(req, res, ['POST', 'OPTIONS']);
@@ -14,6 +16,9 @@ export default async function handler(req: any, res: any) {
     return sendError(res, 405, 'Method not allowed');
   }
 
+  const contentLength = Number.parseInt(String(req.headers['content-length'] || '0'), 10);
+  if (contentLength > 50_000) return sendError(res, 413, 'Request too large');
+
   const ip = getClientIp(req);
   const rateLimit = checkRateLimit(`checkout:${ip}`, 10, 60_000);
   if (!rateLimit.allowed) {
@@ -22,42 +27,87 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const { items, customerInfo } = req.body || {};
+    const { items, customerInfo, requestId } = req.body || {};
 
-    if (!Array.isArray(items) || items.length === 0) {
+    if (!Array.isArray(items) || items.length === 0 || items.length > 50) {
       return sendError(res, 400, 'No items provided');
     }
 
     const customerEmail = sanitizePlainText(customerInfo?.email, 254).toLowerCase();
-    if (!customerEmail) {
+    if (!isValidEmail(customerEmail)) {
       return sendError(res, 400, 'Customer email required');
     }
 
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-      apiVersion: '2026-03-25.dahlia' as any,
-    });
+    const quantitiesByProduct = new Map<string, number>();
+    for (const item of items) {
+      const id = sanitizePlainText(item?.productId, 40);
+      quantitiesByProduct.set(id, (quantitiesByProduct.get(id) || 0) + Number(item?.quantity));
+    }
 
-    const lineItems = items.map((item: any) => ({
+    const verifiedItems = items.map((item: any) => {
+      const product = getProductById(sanitizePlainText(item?.productId, 40));
+      const quantity = Number(item?.quantity);
+      if (!product || !Number.isInteger(quantity) || quantity < 1 || (quantitiesByProduct.get(product.id) || 0) > product.stock) return null;
+      return { product, quantity };
+    });
+    if (verifiedItems.some((item) => item === null)) {
+      return sendError(res, 400, 'Produit indisponible ou quantité invalide');
+    }
+
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return sendError(res, 503, 'Le paiement en ligne est temporairement indisponible.');
+    }
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = verifiedItems.map((entry) => {
+      const { product, quantity } = entry!;
+      return ({
       price_data: {
         currency: 'mad',
         product_data: {
-          name: sanitizePlainText(item?.name, 200),
-          description: sanitizePlainText(item?.description, 500),
+          name: product.name,
+          description: product.description,
         },
-        unit_amount: Math.round(Number(item?.price || 0) * 100),
+        unit_amount: Math.round(product.price * 100),
       },
-      quantity: Math.max(1, Math.min(100, Number(item?.quantity || 1))),
-    }));
+      quantity,
+    });
+    });
+
+    const subtotal = verifiedItems.reduce((sum, entry) => sum + entry!.product.price * entry!.quantity, 0);
+    const shippingFee = Math.round(subtotal * 0.02);
+    const tax = Math.round(subtotal * 0.2);
+    if (shippingFee > 0) {
+      lineItems.push({
+        price_data: { currency: 'mad', product_data: { name: 'Frais de livraison et de gestion' }, unit_amount: shippingFee * 100 },
+        quantity: 1,
+      });
+    }
+    if (tax > 0) {
+      lineItems.push({
+        price_data: { currency: 'mad', product_data: { name: 'TVA (20 %)' }, unit_amount: tax * 100 },
+        quantity: 1,
+      });
+    }
 
     const appBaseUrl = process.env.PUBLIC_APP_URL
       || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:5173');
+    let appOrigin: string;
+    try {
+      appOrigin = new URL(appBaseUrl).origin;
+    } catch {
+      return sendError(res, 500, 'URL publique du site invalide');
+    }
+    if (!getAllowedOrigins().includes(appOrigin)) {
+      return sendError(res, 500, 'URL publique du site non autorisée');
+    }
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${appBaseUrl}/products?payment=success`,
-      cancel_url: `${appBaseUrl}/products?payment=cancelled`,
+      success_url: `${appOrigin}/products?payment=success`,
+      cancel_url: `${appOrigin}/products?payment=cancelled`,
       customer_email: customerEmail,
       metadata: {
         customer_name: sanitizePlainText(customerInfo?.name, 100),
@@ -66,6 +116,10 @@ export default async function handler(req: any, res: any) {
         customer_address: sanitizePlainText(customerInfo?.address, 200),
         customer_message: sanitizePlainText(customerInfo?.message, 500),
       },
+    }, {
+      idempotencyKey: typeof requestId === 'string' && /^[\w-]{16,100}$/.test(requestId)
+        ? requestId
+        : randomUUID(),
     });
 
     return res.status(200).json({ sessionId: session.id });
