@@ -6,6 +6,8 @@ import { MessageCircle, X } from 'lucide-react';
 export default function WhatsAppButton() {
   const [isVisible, setIsVisible] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState('suggestion');
+  const [customMessage, setCustomMessage] = useState('');
   const [location] = useLocation();
 
   useEffect(() => {
@@ -46,7 +48,20 @@ export default function WhatsAppButton() {
     return `Bonjour l’équipe SOMATISME,\n\nJe vous contacte au sujet de ${context}\n\nPouvez-vous me répondre ici pour que nous en discutions ?\n\nMerci.`;
   };
 
-  const message = generateMessage();
+  const messageOptions = [
+    { id: 'quote', label: 'Demander un devis', text: 'Je souhaite recevoir un devis pour un besoin ou un équipement industriel. Pouvez-vous me guider ?' },
+    { id: 'services', label: 'Découvrir vos services', text: 'Je souhaite en savoir plus sur vos services en automatisme, régulation et électricité industrielle.' },
+    { id: 'products', label: 'Question sur un produit', text: 'Je souhaite obtenir des informations sur un équipement industriel, notamment son prix, ses caractéristiques et sa disponibilité.' },
+    { id: 'maintenance', label: 'Maintenance industrielle', text: 'Je recherche une solution de maintenance industrielle et souhaite échanger avec vous au sujet de mon installation.' },
+    { id: 'project', label: 'Présenter un projet', text: 'J’ai un projet industriel à vous présenter et aimerais discuter des solutions possibles avec votre équipe.' },
+  ];
+  const selectedText = selectedMessage === 'custom'
+    ? customMessage.trim() || 'Écrivez votre message dans le champ ci-dessus.'
+    : selectedMessage === 'suggestion'
+      ? generateMessage().replace(/^Bonjour l’équipe SOMATISME,\n\n/, '').replace(/\n\nMerci\.$/, '')
+      : messageOptions.find((option) => option.id === selectedMessage)?.text || messageOptions[0].text;
+  const message = `Bonjour l’équipe SOMATISME,\n\n${selectedText}\n\nMerci.`;
+  const canContinue = selectedMessage !== 'custom' || customMessage.trim().length > 0;
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
   return (
@@ -102,7 +117,7 @@ export default function WhatsAppButton() {
             aria-labelledby="whatsapp-dialog-title"
             initial={{ opacity: 0, y: 16, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="w-full max-w-lg overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl"
           >
             <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5">
               <div>
@@ -125,6 +140,32 @@ export default function WhatsAppButton() {
             </div>
 
             <div className="px-6 py-5">
+              <label htmlFor="whatsapp-message-choice" className="mb-2 block text-sm font-semibold text-slate-800">
+                Choisissez le message à envoyer
+              </label>
+              <select
+                id="whatsapp-message-choice"
+                value={selectedMessage}
+                onChange={(event) => setSelectedMessage(event.target.value)}
+                className="mb-4 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+              >
+                <option value="suggestion">Suggestion selon la page visitée</option>
+                {messageOptions.map((option) => (
+                  <option key={option.id} value={option.id}>{option.label}</option>
+                ))}
+                <option value="custom">Écrire un message personnalisé</option>
+              </select>
+              {selectedMessage === 'custom' && (
+                <textarea
+                  value={customMessage}
+                  onChange={(event) => setCustomMessage(event.target.value.slice(0, 1000))}
+                  placeholder="Écrivez votre message ici…"
+                  rows={3}
+                  maxLength={1000}
+                  className="mb-4 w-full resize-y rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+                />
+              )}
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Aperçu du message</p>
               <div className="max-h-56 overflow-y-auto whitespace-pre-wrap rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700">
                 {message}
               </div>
@@ -145,8 +186,16 @@ export default function WhatsAppButton() {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => setIsOpen(false)}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700"
+                aria-disabled={!canContinue}
+                tabIndex={canContinue ? 0 : -1}
+                onClick={(event) => {
+                  if (!canContinue) {
+                    event.preventDefault();
+                    return;
+                  }
+                  setIsOpen(false);
+                }}
+                className={`inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition ${canContinue ? 'bg-green-600 hover:bg-green-700' : 'pointer-events-none bg-green-600/50'}`}
               >
                 <MessageCircle className="h-4 w-4" />
                 Continuer sur WhatsApp
