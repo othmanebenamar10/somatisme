@@ -40,9 +40,58 @@ function ScrollToTop() {
 }
 
 const LoadingFallback = () => (
-  <div className="min-h-screen flex items-center justify-center bg-background">
-    <div className="w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
-  </div>
+  <main className="somatisme-loader" role="status" aria-live="polite" aria-label="Chargement de SOMATISME">
+    <style>{`
+      .somatisme-loader{--loader-cyan:#12c8dd;--loader-orange:#f28a31;position:relative;display:grid;min-height:100svh;place-items:center;overflow:hidden;padding:32px 20px;background:#07131d;color:#f6fbfd;font-family:Inter,ui-sans-serif,system-ui,sans-serif}
+      .somatisme-loader:before{position:absolute;inset:0;background-image:linear-gradient(rgba(122,174,190,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(122,174,190,.055) 1px,transparent 1px);background-size:42px 42px;content:"";mask-image:linear-gradient(transparent,#000 20%,#000 80%,transparent)}
+      .somatisme-loader:after{position:absolute;width:min(80vw,760px);height:min(80vw,760px);border:1px solid rgba(18,200,221,.12);border-radius:50%;box-shadow:0 0 0 58px rgba(18,200,221,.025),0 0 0 116px rgba(18,200,221,.02);content:""}
+      .somatisme-loader__panel{position:relative;z-index:1;width:min(100%,760px);overflow:hidden;border:1px solid rgba(136,193,207,.2);border-radius:22px;background:linear-gradient(145deg,rgba(17,39,52,.97),rgba(9,24,34,.97));box-shadow:0 28px 90px rgba(0,0,0,.42)}
+      .somatisme-loader__top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;border-bottom:1px solid rgba(136,193,207,.13)}
+      .somatisme-loader__logo{display:block;width:174px;height:auto;border-radius:3px}
+      .somatisme-loader__tag{color:#91aab4;font-size:10px;font-weight:700;letter-spacing:.2em;text-align:right}
+      .somatisme-loader__body{display:grid;grid-template-columns:1fr 220px;align-items:center;gap:34px;padding:42px 44px 34px}
+      .somatisme-loader__eyebrow{display:flex;align-items:center;gap:9px;margin:0 0 14px;color:var(--loader-cyan);font-size:11px;font-weight:750;letter-spacing:.18em;text-transform:uppercase}
+      .somatisme-loader__led{width:8px;height:8px;border-radius:50%;background:#5be4a6;box-shadow:0 0 14px rgba(91,228,166,.8);animation:somatisme-led 1.8s ease-in-out infinite}
+      .somatisme-loader__title{margin:0;color:#f7fbfc;font-size:clamp(26px,5vw,38px);font-weight:750;letter-spacing:-.04em;line-height:1.12}
+      .somatisme-loader__copy{max-width:390px;margin:14px 0 25px;color:#9db2ba;font-size:14px;line-height:1.7}
+      .somatisme-loader__progress{height:3px;overflow:hidden;border-radius:4px;background:rgba(157,178,186,.16)}
+      .somatisme-loader__progress:after{display:block;width:38%;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--loader-cyan),var(--loader-orange));content:"";animation:somatisme-progress 1.7s ease-in-out infinite}
+      .somatisme-loader__labels{display:flex;justify-content:space-between;gap:12px;margin-top:10px;color:#6f8a95;font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+      .somatisme-loader__machine{width:100%;max-width:210px;justify-self:center;color:#43d5e2;filter:drop-shadow(0 0 18px rgba(18,200,221,.15))}
+      .somatisme-loader__trace{stroke-dasharray:7 7;animation:somatisme-trace 2s linear infinite}
+      @keyframes somatisme-progress{0%{transform:translateX(-110%)}100%{transform:translateX(370%)}}
+      @keyframes somatisme-trace{to{stroke-dashoffset:-28}}
+      @keyframes somatisme-led{50%{opacity:.45;box-shadow:0 0 4px rgba(91,228,166,.35)}}
+      @media(max-width:560px){.somatisme-loader__top{padding:16px 18px}.somatisme-loader__logo{width:145px}.somatisme-loader__tag{max-width:130px;font-size:8px;line-height:1.6}.somatisme-loader__body{grid-template-columns:1fr;padding:32px 24px 26px}.somatisme-loader__machine{display:none}.somatisme-loader__copy{font-size:13px}}
+      @media(prefers-reduced-motion:reduce){.somatisme-loader__led,.somatisme-loader__progress:after,.somatisme-loader__trace{animation:none}.somatisme-loader__progress:after{width:55%;transform:translateX(40%)}}
+    `}</style>
+    <section className="somatisme-loader__panel">
+      <header className="somatisme-loader__top">
+        <img className="somatisme-loader__logo" src="/logo-somatisme-green.png" alt="SOMATISME" />
+        <span className="somatisme-loader__tag">AUTOMATISME · RÉGULATION · ÉLECTRICITÉ</span>
+      </header>
+      <div className="somatisme-loader__body">
+        <div>
+          <p className="somatisme-loader__eyebrow"><span className="somatisme-loader__led" />Système en démarrage</p>
+          <h1 className="somatisme-loader__title">Préparation de votre espace</h1>
+          <p className="somatisme-loader__copy">Nous mettons en route les solutions industrielles SOMATISME.</p>
+          <div className="somatisme-loader__progress" aria-hidden="true" />
+          <div className="somatisme-loader__labels"><span>Automatisme industriel</span><span>En cours</span></div>
+        </div>
+        <svg className="somatisme-loader__machine" viewBox="0 0 220 190" fill="none" aria-hidden="true">
+          <path d="M20 95h35m110 0h35M110 20v25m0 100v25" stroke="currentColor" strokeOpacity=".35" strokeWidth="2" />
+          <path className="somatisme-loader__trace" d="M20 95h35m110 0h35M110 20v25m0 100v25" stroke="currentColor" strokeWidth="2" />
+          <rect x="55" y="45" width="110" height="100" rx="12" fill="#102936" stroke="currentColor" strokeOpacity=".8" strokeWidth="2" />
+          <rect x="69" y="59" width="82" height="42" rx="5" fill="#091923" stroke="currentColor" strokeOpacity=".4" />
+          <path d="M78 84h12l7-13 10 21 8-14h21" stroke="#f28a31" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
+          <circle cx="77" cy="119" r="5" fill="#5be4a6" /><circle cx="96" cy="119" r="5" fill="#f28a31" />
+          <path d="M116 114h35m-35 10h25" stroke="currentColor" strokeLinecap="round" strokeOpacity=".5" strokeWidth="3" />
+          <circle cx="20" cy="95" r="4" fill="#f28a31" /><circle cx="200" cy="95" r="4" fill="#5be4a6" />
+          <circle cx="110" cy="20" r="4" fill="#5be4a6" /><circle cx="110" cy="170" r="4" fill="#f28a31" />
+        </svg>
+      </div>
+    </section>
+  </main>
 );
 
 function Router() {
