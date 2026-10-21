@@ -2,9 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { useRecaptcha } from '@/hooks/useRecaptcha';
-import { ShoppingCart, Filter, Search, Star, Check, X, Download, ArrowRight } from 'lucide-react';
+import { ShoppingCart, Search, X, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -30,7 +29,6 @@ interface CartItem extends Product {
 }
 
 export default function Products() {
-  const { t } = useLanguage();
   const [language, setLanguage] = useState<'fr' | 'ar'>('fr');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');

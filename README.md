@@ -1,260 +1,76 @@
-# SOMATISME - Site Web Industriel Premium 🏭
+# SOMATISME
 
-Site web d'entreprise moderne, sécurisé et premium pour **SOMATISME**, spécialisée en automatisme industriel, régulation, installation électrique et maintenance industrielle.
+Site vitrine et catalogue de matériel industriel pour SOMATISME. Le site en
+production est accessible sur [somatisme.vercel.app](https://somatisme.vercel.app).
 
-## ✨ Dernières Améliorations (Avril 2026)
+## Fonctionnalités
 
-- 🎨 **Redesign Industriel Complet** : Palette Navy Blue (#1e3a5f) + Cyan (#06b6d4) + Gris (#2d3748)
-- 🛒 **Paiement Stripe Checkout** : Montants et panier validés côté serveur
-- 💰 **Frais de Livraison** : 2% du sous-total, calculés côté serveur
-- 📄 **Confirmation de paiement** : Emails déclenchés par webhook Stripe signé
-- 📱 **Message WhatsApp Optimisé** : Format simple et lisible
-- 🔘 **Boutons Améliorés** : Centrage parfait, styles uniformes, ombres cyan
-- 📧 **SMTP Configuré** : Prêt pour Gmail/Outlook avec nodemailer
-- ⚡ **Performance Optimisée** : Build Vite optimisé, code splitting
+- Pages de présentation des services, projets et coordonnées de l’entreprise.
+- Catalogue de produits avec recherche, filtres, panier et stockage local.
+- Demandes de devis avec PDF envoyé par email et récapitulatif WhatsApp.
+- Paiement par Stripe Checkout ; les emails de confirmation partent après
+  validation du webhook Stripe signé.
+- Formulaire de contact protégé par validation, reCAPTCHA et limitation de débit.
 
-## 🎯 Caractéristiques Principales
+## Technologies
 
-### Design & UX
-- **Design Industriel Professionnel** : Palette Navy Blue + Cyan + Gris
-- **Cohérence Visuelle 100%** : Toutes les 15+ pages unifiées
-- **Animations Fluides** : Framer Motion pour des transitions élégantes
-- **Responsive Design** : Parfaitement adapté mobile, tablette et desktop
-- **Typographie Sophistiquée** : Poppins (titres) + Inter (corps)
+- React, TypeScript, Vite et Tailwind CSS.
+- API Node.js sur Vercel, avec Express pour le développement et l’hébergement
+  autonome.
+- Stripe Checkout, Nodemailer/SMTP, reCAPTCHA v3 et Upstash Redis.
 
-### Fonctionnalités
-- ✅ **15+ Pages Complètes** : Accueil, À propos, Services (4 pages), Projets, Contact, Produits, etc.
-- ✅ **Système de Panier** : Ajout/suppression de produits, calcul dynamique
-- ✅ **Formulaire de Commande** : 2 étapes avec validation complète
-- ✅ **Paiement par carte** : Stripe Checkout avec vérification serveur
-- ✅ **Emails de commande** : Confirmation client et notification administrateur après paiement
-- ✅ **Formulaire de Contact** : Avec SMTP nodemailer
-- ✅ **SEO Avancé** : Meta tags, sitemap.xml, robots.txt, structured data
-- ✅ **Multilingue** : Support FR/AR avec sélecteur de langue
-- ✅ **Navigation Responsive** : Menu mobile intégré
+## Développement local
 
-### Performance & Sécurité
-- ⚡ **Optimisé Vercel** : Build rapide, déploiement automatique
-- 🔒 **OWASP Top 10** : Headers de sécurité complets (CSP, HSTS, X-Frame-Options, etc.)
-- 🚀 **SMTP Nodemailer** : Envoi d'emails sécurisé via Gmail/Outlook
-- 📱 **Mobile-First** : Conception mobile d'abord
-- 🎨 **Accessibilité** : Contraste optimal, navigation au clavier
+Prérequis : Node.js compatible avec Vite 7 et pnpm 10.
 
-## 📁 Structure du Projet
-
-```
-/somatisme
-├── api/
-│   ├── contact.ts             # Formulaire de contact (SMTP)
-│   ├── quote.ts               # Devis PDF par email
-│   ├── checkout.ts            # Session Stripe Checkout
-│   └── webhooks/stripe.ts     # Confirmation après webhook signé
-├── client/
-│   ├── public/
-│   │   ├── robots.txt          # Directives pour les moteurs de recherche
-│   │   └── sitemap.xml         # Plan du site
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── Home.tsx
-│   │   │   ├── About.tsx
-│   │   │   ├── Services.tsx
-│   │   │   ├── Projects.tsx
-│   │   │   ├── Contact.tsx
-│   │   │   └── services/
-│   │   │       ├── Automation.tsx
-│   │   │       ├── Regulation.tsx
-│   │   │       ├── Electrical.tsx
-│   │   │       └── Maintenance.tsx
-│   │   ├── components/
-│   │   │   ├── Header.tsx
-│   │   │   ├── Footer.tsx
-│   │   │   └── LanguageSwitcher.tsx
-│   │   ├── contexts/
-│   │   │   ├── ThemeContext.tsx
-│   │   │   └── LanguageContext.tsx
-│   │   ├── hooks/
-│   │   │   └── useSEO.ts
-│   │   ├── lib/
-│   │   │   ├── seo.ts
-│   │   │   └── security.ts
-│   │   ├── App.tsx
-│   │   ├── main.tsx
-│   │   └── index.css
-│   └── index.html
-├── vercel.json                # Configuration Vercel + Security Headers
-├── package.json
-└── README.md
-```
-
-## 🚀 Démarrage Rapide
-
-### Installation des Dépendances
 ```bash
 pnpm install
-```
-
-### Développement Local
-```bash
 pnpm dev
 ```
-Le site sera accessible à `http://localhost:3000`
 
-### Build Production
+Le serveur de développement écoute sur `http://localhost:3000`.
+
+Commandes disponibles :
+
 ```bash
-pnpm build
+pnpm check       # Vérification TypeScript
+pnpm build       # Build Vite et serveur Express
+pnpm preview     # Prévisualisation du client compilé
+pnpm start       # Démarrage du serveur compilé
 ```
 
-### Preview Production
-```bash
-pnpm preview
+## Configuration
+
+Copiez `.env.example` vers `.env` et configurez les variables nécessaires.
+Pour les tests locaux, utilisez des clés Stripe de test, un secret webhook de
+test, des identifiants SMTP et une base Upstash. Les clés secrètes restent
+côté serveur. `VITE_RECAPTCHA_SITE_KEY` est publique et est intégrée au build.
+
+Sur Vercel, définissez ces variables dans les paramètres du projet. Les valeurs
+`VITE_*` doivent être présentes au moment du build. `PUBLIC_APP_URL` doit
+correspondre à l’URL publique autorisée dans `api/_lib/security.ts`.
+
+Le webhook Stripe attendu est :
+`https://somatisme.vercel.app/api/webhooks/stripe`, événement
+`checkout.session.completed`.
+
+## Organisation
+
+```text
+api/                 Fonctions API, logique de sécurité et PDF de devis
+client/src/          Interface React, pages, composants et données
+client/public/       Images, robots.txt et sitemap.xml
+server/              Serveur Express et routes locales
+shared/              Exports partagés entre client et serveur
 ```
 
-## 🎨 Design System
+## Sécurité et limites connues
 
-### Couleurs Officielles (Design Industriel)
-| Couleur | Hex | Usage |
-|---------|-----|-------|
-| Navy Blue | #1e3a5f | Fond principal, titres, sections sombres |
-| Cyan | #06b6d4 | Accents, CTA, boutons d'action, ombres |
-| Gris Foncé | #2d3748 | Texte secondaire, bordures |
-| Blanc | #FFFFFF | Fond clair, texte principal |
-| Gris Moyen | #6b7280 | Texte muted, placeholders |
+Les API valident les entrées côté serveur, appliquent CORS par origine, utilisent
+Upstash pour la limitation de débit et protègent les emails de paiement derrière
+le webhook signé de Stripe. Les erreurs ne doivent pas contenir de secrets ni
+de données personnelles dans les logs.
 
-### Typographie
-- **Display (H1)** : Poppins Bold 700
-- **Heading (H2-H4)** : Poppins SemiBold 600
-- **Body** : Inter Regular 400
-- **Labels** : Inter Medium 500
-
-### Spacing
-- Base unit: 4px
-- Sections: 3rem minimum
-- Containers: 1280px max-width
-
-## 📱 Pages et Contenu
-
-### Page d'Accueil
-- Hero section avec CTA
-- Aperçu des 4 services principaux
-- Statistiques clés
-- Section d'appel à l'action
-
-### À Propos
-- Histoire de l'entreprise
-- Valeurs (Excellence, Collaboration, Innovation)
-- Statistiques et chiffres clés
-
-### Services
-- Vue d'ensemble de tous les services
-- 4 pages détaillées pour chaque service
-- Avantages et cas d'usage
-
-### Projets
-- Galerie de réalisations
-- Catégorisation par type de service
-- Liens vers les détails
-
-### Contact
-- Formulaire complet avec validation
-- Informations de contact
-- Horaires d'ouverture
-- Intégration Google Maps (optionnel)
-
-## 🌐 SEO & Optimisations
-
-### Métadonnées
-- ✅ Meta descriptions uniques par page
-- ✅ Keywords pertinents
-- ✅ Open Graph tags
-- ✅ Canonical URLs
-
-### Fichiers SEO
-- `robots.txt` : Directives pour les crawlers
-- `sitemap.xml` : Plan du site avec priorités
-- Structured data JSON-LD
-
-### Performance
-- Lazy loading des images
-- Compression des assets
-- Code splitting automatique
-- Cache optimisé
-
-## 🌍 Multilingue (i18n)
-
-Le site est optimisé pour le **Français**. L'architecture de traduction via `LanguageContext` est conservée pour faciliter toute extension future, mais seul le français est activé par défaut.
-
-## 🔒 Sécurité (OWASP Top 10)
-
-### Mesures Implémentées
-- ✅ **A01 Broken Access Control** : Headers CSP stricts, pas de routes exposées
-- ✅ **A03 Injection** : Validation et sanitization des inputs, prepared queries
-- ✅ **A05 Security Misconfiguration** : Headers de sécurité en vercel.json
-- ✅ **A06 XSS** : CSP headers, sanitization HTML, validation des inputs
-- ✅ **A07 Identification** : Pas d'authentification côté public
-- ✅ **A08 Software Integrity** : Dependabot activé, pnpm lockfile
-- ✅ **A09 Logging** : Logs côté serveur (Vercel)
-- ✅ **Headers de sécurité** : CSP, HSTS, X-Frame-Options, X-Content-Type-Options
-- ✅ **Protection XSS** : CSP headers, sanitization des inputs
-- ✅ **Validation des formulaires** : Regex email, honeypot anti-spam
-- ✅ **HTTPS obligatoire** : HSTS header avec preload
-- ✅ **Rate limiting** : Simple rate limiting côté API (à améliorer avec Redis)
-
-## 📊 Technologie Stack
-
-| Catégorie | Technologie |
-|-----------|-------------|
-| Framework | React 19 + TypeScript |
-| Styling | Tailwind CSS 4 |
-| Animations | Framer Motion |
-| Routing | Wouter |
-| UI Components | shadcn/ui |
-| Icons | Lucide React |
-| Notifications | Sonner |
-| Email | Nodemailer / SMTP |
-| Build | Vite |
-| Hosting | Vercel (fonctions Node.js) |
-
-## 🎯 Checklist de Déploiement
-
-- [ ] Vérifier tous les liens internes
-- [ ] Configurer SMTP, Stripe, le webhook Stripe et les clés Upstash Redis
-- [ ] Configurer RECAPTCHA_SECRET_KEY et VITE_RECAPTCHA_SITE_KEY
-- [ ] Tester le formulaire de contact
-- [ ] Valider le responsive design
-- [ ] Vérifier les images et assets
-- [ ] Tester les animations
-- [ ] Vérifier le SEO (Google Search Console)
-- [ ] Tester la performance (Lighthouse)
-- [ ] Configurer le domaine personnalisé (somatisme.ma)
-- [ ] Vérifier les security headers (securityheaders.com)
-- [ ] Configurer les analytics
-
-## 📈 Optimisations Futures
-
-- [ ] Blog avec articles SEO
-- [ ] Système de notification push
-- [ ] Chat en direct
-- [ ] Intégration CRM
-- [ ] Système de réservation
-- [ ] Téléchargement de ressources (brochures, etc.)
-- [ ] Vidéos de démonstration
-- [ ] Testimonials de clients
-
-## 📞 Support & Maintenance
-
-Pour les questions ou problèmes :
-- 📧 Email : somatisme@gmail.com
-- 📱 Téléphone : 05 23 30 28 29
-- 🌐 Site : https://somatisme.ma
-
-## 📄 Licence
-
-© 2026 SOMATISME. Tous droits réservés.
-
----
-
-**Dernière mise à jour** : 20 Avril 2026
-**Version** : 1.1.0
-**Status** : Production Ready ✅
-**Déploiement** : https://somatisme.vercel.app
-**Repository** : https://github.com/othmanebenamar10/somatisme
+Le build et la vérification TypeScript doivent être exécutés avant chaque
+publication. La configuration de production (SMTP, Stripe, reCAPTCHA et Upstash)
+doit également être vérifiée dans Vercel : elle n’est pas stockée dans ce dépôt.

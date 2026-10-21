@@ -24,7 +24,6 @@ overrides:
   esbuild: 0.28.1
   '@babel/core': 7.29.6
   body-parser: 1.20.6
-  mongoose: 9.7.2
   fflate: 0.8.3
   vitest: 4.1.11
   '@vitest/mocker': 4.1.11
@@ -39,9 +38,6 @@ importers:
 
   .:
     dependencies:
-      '@hookform/resolvers':
-        specifier: ^5.2.2
-        version: 5.2.2(react-hook-form@7.64.0(react@19.2.1))
       '@radix-ui/react-accordion':
         specifier: ^1.2.12
         version: 1.2.12(@types/react-dom@19.2.1(@types/react@19.2.1))(@types/react@19.2.1)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
@@ -120,9 +116,6 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.2.8
         version: 1.2.8(@types/react-dom@19.2.1(@types/react@19.2.1))(@types/react@19.2.1)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
-      '@stripe/stripe-js':
-        specifier: ^9.2.0
-        version: 9.2.0
       '@upstash/redis':
         specifier: ^1.39.0
         version: 1.39.0
@@ -159,12 +152,6 @@ importers:
       lucide-react:
         specifier: ^0.453.0
         version: 0.453.0(react@19.2.1)
-      mongoose:
-        specifier: 9.7.2
-        version: 9.7.2
-      nanoid:
-        specifier: ^5.1.16
-        version: 5.1.16
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.1(react@19.2.1))(react@19.2.1)

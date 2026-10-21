@@ -25,21 +25,27 @@ function loadRecaptcha(siteKey: string): Promise<void> {
       script.async = true;
     }
 
-    const timeout = window.setTimeout(() => {
-      reject(new Error('Timed out while loading reCAPTCHA'));
-    }, 10_000);
     const cleanup = () => {
       window.clearTimeout(timeout);
-      script?.removeEventListener('load', onLoad);
-      script?.removeEventListener('error', onError);
+      script.removeEventListener('load', onLoad);
+      script.removeEventListener('error', onError);
     };
+    const timeout = window.setTimeout(() => {
+      cleanup();
+      script.remove();
+      reject(new Error('Timed out while loading reCAPTCHA'));
+    }, 10_000);
     const onLoad = () => {
       cleanup();
       if (window.grecaptcha) resolve();
-      else reject(new Error('reCAPTCHA did not initialize'));
+      else {
+        script.remove();
+        reject(new Error('reCAPTCHA did not initialize'));
+      }
     };
     const onError = () => {
       cleanup();
+      script.remove();
       reject(new Error('Failed to load reCAPTCHA'));
     };
 
