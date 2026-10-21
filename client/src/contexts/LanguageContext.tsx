@@ -104,6 +104,7 @@ const translations = {
     "shop.checkout.command": "Commander",
     "shop.checkout.secure": "Paiement sécurisé par carte",
     "shop.products.outOfStock": "Rupture de stock",
+    "shop.products.inStock": "En stock",
     "shop.products.add": "Ajouter au panier",
     "shop.products.stock": "Stock disponible : {count}",
     "shop.products.none": "Aucun produit trouvé.",

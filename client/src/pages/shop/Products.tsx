@@ -30,6 +30,17 @@ interface CartItem extends Product {
   quantity: number;
 }
 
+function getLocalizedProductName(product: Product, language: string) {
+  if (language === 'fr') return product.name;
+  const description = productDescriptions[language as 'en' | 'es']?.[product.id];
+  const referenceTitle = description?.match(/^(.+?\(ref\.\s*[^)]+\))/i)?.[1];
+  return referenceTitle || description?.split('. ')[0]?.replace(/[.]$/, '') || product.name;
+}
+
+function shouldShowProductBrand(brand: string) {
+  return Boolean(brand.trim()) && brand.trim().toLocaleLowerCase('fr') !== 'industriel';
+}
+
 export default function Products() {
   const { language, t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -130,8 +141,12 @@ export default function Products() {
       return matchesCategory && matchesSearch;
     })
     .sort((a, b) => {
-      if (sortBy === 'name-asc') return a.name.localeCompare(b.name);
-      if (sortBy === 'name-desc') return b.name.localeCompare(a.name);
+      if (sortBy === 'name-asc') {
+        return getLocalizedProductName(a, language).localeCompare(getLocalizedProductName(b, language), language);
+      }
+      if (sortBy === 'name-desc') {
+        return getLocalizedProductName(b, language).localeCompare(getLocalizedProductName(a, language), language);
+      }
       if (sortBy === 'price-asc') return a.price - b.price;
       if (sortBy === 'price-desc') return b.price - a.price;
       return 0;
@@ -253,7 +268,7 @@ export default function Products() {
 
       const requestedItems = cart.slice(0, 12)
         .map((item) => t('shop.quote.whatsappItem')
-          .replace('{name}', item.name)
+          .replace('{name}', getLocalizedProductName(item, language))
           .replace('{quantity}', String(item.quantity)))
         .join('\n');
       const moreItems = cart.length > 12
@@ -492,16 +507,16 @@ export default function Products() {
                           <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0">
                             <img
                               src={item.image}
-                              alt={item.name}
+                              alt={getLocalizedProductName(item, language)}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                             />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-bold text-xs truncate">
-                              {item.name}
+                              {getLocalizedProductName(item, language)}
                             </p>
                             <p className="text-xs text-muted-foreground mt-0.5">
-                              {item.brand}
+                              {shouldShowProductBrand(item.brand) ? item.brand : null}
                             </p>
                             <p className="text-accent font-bold text-xs mt-1">
                               {item.price} MAD
@@ -605,7 +620,7 @@ export default function Products() {
                 <div className="aspect-square overflow-hidden rounded-xl mb-5 relative">
                   <img
                     src={product.image}
-                      alt={product.name}
+                      alt={getLocalizedProductName(product, language)}
                     loading="lazy"
                     decoding="async"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
@@ -617,16 +632,18 @@ export default function Products() {
                   </div>
                 </div>
                 <h3 className="text-subheading text-foreground mb-2 line-clamp-2">
-                  {product.name}
+                  {getLocalizedProductName(product, language)}
                 </h3>
-                <p className="text-sm text-muted-foreground mb-2">{product.brand}</p>
+                {shouldShowProductBrand(product.brand) && (
+                  <p className="text-sm text-muted-foreground mb-2">{product.brand}</p>
+                )}
                 <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                   {language === 'fr' ? product.description : productDescriptions[language][product.id] || product.description}
                 </p>
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-2xl font-bold gradient-text">{product.price} MAD</p>
                   {product.stock > 0 && (
-                    <span className="text-xs text-green-600 font-medium">En stock</span>
+                    <span className="text-xs text-green-600 font-medium">{t('shop.products.inStock')}</span>
                   )}
                 </div>
                 <motion.button
@@ -710,8 +727,10 @@ export default function Products() {
                     {cart.map((item, index) => (
                       <div key={index} className="bg-gray-50 p-3 rounded-lg border border-gray-200 flex justify-between items-center">
                         <div>
-                          <p className="font-medium text-sm">{item.name}</p>
-                          <p className="text-xs text-muted-foreground">{item.brand}</p>
+                          <p className="font-medium text-sm">{getLocalizedProductName(item, language)}</p>
+                          {shouldShowProductBrand(item.brand) && (
+                            <p className="text-xs text-muted-foreground">{item.brand}</p>
+                          )}
                         </div>
                         <span className="font-bold text-cyan-600">{item.price} MAD</span>
                       </div>
