@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { useRecaptcha } from '@/hooks/useRecaptcha';
 import { fetchJsonWithTimeout } from '@/lib/fetchWithTimeout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,7 +30,6 @@ export default function Contact() {
   const [botField, setBotField] = useState(''); // Anti-spam Honeypot
   const [formStartTime] = useState(() => Date.now()); // Timing bot detection
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { getToken } = useRecaptcha();
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [currentStep, setCurrentStep] = useState(1); // Step 1: Contact Info, Step 2: Details, Step 3: Confirm
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -100,15 +98,12 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
-      const recaptchaToken = await getToken('contact_form');
-
       const { response, data } = await fetchJsonWithTimeout<Record<string, string>>('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
           phone: toInternationalPhone(phoneCountryIso, formData.phone),
-          recaptchaToken,
           _duration: Date.now() - formStartTime,
           website: botField,
         }),

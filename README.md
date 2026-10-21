@@ -43,8 +43,9 @@ pnpm start       # Démarrage du serveur compilé
 
 Copiez `.env.example` vers `.env` et configurez les variables nécessaires.
 Pour les tests locaux, utilisez des clés Stripe de test, un secret webhook de
-test, des identifiants SMTP et une base Upstash. Les clés secrètes restent
-côté serveur. `VITE_RECAPTCHA_SITE_KEY` est publique et est intégrée au build.
+test et des identifiants SMTP. Upstash est optionnel. Les clés secrètes restent
+côté serveur. Les formulaires sont protégés côté serveur par une limitation du
+nombre de demandes et un champ honeypot.
 
 Sur Vercel, définissez ces variables dans les paramètres du projet. Les valeurs
 `VITE_*` doivent être présentes au moment du build. `PUBLIC_APP_URL` doit

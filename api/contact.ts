@@ -12,7 +12,6 @@ import {
   sanitizeHeaderValue,
   sanitizePlainText,
   sendError,
-  verifyRecaptcha,
 } from './_lib/security.js';
 
 const ADMIN_EMAIL = process.env.EMAIL_TO || 'somatisme@gmail.com';
@@ -82,14 +81,13 @@ export default async function handler(req: any, res: any) {
       company: sanitizePlainText(body.company, 150),
       subject: sanitizeHeaderValue(body.subject, 200),
       message: sanitizePlainText(body.message, 2000),
-      recaptchaToken: sanitizePlainText(body.recaptchaToken, 2048) || undefined,
     });
 
     if (!parsed.success) {
       return sendError(res, 400, 'Invalid request payload');
     }
 
-    const { name, email, phone, company, subject, message, recaptchaToken } = parsed.data;
+    const { name, email, phone, company, subject, message } = parsed.data;
 
     if (!isValidEmail(email)) {
       return sendError(res, 400, 'Adresse email invalide');
@@ -99,15 +97,8 @@ export default async function handler(req: any, res: any) {
       return sendError(res, 400, 'Numero de telephone invalide');
     }
 
-    if (!process.env.RECAPTCHA_SECRET_KEY && process.env.NODE_ENV === 'production') {
-      console.error('[CONTACT] RECAPTCHA_SECRET_KEY is required in production');
-      return sendError(res, 503, 'Le formulaire est temporairement indisponible.');
-    }
-
-    if (process.env.RECAPTCHA_SECRET_KEY
-      && !await verifyRecaptcha(recaptchaToken, 0.4, 'contact_form')) {
-      return sendError(res, 403, 'La vérification anti-spam est requise. Veuillez réessayer.');
-    }
+    // reCAPTCHA v3 is advisory: honeypot and IP rate limiting above protect the
+    // contact form without blocking genuine visitors on failed Google checks.
 
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
       console.error('[CONTACT] SMTP not configured');

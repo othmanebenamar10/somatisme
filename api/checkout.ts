@@ -12,7 +12,6 @@ import {
   logApiRequest,
   sanitizePlainText,
   sendError,
-  verifyRecaptcha,
 } from './_lib/security.js';
 
 const checkoutSchema = z.object({
@@ -28,7 +27,6 @@ const checkoutSchema = z.object({
     address: z.string().max(200).optional().default(''),
     message: z.string().max(500).optional().default(''),
   }),
-  recaptchaToken: z.string().max(2048).optional(),
   requestId: z.string().regex(/^[\w-]{16,100}$/).optional(),
 });
 
@@ -67,7 +65,7 @@ export default async function handler(req: any, res: any) {
   const parsed = checkoutSchema.safeParse(req.body || {});
   if (!parsed.success) return sendError(res, 400, 'Informations de commande invalides');
 
-  const { items, customerInfo, recaptchaToken, requestId } = parsed.data;
+  const { items, customerInfo, requestId } = parsed.data;
   const customer = {
     name: sanitizePlainText(customerInfo.name, 100),
     email: sanitizePlainText(customerInfo.email, 254).toLowerCase(),
@@ -80,15 +78,8 @@ export default async function handler(req: any, res: any) {
     return sendError(res, 400, 'Adresse email ou numéro de téléphone invalide');
   }
 
-  if (!process.env.RECAPTCHA_SECRET_KEY && process.env.NODE_ENV === 'production') {
-    console.error('[CHECKOUT] RECAPTCHA_SECRET_KEY is required in production');
-    return sendError(res, 503, 'Le paiement est temporairement indisponible.');
-  }
-
-  if (process.env.RECAPTCHA_SECRET_KEY
-    && !await verifyRecaptcha(recaptchaToken, 0.4, 'order_submit')) {
-    return sendError(res, 403, 'La vérification anti-spam a échoué. Veuillez réessayer.');
-  }
+  // reCAPTCHA v3 is not allowed to block checkout; server-side IP rate limiting
+  // and Stripe's payment flow remain active if Google cannot verify a visitor.
 
   if (!process.env.STRIPE_SECRET_KEY) {
     return sendError(res, 503, 'Le paiement en ligne est temporairement indisponible.');

@@ -29,13 +29,11 @@ environnements Preview et Production selon les clés prévues pour chacun.
 | `STRIPE_SECRET_KEY` | Création des sessions Checkout |
 | `STRIPE_WEBHOOK_SECRET` | Vérification de la signature du webhook |
 | `PUBLIC_APP_URL` | URL de retour après Checkout : `https://somatisme.vercel.app` |
-| `RECAPTCHA_SECRET_KEY` | Vérification serveur reCAPTCHA v3 |
-| `VITE_RECAPTCHA_SITE_KEY` | Clé publique reCAPTCHA intégrée au build |
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Optionnels : limites de débit et idempotence partagées entre instances |
 
-Ne mettez jamais les clés Stripe secrètes, le secret reCAPTCHA, le mot de passe
-SMTP ou le jeton Upstash dans une variable `VITE_*` ou dans le code client.
-Les variables `VITE_*` doivent être définies avant le build. En production,
+Ne mettez jamais les clés Stripe secrètes, le mot de passe SMTP ou le jeton
+Upstash dans une variable `VITE_*` ou dans le code client. Les variables `VITE_*`
+doivent être définies avant le build. En production,
 reCAPTCHA et SMTP sont requis pour les formulaires. Sans Upstash, la limitation
 de débit et l’idempotence utilisent une mémoire locale à chaque instance ; leur
 protection est donc moins forte sur un déploiement serverless multi-instance.

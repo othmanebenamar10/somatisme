@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useRecaptcha } from '@/hooks/useRecaptcha';
 import { fetchJsonWithTimeout } from '@/lib/fetchWithTimeout';
 import { ShoppingCart, Search, X, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -94,7 +93,6 @@ export default function Products() {
   });
   const [phoneCountryIso, setPhoneCountryIso] = useState('MA');
   const checkoutRequestIdRef = useRef<string | null>(null);
-  const { getToken: getRecaptchaToken } = useRecaptcha();
   const [submissionAction, setSubmissionAction] = useState<'checkout' | 'quote' | null>(null);
   const isSubmitting = submissionAction !== null;
   const [sortBy, setSortBy] = useState<'default' | 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc'>('default');
@@ -191,7 +189,6 @@ export default function Products() {
 
     setSubmissionAction('checkout');
     try {
-      const recaptchaToken = await getRecaptchaToken('order_submit');
       const { response, data: result } = await fetchJsonWithTimeout<{ url?: unknown; error?: string }>('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -201,7 +198,6 @@ export default function Products() {
             ...orderForm,
             phone: toInternationalPhone(phoneCountryIso, orderForm.phone),
           },
-          recaptchaToken,
           requestId: checkoutRequestIdRef.current || (checkoutRequestIdRef.current = crypto.randomUUID()),
         }),
       });
@@ -239,7 +235,6 @@ export default function Products() {
 
     setSubmissionAction('quote');
     try {
-      const recaptchaToken = await getRecaptchaToken('quote_request');
       const { response, data: result } = await fetchJsonWithTimeout<{ quoteNumber?: unknown; error?: string }>('/api/quote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -249,7 +244,6 @@ export default function Products() {
             ...orderForm,
             phone: toInternationalPhone(phoneCountryIso, orderForm.phone),
           },
-          recaptchaToken,
         }),
       });
       if (!response.ok || typeof result?.quoteNumber !== 'string') {

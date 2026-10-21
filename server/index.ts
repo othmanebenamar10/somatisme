@@ -26,12 +26,12 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", 'https://www.google.com/recaptcha/', 'https://www.gstatic.com/recaptcha/'],
+      scriptSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       imgSrc: ["'self'", 'data:', 'blob:', 'https://images.unsplash.com', 'https://ui-avatars.com', 'https://d2xsxph8kpxj0f.cloudfront.net'],
       fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
-      connectSrc: ["'self'", 'https://www.google.com/recaptcha/', 'https://www.gstatic.com/recaptcha/'],
-      frameSrc: ["'self'", 'https://www.google.com/recaptcha/', 'https://recaptcha.google.com/', 'https://www.google.com/maps/', 'https://maps.google.com/'],
+      connectSrc: ["'self'"],
+      frameSrc: ["'self'", 'https://www.google.com/maps/', 'https://maps.google.com/'],
       objectSrc: ["'none'"],
       frameAncestors: ["'none'"],
       baseUri: ["'self'"],

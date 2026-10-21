@@ -15,7 +15,6 @@ import {
   sanitizeHeaderValue,
   sanitizePlainText,
   sendError,
-  verifyRecaptcha,
 } from './_lib/security.js';
 
 const quoteSchema = z.object({
@@ -31,7 +30,6 @@ const quoteSchema = z.object({
     address: z.string().max(200).optional().default(''),
     message: z.string().max(500).optional().default(''),
   }),
-  recaptchaToken: z.string().max(2048).nullable().optional(),
 });
 
 let transporter: Transporter | undefined;
@@ -99,7 +97,7 @@ export default async function handler(req: any, res: any) {
   const parsed = quoteSchema.safeParse(req.body || {});
   if (!parsed.success) return sendError(res, 400, 'Informations de devis invalides.');
 
-  const { items, customerInfo, recaptchaToken } = parsed.data;
+  const { items, customerInfo } = parsed.data;
   const customer = {
     name: sanitizePlainText(customerInfo.name, 100),
     email: sanitizePlainText(customerInfo.email, 254).toLowerCase(),
@@ -112,14 +110,9 @@ export default async function handler(req: any, res: any) {
     return sendError(res, 400, 'Adresse email ou téléphone invalide.');
   }
 
-  if (!process.env.RECAPTCHA_SECRET_KEY && process.env.NODE_ENV === 'production') {
-    console.error('[QUOTE] RECAPTCHA_SECRET_KEY is required in production');
-    return sendError(res, 503, 'Le formulaire de devis est temporairement indisponible.');
-  }
-  if (process.env.RECAPTCHA_SECRET_KEY
-    && !await verifyRecaptcha(recaptchaToken, 0.4, 'quote_request')) {
-    return sendError(res, 403, 'La vérification anti-spam a échoué. Veuillez réessayer.');
-  }
+  // reCAPTCHA v3 can reject genuine visitors (privacy extensions, score or key
+  // configuration). Keep it advisory so it cannot block quote requests; the
+  // IP rate limit above remains enforced server-side.
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
     console.error('[QUOTE] SMTP is not configured');
     return sendError(res, 503, 'Envoi du devis temporairement indisponible.');

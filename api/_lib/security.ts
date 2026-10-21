@@ -286,46 +286,6 @@ export function isLikelyBot(payload: Record<string, unknown>, minDurationMs: num
   return Number.isFinite(duration) && duration > 0 && duration < minDurationMs;
 }
 
-export async function verifyRecaptcha(
-  token: string | null | undefined,
-  minScore = 0.5,
-  expectedAction?: string
-): Promise<boolean> {
-  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
-  if (!secretKey) {
-    return false;
-  }
-
-  if (!token || typeof token !== 'string' || token.length > 2048) {
-    return false;
-  }
-
-  try {
-    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(token)}`,
-      signal: AbortSignal.timeout(8_000),
-    });
-
-    if (!response.ok) {
-      return false;
-    }
-
-    const data = await response.json() as {
-      success?: boolean;
-      score?: number;
-      action?: string;
-    };
-
-    return data.success === true
-      && (data.score ?? 1) >= minScore
-      && (!expectedAction || data.action === expectedAction);
-  } catch {
-    return false;
-  }
-}
-
 export const contactSchema = z.object({
   name: z.string().min(1).max(100),
   email: z.string().min(3).max(254),
@@ -333,5 +293,4 @@ export const contactSchema = z.object({
   company: z.string().max(150).optional().default(''),
   subject: z.string().min(1).max(200),
   message: z.string().min(1).max(2000),
-  recaptchaToken: z.string().max(2048).optional().nullable(),
 });

@@ -27,7 +27,6 @@ SMTP_USER = somatisme@gmail.com
 SMTP_PASS = (le mot de passe d'application généré)
 EMAIL_FROM = "SOMATISME" <somatisme@gmail.com>
 EMAIL_TO = somatisme@gmail.com
-RECAPTCHA_SECRET_KEY = (votre_cle_secrete_google_recaptcha_v3)
 ```
 
 6. Cliquez "Save" pour chaque variable
@@ -48,15 +47,6 @@ RECAPTCHA_SECRET_KEY = (votre_cle_secrete_google_recaptcha_v3)
 2. Remplissez le formulaire de contact
 3. Cliquez "Envoyer"
 4. Vérifiez que vous recevez un email à `somatisme@gmail.com`
-
-## 🛡️ Configuration reCAPTCHA v3
-
-Le site utilise Google reCAPTCHA v3 pour protéger les formulaires.
-1. Accédez à la Google reCAPTCHA Admin Console.
-2. Créez une nouvelle clé de type **reCAPTCHA v3**.
-3. Ajoutez vos domaines : `somatisme.ma` et `somatisme.vercel.app`.
-4. Copiez la **Clé secrète** et ajoutez-la sur Vercel dans la variable `RECAPTCHA_SECRET_KEY`.
-5. Copiez la **Clé du site** et ajoutez-la sur Vercel dans la variable `VITE_RECAPTCHA_SITE_KEY`.
 
 ## � Sécurité
 
