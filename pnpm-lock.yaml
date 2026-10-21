@@ -121,8 +121,8 @@ importers:
         specifier: ^1.2.8
         version: 1.2.8(@types/react-dom@19.2.1(@types/react@19.2.1))(@types/react@19.2.1)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@stripe/stripe-js':
-        specifier: ^9.2.0
-        version: 9.2.0
+        specifier: ^10.1.0
+        version: 10.1.0
       '@upstash/redis':
         specifier: ^1.39.0
         version: 1.39.0
@@ -1346,8 +1346,8 @@ packages:
   '@standard-schema/utils@0.3.0':
     resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
 
-  '@stripe/stripe-js@9.2.0':
-    resolution: {integrity: sha512-YSzLC0t6VS9MDdPTynSMqU8IxrItFUjkDORALFT6sSMR/XZ5Vgm3RDp/Gk7z727MC4A9s4MFVel0gF0c7+kdrg==}
+  '@stripe/stripe-js@10.1.0':
+    resolution: {integrity: sha512-sLRPukMKMxvRVrgV3Za8LM0Yd2azrixQjfaiuzS8Fivlu/Gt7VbBuRiRZJIvfL3XxAw+FdfdmhHSvjAfLG3lkA==}
     engines: {node: '>=12.16'}
 
   '@tailwindcss/node@4.1.14':
@@ -3796,7 +3796,7 @@ snapshots:
 
   '@standard-schema/utils@0.3.0': {}
 
-  '@stripe/stripe-js@9.2.0': {}
+  '@stripe/stripe-js@10.1.0': {}
 
   '@tailwindcss/node@4.1.14':
     dependencies:
