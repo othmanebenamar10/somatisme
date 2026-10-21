@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
 import { isValidEmail, logApiRequest, sendError } from '../_lib/security.js';
 import { calculateOrderTotals } from '../_lib/pricing.js';
-import { getProductById } from '../../shared/products.js';
+import { getProductById } from '../../shared/products.ts';
 import { sendPaidOrderEmails } from '../send-order-email.js';
 
 export const config = { api: { bodyParser: false } };

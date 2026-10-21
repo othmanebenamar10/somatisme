@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import nodemailer, { type Transporter } from 'nodemailer';
-import { getProductById } from '../shared/products.js';
+import { getProductById } from '../shared/products.ts';
 import { escapeHtml, getRedis, sanitizePlainText } from './_lib/security.js';
 import { calculateOrderTotals } from './_lib/pricing.js';
 

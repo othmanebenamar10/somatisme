@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { z } from 'zod';
-import { getProductById } from '../shared/products.js';
+import { getProductById } from '../shared/products.ts';
 import { calculateOrderTotals } from './_lib/pricing.js';
 import {
   checkRateLimit,
