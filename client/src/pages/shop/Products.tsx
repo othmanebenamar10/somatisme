@@ -16,6 +16,7 @@ import { products, type Product } from '@shared/products';
 import CountryPhoneInput from '@/components/CountryPhoneInput';
 import { toInternationalPhone } from '@/data/phoneCountries';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { productDescriptions } from '@/contexts/productDescriptions';
 
 const categories = [
   { id: 'all', nameKey: 'shop.category.all' },
@@ -31,7 +32,7 @@ interface CartItem extends Product {
 }
 
 export default function Products() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -119,9 +120,13 @@ export default function Products() {
     .filter((product) => {
       const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
       const searchLower = searchQuery.toLowerCase();
+      const localizedDescription = language === 'fr'
+        ? product.description
+        : productDescriptions[language][product.id] || product.description;
       const matchesSearch = searchQuery === '' ||
         product.name.toLowerCase().includes(searchLower) ||
         product.description.toLowerCase().includes(searchLower) ||
+        localizedDescription.toLowerCase().includes(searchLower) ||
         product.brand.toLowerCase().includes(searchLower) ||
         product.category.toLowerCase().includes(searchLower);
       return matchesCategory && matchesSearch;
@@ -622,7 +627,7 @@ export default function Products() {
                 </h3>
                 <p className="text-sm text-muted-foreground mb-2">{product.brand}</p>
                 <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                  {product.description}
+                  {language === 'fr' ? product.description : productDescriptions[language][product.id] || product.description}
                 </p>
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-2xl font-bold gradient-text">{product.price} MAD</p>

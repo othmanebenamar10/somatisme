@@ -40,12 +40,11 @@ export default function Projects() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 border border-accent/40 backdrop-blur-sm mb-8"
             >
               <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
-              <span className="text-accent font-bold text-sm uppercase tracking-widest">Nos Réalisations</span>
+              <span className="text-accent font-bold text-sm uppercase tracking-widest">{t('projects.hero.badge')}</span>
             </motion.div>
 
             <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 sm:mb-8 leading-tight">
-              Projets <br />
-              <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">Réussis</span>
+              {t('projects.hero.successTitle')}
             </h1>
             <p className="text-base sm:text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
               {t('projects.hero.subtitle')}
@@ -72,7 +71,7 @@ export default function Projects() {
                 <div className="relative h-64 overflow-hidden rounded-t-2xl">
                   <img
                     src={project.image}
-                    alt={project.title}
+                    alt={t(`projects.detail.${project.slug}.title`)}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent"></div>
@@ -81,19 +80,19 @@ export default function Projects() {
                 {/* Content */}
                 <div className="p-6">
                   <span className="badge-premium text-xs">
-                    {project.category}
+                    {t(`projects.detail.${project.slug}.category`)}
                   </span>
-                  <h3 className="text-subheading text-foreground mb-2 mt-3">{project.title}</h3>
-                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{project.description}</p>
+                  <h3 className="text-subheading text-foreground mb-2 mt-3">{t(`projects.detail.${project.slug}.title`)}</h3>
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{t(`projects.detail.${project.slug}.description`)}</p>
 
                   <div className="space-y-2 mb-6 pt-4 border-t border-border/50">
                     <div className="flex items-start gap-2 text-xs font-medium text-foreground">
                       <Settings size={14} className="text-accent mt-0.5 flex-shrink-0" />
-                      <span className="line-clamp-1">{project.tech}</span>
+                      <span className="line-clamp-1">{t(`projects.detail.${project.slug}.tech`)}</span>
                     </div>
                     <div className="flex items-start gap-2 text-xs font-medium text-foreground">
                       <CheckCircle2 size={14} className="text-accent mt-0.5 flex-shrink-0" />
-                      <span className="line-clamp-1">{project.result}</span>
+                      <span className="line-clamp-1">{t(`projects.detail.${project.slug}.result`)}</span>
                     </div>
                   </div>
 
@@ -158,9 +157,9 @@ export default function Projects() {
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             {[
-              { number: '50+', label: 'Projets réalisés' },
-              { number: '100%', label: 'Clients satisfaits' },
-              { number: '15+', label: 'Années d\'expérience' },
+              { number: '50+', label: t('projects.stats.projects') },
+              { number: '100%', label: t('projects.stats.customers') },
+              { number: '15+', label: t('projects.stats.experience') },
             ].map((stat, index) => (
               <motion.div
                 key={index}
@@ -185,11 +184,11 @@ export default function Projects() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-heading text-primary-foreground mb-6">
-              Prêt à démarrer votre projet ?
+              {t('projects.cta.title')}
             </h2>
             <Link href="/contact">
               <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white gap-2">
-                Nous contacter
+                {t('cta.contact')}
                 <ArrowRight size={18} />
               </Button>
             </Link>
