@@ -69,8 +69,21 @@ export function useRecaptcha() {
         await loadRecaptcha(SITE_KEY);
         if (!window.grecaptcha) return null;
         return await new Promise<string>((resolve, reject) => {
+          const timeout = window.setTimeout(() => {
+            reject(new Error('Timed out while requesting a reCAPTCHA token'));
+          }, 10_000);
+          const finish = (callback: (value: string) => void, value: string) => {
+            window.clearTimeout(timeout);
+            callback(value);
+          };
           window.grecaptcha!.ready(() => {
-            window.grecaptcha!.execute(SITE_KEY, { action }).then(resolve, reject);
+            window.grecaptcha!.execute(SITE_KEY, { action }).then(
+              (token) => finish(resolve, token),
+              (error) => {
+                window.clearTimeout(timeout);
+                reject(error);
+              },
+            );
           });
         });
       } catch {

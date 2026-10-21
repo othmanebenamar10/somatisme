@@ -25,7 +25,12 @@ export function getRedis(): Redis {
     if (!url || !token) {
       throw new Error('Upstash Redis is not configured');
     }
-    redisClient = new Redis({ url, token });
+    redisClient = new Redis({
+      url,
+      token,
+      // Bound rate-limit and idempotency calls so API requests cannot hang indefinitely.
+      signal: () => AbortSignal.timeout(8_000),
+    });
   }
   return redisClient;
 }

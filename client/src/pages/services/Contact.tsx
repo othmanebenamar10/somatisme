@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useRecaptcha } from '@/hooks/useRecaptcha';
+import { fetchJsonWithTimeout } from '@/lib/fetchWithTimeout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Mail, Phone, MapPin, ArrowRight, User, Building, MessageSquare, Send, CheckCircle2, ShieldCheck, ClipboardCheck, X } from 'lucide-react';
@@ -101,7 +102,7 @@ export default function Contact() {
     try {
       const recaptchaToken = await getToken('contact_form');
 
-      const response = await fetch('/api/contact', {
+      const { response, data } = await fetchJsonWithTimeout<Record<string, string>>('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -113,10 +114,7 @@ export default function Contact() {
         }),
       });
 
-      let data: Record<string, string> = {};
-      try {
-        data = await response.json();
-      } catch {
+      if (!data) {
         console.error('[CONTACT] Response not JSON, status:', response.status);
         toast.error(`Erreur serveur (${response.status}). Veuillez réessayer.`);
         return;
@@ -132,7 +130,9 @@ export default function Contact() {
       }
     } catch (error) {
       console.error('[CONTACT] Fetch error:', error);
-      toast.error('Impossible de joindre le serveur. Vérifiez votre connexion.');
+      toast.error(error instanceof Error && error.name === 'TimeoutError'
+        ? 'Le serveur met trop de temps à répondre. Vérifiez votre connexion avant de réessayer.'
+        : 'Impossible de joindre le serveur. Vérifiez votre connexion.');
     } finally {
       setIsSubmitting(false);
     }

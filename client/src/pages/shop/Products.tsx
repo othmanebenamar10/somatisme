@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useRecaptcha } from '@/hooks/useRecaptcha';
+import { fetchJsonWithTimeout } from '@/lib/fetchWithTimeout';
 import { ShoppingCart, Search, X, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -187,7 +188,7 @@ export default function Products() {
     setSubmissionAction('checkout');
     try {
       const recaptchaToken = await getRecaptchaToken('order_submit');
-      const response = await fetch('/api/checkout', {
+      const { response, data: result } = await fetchJsonWithTimeout<{ url?: unknown; error?: string }>('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -200,15 +201,16 @@ export default function Products() {
           requestId: checkoutRequestIdRef.current || (checkoutRequestIdRef.current = crypto.randomUUID()),
         }),
       });
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok || typeof result.url !== 'string') {
-        toast.error(result.error || 'Impossible de démarrer le paiement.');
+      if (!response.ok || typeof result?.url !== 'string') {
+        toast.error(result?.error || 'Impossible de démarrer le paiement.');
         return;
       }
       window.location.assign(result.url);
     } catch (error) {
       console.error('Checkout initialization failed:', error);
-      toast.error('Erreur lors de la création du paiement. Votre panier est conservé.');
+      toast.error(error instanceof Error && error.name === 'TimeoutError'
+        ? 'Le serveur met trop de temps à répondre. Vérifiez votre connexion puis réessayez.'
+        : 'Erreur lors de la création du paiement. Votre panier est conservé.');
     } finally {
       setSubmissionAction(null);
     }
@@ -234,7 +236,7 @@ export default function Products() {
     setSubmissionAction('quote');
     try {
       const recaptchaToken = await getRecaptchaToken('quote_request');
-      const response = await fetch('/api/quote', {
+      const { response, data: result } = await fetchJsonWithTimeout<{ quoteNumber?: unknown; error?: string }>('/api/quote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -246,9 +248,8 @@ export default function Products() {
           recaptchaToken,
         }),
       });
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok || typeof result.quoteNumber !== 'string') {
-        toast.error(result.error || 'Impossible de préparer le devis.');
+      if (!response.ok || typeof result?.quoteNumber !== 'string') {
+        toast.error(result?.error || 'Impossible de préparer le devis.');
         return;
       }
 
@@ -269,7 +270,9 @@ export default function Products() {
       window.location.assign(`https://wa.me/212679825646?text=${encodeURIComponent(whatsappMessage)}`);
     } catch (error) {
       console.error('Quote request failed:', error);
-      toast.error('Erreur lors de la préparation du devis. Veuillez réessayer.');
+      toast.error(error instanceof Error && error.name === 'TimeoutError'
+        ? 'Le serveur met trop de temps à répondre. Vérifiez votre connexion avant de réessayer.'
+        : 'Erreur lors de la préparation du devis. Veuillez réessayer.');
     } finally {
       setSubmissionAction(null);
     }
