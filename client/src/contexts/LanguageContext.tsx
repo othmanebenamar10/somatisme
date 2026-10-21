@@ -1,16 +1,24 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { localeTranslations } from './localeTranslations';
+
+export type Language = 'fr' | 'en' | 'es';
 
 interface LanguageContextType {
+  language: Language;
+  setLanguage: (language: Language) => void;
   t: (key: string) => string;
 }
 
 const translations = {
+    "language.select": "Choisir la langue",
     "nav.home": "Accueil",
     "nav.about": "À Propos",
     "nav.services": "Services",
     "nav.projects": "Projets",
     "nav.products": "Produits",
     "nav.contact": "Contact",
+    "nav.openMenu": "Ouvrir le menu",
+    "nav.closeMenu": "Fermer le menu",
     "header.tagline": "Solutions d'automatisme industriel depuis plus de 15 ans",
     "home.hero.badge": "Expertise Industrielle",
     "home.hero.title": "Solutions d'Automatisme",
@@ -299,12 +307,35 @@ const translations = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const t = (key: string) => {
-    return (translations as Record<string, string>)[key] || key;
-  };
+  const [language, setLanguage] = useState<Language>(() => {
+    if (typeof window === 'undefined') return 'fr';
+    try {
+      const saved = window.localStorage.getItem('somatisme-language');
+      return saved === 'en' || saved === 'es' ? saved : 'fr';
+    } catch {
+      return 'fr';
+    }
+  });
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.documentElement.dir = 'ltr';
+    try {
+      window.localStorage.setItem('somatisme-language', language);
+    } catch {
+      // The selected language still applies for this session when storage is blocked.
+    }
+  }, [language]);
+
+  const t = useMemo(() => (key: string) => {
+    if (language === 'fr') return (translations as Record<string, string>)[key] || key;
+    return localeTranslations[language][key]
+      || (translations as Record<string, string>)[key]
+      || key;
+  }, [language]);
 
   return (
-    <LanguageContext.Provider value={{ t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );

@@ -1,8 +1,28 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
 import { Menu, X, ArrowRight } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage, type Language } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
+
+function LanguageSelect() {
+  const { language, setLanguage, t } = useLanguage();
+
+  return (
+    <label className="inline-flex items-center">
+      <span className="sr-only">{t('language.select')}</span>
+      <select
+        aria-label={t('language.select')}
+        value={language}
+        onChange={(event) => setLanguage(event.target.value as Language)}
+        className="h-10 rounded-lg border border-border bg-background px-3 text-sm font-semibold text-foreground outline-none transition-colors hover:border-accent focus-visible:ring-2 focus-visible:ring-accent"
+      >
+        <option value="fr">Français</option>
+        <option value="en">English</option>
+        <option value="es">Español</option>
+      </select>
+    </label>
+  );
+}
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -101,6 +121,7 @@ export default function Header() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
         >
+          <LanguageSelect />
           <Link href="/contact">
             <motion.div
               whileHover={{ scale: 1.08, y: -2 }}
@@ -126,22 +147,22 @@ export default function Header() {
         </motion.div>
 
         {/* Mobile Menu Button - SPECTACULAR */}
-        <motion.button
-          type="button"
-          onClick={toggleMenu}
-          whileHover={{ scale: 1.15, rotate: 90 }}
-          whileTap={{ scale: 0.85 }}
-          className="lg:hidden p-2 hover:bg-accent/10 rounded-lg transition-colors border-2 border-accent/30 hover:border-accent/60"
-          aria-label={isOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
-          aria-expanded={isOpen}
-        >
-          <motion.div
-            animate={{ rotate: isOpen ? 180 : 0 }}
-            transition={{ duration: 0.3 }}
+        <div className="lg:hidden flex items-center gap-2">
+          <LanguageSelect />
+          <motion.button
+            type="button"
+            onClick={toggleMenu}
+            whileHover={{ scale: 1.08, rotate: 3 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-2 hover:bg-accent/10 rounded-lg transition-colors border-2 border-accent/30 hover:border-accent/60"
+            aria-label={isOpen ? t('nav.closeMenu') : t('nav.openMenu')}
+            aria-expanded={isOpen}
           >
-            {isOpen ? <X size={24} className="text-accent" /> : <Menu size={24} className="text-accent" />}
-          </motion.div>
-        </motion.button>
+            <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }}>
+              {isOpen ? <X size={24} className="text-accent" /> : <Menu size={24} className="text-accent" />}
+            </motion.div>
+          </motion.button>
+        </div>
       </div>
 
       {/* Mobile Navigation - SPECTACULAR */}

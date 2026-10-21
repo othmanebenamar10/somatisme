@@ -13,6 +13,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Electrical() {
   const { t } = useLanguage();
+  const titleParts = t('service.electrical.title').split(' ');
+  const titleAccent = titleParts.pop();
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -28,7 +30,7 @@ export default function Electrical() {
             className="max-w-3xl"
           >
             <h1 className="text-display text-foreground mb-6">
-              {t('service.electrical.title').split(' ')[0]} <span className="text-accent">Industrielle</span>
+              {titleParts.join(' ')} <span className="text-accent">{titleAccent}</span>
             </h1>
             <p className="text-lg text-muted-foreground mb-8">
               Solutions électriques sécurisées, conformes aux normes et optimisées pour la performance de vos installations.

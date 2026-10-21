@@ -8,6 +8,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Conseil() {
   const { t } = useLanguage();
+  const titleParts = t('service.conseil.title').split(' ');
+  const titleAccent = titleParts.pop();
 
   const expertises = [
     "Expertises et diagnostics d'obsolescence (Audit de parc machine)",
@@ -39,7 +41,7 @@ export default function Conseil() {
               <div className="p-4 bg-accent/10 rounded-3xl mb-8 shadow-inner">
                 <ClipboardList className="text-accent w-12 h-12" />
               </div>
-              <h1 className="text-display mb-6">{t('service.conseil.title').split('&')[0]} & <span className="text-accent">{t('service.conseil.title').split('&')[1]}</span></h1>
+              <h1 className="text-display mb-6">{titleParts.join(' ')} <span className="text-accent">{titleAccent}</span></h1>
               <p className="text-2xl font-light text-muted-foreground leading-relaxed">
                 {t('service.conseil.hero')}
               </p>
