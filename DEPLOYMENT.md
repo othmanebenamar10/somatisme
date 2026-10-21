@@ -40,7 +40,7 @@ Ajouter les variables d'environnement dans Vercel Dashboard :
 
 ```env
 NODE_ENV=production
-PUBLIC_APP_URL=https://somatisme.ma
+PUBLIC_APP_URL=https://somatisme.vercel.app
 STRIPE_SECRET_KEY=sk_live_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 SMTP_HOST=smtp.gmail.com
@@ -57,10 +57,10 @@ VITE_RECAPTCHA_SITE_KEY=...
 `RECAPTCHA_SECRET_KEY` is required in production. The contact, checkout, and
 quote APIs return `503` if it is missing, and reject submissions with missing
 or invalid tokens. Set `VITE_RECAPTCHA_SITE_KEY` before building the frontend;
-the reCAPTCHA site key must be registered for both `somatisme.ma` and
-`www.somatisme.ma`. Quote emails use the same SMTP and Upstash Redis variables.
+the reCAPTCHA site key must include `somatisme.vercel.app` among its allowed
+domains. Quote emails use the same SMTP and Upstash Redis variables.
 
-Configure the Stripe webhook at `https://somatisme.ma/api/webhooks/stripe` for the `checkout.session.completed` event, then add its signing secret as `STRIPE_WEBHOOK_SECRET`. `VITE_*` variables are embedded in the frontend build and must be set before deployment.
+Configure the Stripe webhook at `https://somatisme.vercel.app/api/webhooks/stripe` for the `checkout.session.completed` event, then add its signing secret as `STRIPE_WEBHOOK_SECRET`. `VITE_*` variables are embedded in the frontend build and must be set before deployment. Update `PUBLIC_APP_URL` and the reCAPTCHA allowed domain if the production site moves to a custom domain.
 
 ### Étape 4 : Domaine Personnalisé
 

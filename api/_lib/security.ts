@@ -289,28 +289,6 @@ export async function verifyRecaptcha(
   }
 }
 
-export function isSafePdfBase64(pdfBase64: unknown, maxBytes = 1_500_000): boolean {
-  if (typeof pdfBase64 !== 'string' || pdfBase64.length === 0) {
-    return false;
-  }
-
-  if (!/^[A-Za-z0-9+/=]+$/.test(pdfBase64)) {
-    return false;
-  }
-
-  const approxBytes = Math.floor((pdfBase64.length * 3) / 4);
-  if (approxBytes > maxBytes) {
-    return false;
-  }
-
-  try {
-    const prefix = Buffer.from(pdfBase64.slice(0, 64), 'base64').toString('utf8');
-    return prefix.startsWith('%PDF-');
-  } catch {
-    return false;
-  }
-}
-
 export const contactSchema = z.object({
   name: z.string().min(1).max(100),
   email: z.string().min(3).max(254),
@@ -318,24 +296,5 @@ export const contactSchema = z.object({
   company: z.string().max(150).optional().default(''),
   subject: z.string().min(1).max(200),
   message: z.string().min(1).max(2000),
-  recaptchaToken: z.string().max(2048).optional().nullable(),
-});
-
-export const orderSchema = z.object({
-  orderForm: z.object({
-    name: z.string().min(1).max(100),
-    email: z.string().min(3).max(254),
-    phone: z.string().min(7).max(20),
-    company: z.string().max(150).optional().default(''),
-    address: z.string().max(200).optional().default(''),
-    message: z.string().max(1000).optional().default(''),
-  }),
-  orderItems: z.array(z.object({
-    productId: z.string().min(1).max(40),
-    quantity: z.number().int().min(1).max(100),
-  })).min(1).max(50),
-  cartTotal: z.number().finite().positive().max(10_000_000),
-  pdfBase64: z.string().optional(),
-  invoiceNumber: z.string().min(1).max(60),
   recaptchaToken: z.string().max(2048).optional().nullable(),
 });

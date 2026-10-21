@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { siteConfig } from '@/lib/seo';
 
 interface SEOConfig {
   title: string;
@@ -19,9 +20,9 @@ export function useSEO(config: SEOConfig) {
       if (!element) {
         const meta = document.createElement('meta');
         meta.setAttribute(attribute, key);
-      document.head.appendChild(meta);
+        document.head.appendChild(meta);
         element = meta;
-    }
+      }
       element.setAttribute('content', value);
     };
 
@@ -37,7 +38,7 @@ export function useSEO(config: SEOConfig) {
       setMeta('meta[property="og:image"]', 'property', 'og:image', config.ogImage);
     }
 
-    const canonicalURL = config.canonical || `https://somatisme.ma${window.location.pathname}`;
+    const canonicalURL = config.canonical || `${siteConfig.url}${window.location.pathname}`;
     let canonical = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (!canonical) {
       canonical = document.createElement('link');

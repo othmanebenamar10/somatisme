@@ -39,14 +39,16 @@ Site web d'entreprise moderne, sécurisé et premium pour **SOMATISME**, spécia
 - 🚀 **SMTP Nodemailer** : Envoi d'emails sécurisé via Gmail/Outlook
 - 📱 **Mobile-First** : Conception mobile d'abord
 - 🎨 **Accessibilité** : Contraste optimal, navigation au clavier
-- 💾 **MongoDB** : Base de données pour les soumissions de contact
 
 ## 📁 Structure du Projet
 
 ```
 /somatisme
 ├── api/
-│   └── contact.ts             # Vercel Edge API pour formulaire de contact (Resend)
+│   ├── contact.ts             # Formulaire de contact (SMTP)
+│   ├── quote.ts               # Devis PDF par email
+│   ├── checkout.ts            # Session Stripe Checkout
+│   └── webhooks/stripe.ts     # Confirmation après webhook signé
 ├── client/
 │   ├── public/
 │   │   ├── robots.txt          # Directives pour les moteurs de recherche
@@ -208,9 +210,9 @@ Le site est optimisé pour le **Français**. L'architecture de traduction via `L
 | UI Components | shadcn/ui |
 | Icons | Lucide React |
 | Notifications | Sonner |
-| Email API | Resend |
+| Email | Nodemailer / SMTP |
 | Build | Vite |
-| Hosting | Vercel (Edge Runtime) |
+| Hosting | Vercel (fonctions Node.js) |
 
 ## 🎯 Checklist de Déploiement
 
