@@ -5,7 +5,7 @@ import { Route, Switch, useLocation } from "wouter";
 import { useEffect } from "react";
 import ErrorBoundary from "../../components/ErrorBoundary";
 import { ThemeProvider } from "../../contexts/ThemeContext";
-import { LanguageProvider } from "../../contexts/LanguageContext";
+import { LanguageProvider, useLanguage } from "../../contexts/LanguageContext";
 import WhatsAppButton from "../../components/WhatsAppButton";
 import { generateLocalBusinessSchema } from "../../lib/seo";
 import { useSEO } from "../../hooks/useSEO";
@@ -39,8 +39,11 @@ function ScrollToTop() {
   return null;
 }
 
-const LoadingFallback = () => (
-  <main className="somatisme-loader" role="status" aria-live="polite" aria-label="Chargement de SOMATISME">
+const LoadingFallback = () => {
+  const { t } = useLanguage();
+
+  return (
+  <main className="somatisme-loader" role="status" aria-live="polite" aria-label={t('loading.aria')}>
     <style>{`
       .somatisme-loader{--loader-cyan:#12c8dd;--loader-orange:#f28a31;position:relative;display:grid;min-height:100svh;place-items:center;overflow:hidden;padding:32px 20px;background:#07131d;color:#f6fbfd;font-family:Inter,ui-sans-serif,system-ui,sans-serif}
       .somatisme-loader:before{position:absolute;inset:0;background-image:linear-gradient(rgba(122,174,190,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(122,174,190,.055) 1px,transparent 1px);background-size:42px 42px;content:"";mask-image:linear-gradient(transparent,#000 20%,#000 80%,transparent)}
@@ -68,15 +71,15 @@ const LoadingFallback = () => (
     <section className="somatisme-loader__panel">
       <header className="somatisme-loader__top">
         <img className="somatisme-loader__logo" src="/logo-somatisme-green.png" alt="SOMATISME" />
-        <span className="somatisme-loader__tag">AUTOMATISME · RÉGULATION · ÉLECTRICITÉ</span>
+        <span className="somatisme-loader__tag">{t('loading.tagline')}</span>
       </header>
       <div className="somatisme-loader__body">
         <div>
-          <p className="somatisme-loader__eyebrow"><span className="somatisme-loader__led" />Système en démarrage</p>
-          <h1 className="somatisme-loader__title">Préparation de votre espace</h1>
-          <p className="somatisme-loader__copy">Nous mettons en route les solutions industrielles SOMATISME.</p>
+          <p className="somatisme-loader__eyebrow"><span className="somatisme-loader__led" />{t('loading.eyebrow')}</p>
+          <h1 className="somatisme-loader__title">{t('loading.title')}</h1>
+          <p className="somatisme-loader__copy">{t('loading.description')}</p>
           <div className="somatisme-loader__progress" aria-hidden="true" />
-          <div className="somatisme-loader__labels"><span>Automatisme industriel</span><span>En cours</span></div>
+          <div className="somatisme-loader__labels"><span>{t('loading.industry')}</span><span>{t('loading.status')}</span></div>
         </div>
         <svg className="somatisme-loader__machine" viewBox="0 0 220 190" fill="none" aria-hidden="true">
           <path d="M20 95h35m110 0h35M110 20v25m0 100v25" stroke="currentColor" strokeOpacity=".35" strokeWidth="2" />
@@ -92,7 +95,8 @@ const LoadingFallback = () => (
       </div>
     </section>
   </main>
-);
+  );
+};
 
 function Router() {
   const [location] = useLocation();

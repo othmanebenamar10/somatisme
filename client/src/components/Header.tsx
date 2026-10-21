@@ -1,26 +1,45 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { Menu, X, ArrowRight } from 'lucide-react';
+import { Menu, X, ArrowRight, Globe2 } from 'lucide-react';
 import { useLanguage, type Language } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
 
 function LanguageSelect() {
   const { language, setLanguage, t } = useLanguage();
+  const languages: { value: Language; short: string; label: string }[] = [
+    { value: 'fr', short: 'FR', label: 'Français' },
+    { value: 'en', short: 'EN', label: 'English' },
+    { value: 'es', short: 'ES', label: 'Español' },
+  ];
 
   return (
-    <label className="inline-flex items-center">
-      <span className="sr-only">{t('language.select')}</span>
-      <select
-        aria-label={t('language.select')}
-        value={language}
-        onChange={(event) => setLanguage(event.target.value as Language)}
-        className="h-10 rounded-lg border border-border bg-background px-3 text-sm font-semibold text-foreground outline-none transition-colors hover:border-accent focus-visible:ring-2 focus-visible:ring-accent"
-      >
-        <option value="fr">Français</option>
-        <option value="en">English</option>
-        <option value="es">Español</option>
-      </select>
-    </label>
+    <div
+      role="group"
+      aria-label={t('language.select')}
+      className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-slate-200 bg-white/90 p-1 shadow-sm shadow-slate-900/5"
+    >
+      <Globe2 aria-hidden="true" className="mx-1 hidden h-4 w-4 text-slate-500 sm:block" />
+      {languages.map((option) => {
+        const isActive = language === option.value;
+        return (
+          <button
+            key={option.value}
+            type="button"
+            aria-label={`${t('language.select')}: ${option.label}`}
+            aria-pressed={isActive}
+            title={option.label}
+            onClick={() => setLanguage(option.value)}
+            className={`min-w-8 rounded-full px-2 py-1.5 text-[11px] font-extrabold tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-1 sm:min-w-10 sm:px-2.5 sm:text-xs ${
+              isActive
+                ? 'bg-gradient-to-r from-cyan-600 to-cyan-500 text-white shadow-sm'
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'
+            }`}
+          >
+            {option.short}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
