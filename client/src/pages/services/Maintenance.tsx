@@ -34,7 +34,7 @@ export default function Maintenance() {
             </p>
             <Link href="/contact">
               <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 gap-2">
-                {t('service.conseil.btn')}
+                {t('service.maintenance.btn')}
                 <ArrowRight size={18} />
               </Button>
             </Link>
