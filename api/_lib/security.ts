@@ -17,6 +17,8 @@ type ApiResponse = {
 };
 
 let redisClient: Redis | undefined;
+const localRateLimits = new Map<string, { count: number; resetAt: number }>();
+let warnedAboutLocalRateLimits = false;
 
 export function getRedis(): Redis {
   if (!redisClient) {
@@ -172,14 +174,44 @@ export async function checkRateLimit(
   maxRequests = 10,
   windowMs = 60_000
 ): Promise<{ allowed: boolean; retryAfterSeconds: number }> {
-  const result = await getRedis().eval<[string], [number, number]>(
-    `local count = redis.call('INCR', KEYS[1])
-     if count == 1 then redis.call('PEXPIRE', KEYS[1], ARGV[1]) end
-     return {count, redis.call('PTTL', KEYS[1])}`,
-    [`somatisme:rate-limit:${key}`],
-    [String(windowMs)],
-  );
-  const [count, ttlMs] = result;
+  const now = Date.now();
+  let count: number;
+  let ttlMs: number;
+
+  try {
+    const result = await getRedis().eval<[string], [number, number]>(
+      `local count = redis.call('INCR', KEYS[1])
+       if count == 1 then redis.call('PEXPIRE', KEYS[1], ARGV[1]) end
+       return {count, redis.call('PTTL', KEYS[1])}`,
+      [`somatisme:rate-limit:${key}`],
+      [String(windowMs)],
+    );
+    [count, ttlMs] = result;
+  } catch {
+    // Keep public forms available without Upstash; this fallback is per serverless instance.
+    if (!warnedAboutLocalRateLimits) {
+      console.warn('[SECURITY] Upstash unavailable; using per-instance rate limits.');
+      warnedAboutLocalRateLimits = true;
+    }
+    for (const [bucketKey, bucket] of localRateLimits) {
+      if (bucket.resetAt <= now) localRateLimits.delete(bucketKey);
+    }
+    if (localRateLimits.size >= 10_000 && !localRateLimits.has(key)) {
+      const oldestKey = localRateLimits.keys().next().value;
+      if (oldestKey) localRateLimits.delete(oldestKey);
+    }
+    const bucket = localRateLimits.get(key);
+    if (!bucket || bucket.resetAt <= now) {
+      localRateLimits.set(key, { count: 1, resetAt: now + windowMs });
+      count = 1;
+      ttlMs = windowMs;
+    } else {
+      bucket.count += 1;
+      count = bucket.count;
+      ttlMs = bucket.resetAt - now;
+    }
+  }
+
   return {
     allowed: count <= maxRequests,
     retryAfterSeconds: Math.max(1, Math.ceil(ttlMs / 1000)),

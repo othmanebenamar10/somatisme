@@ -45,15 +45,37 @@ const releaseClaimScript = `
   return 0
 `;
 
+const localOrderEmailStates = new Map<string, { state: 'processing' | 'sent'; token?: string; expiresAt: number }>();
+
 /** Called only after Stripe has verified a checkout.session.completed event. */
 export async function sendPaidOrderEmails(order: PaidOrder): Promise<'sent' | 'already-sent' | 'busy'> {
-  const redis = getRedis();
   const key = `somatisme:order:${order.sessionId}`;
   const claimToken = randomUUID();
-  const claimed = await redis.set(key, `processing:${claimToken}`, { nx: true, ex: 300 });
-  if (!claimed) {
-    const current = await redis.get<string>(key);
-    return current === 'sent' ? 'already-sent' : 'busy';
+  let redis: ReturnType<typeof getRedis> | undefined;
+  try {
+    redis = getRedis();
+  } catch {
+    // Upstash is optional. Keep webhook email delivery functional with a per-instance guard.
+  }
+
+  if (redis) {
+    const claimed = await redis.set(key, `processing:${claimToken}`, { nx: true, ex: 300 });
+    if (!claimed) {
+      const current = await redis.get<string>(key);
+      return current === 'sent' ? 'already-sent' : 'busy';
+    }
+  } else {
+    const now = Date.now();
+    for (const [orderKey, state] of localOrderEmailStates) {
+      if (state.expiresAt <= now) localOrderEmailStates.delete(orderKey);
+    }
+    const existing = localOrderEmailStates.get(key);
+    if (existing) return existing.state === 'sent' ? 'already-sent' : 'busy';
+    if (localOrderEmailStates.size >= 10_000) {
+      const oldestKey = localOrderEmailStates.keys().next().value;
+      if (oldestKey) localOrderEmailStates.delete(oldestKey);
+    }
+    localOrderEmailStates.set(key, { state: 'processing', token: claimToken, expiresAt: now + 5 * 60_000 });
   }
 
   try {
@@ -111,10 +133,12 @@ export async function sendPaidOrderEmails(order: PaidOrder): Promise<'sent' | 'a
       text: `${text}\nClient : ${name} (${email})\nTéléphone : ${sanitizePlainText(order.customerPhone, 24)}\nEntreprise : ${sanitizePlainText(order.company, 150)}\nAdresse : ${sanitizePlainText(order.address, 200)}\n${sanitizePlainText(order.message, 500)}`,
     });
     await mailer.sendMail({ from, to: email, subject: 'Confirmation de votre paiement - SOMATISME', html, text });
-    await redis.set(key, 'sent', { ex: 60 * 60 * 24 * 90 });
+    if (redis) await redis.set(key, 'sent', { ex: 60 * 60 * 24 * 90 });
+    else localOrderEmailStates.set(key, { state: 'sent', expiresAt: Date.now() + 90 * 24 * 60 * 60_000 });
     return 'sent';
   } catch (error) {
-    await redis.eval(releaseClaimScript, [key], [`processing:${claimToken}`]);
+    if (redis) await redis.eval(releaseClaimScript, [key], [`processing:${claimToken}`]);
+    else if (localOrderEmailStates.get(key)?.token === claimToken) localOrderEmailStates.delete(key);
     throw error;
   }
 }
