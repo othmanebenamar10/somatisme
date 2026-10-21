@@ -1,8 +1,12 @@
 import { z } from 'zod';
+import { randomUUID } from 'node:crypto';
+import { isIP } from 'node:net';
+import { Redis } from '@upstash/redis';
 
 type ApiRequest = {
   method?: string;
   headers: Record<string, string | string[] | undefined>;
+  ip?: string;
   body?: Record<string, unknown>;
   socket?: { remoteAddress?: string };
 };
@@ -12,7 +16,26 @@ type ApiResponse = {
   status(code: number): { json(data: unknown): void; end(): void };
 };
 
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+let redisClient: Redis | undefined;
+const localRateLimits = new Map<string, { count: number; resetAt: number }>();
+let warnedAboutLocalRateLimits = false;
+
+export function getRedis(): Redis {
+  if (!redisClient) {
+    const url = process.env.UPSTASH_REDIS_REST_URL;
+    const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+    if (!url || !token) {
+      throw new Error('Upstash Redis is not configured');
+    }
+    redisClient = new Redis({
+      url,
+      token,
+      // Bound rate-limit and idempotency calls so API requests cannot hang indefinitely.
+      signal: () => AbortSignal.timeout(8_000),
+    });
+  }
+  return redisClient;
+}
 
 const DEFAULT_PRODUCTION_ORIGINS = [
   'https://somatisme.vercel.app',
@@ -38,6 +61,9 @@ function normalizeOrigin(origin: string): string | null {
 }
 
 export function getAllowedOrigins(): string[] {
+  const production = process.env.NODE_ENV === 'production';
+  if (production) return DEFAULT_PRODUCTION_ORIGINS;
+
   const configured = (process.env.ALLOWED_ORIGINS || '')
     .split(',')
     .map((value) => value.trim())
@@ -45,28 +71,59 @@ export function getAllowedOrigins(): string[] {
     .map(normalizeOrigin)
     .filter((value): value is string => Boolean(value));
 
-  const vercelOrigin = process.env.VERCEL_URL
-    ? normalizeOrigin(`https://${process.env.VERCEL_URL}`)
-    : null;
-
-  const baseline = process.env.NODE_ENV === 'production'
-    ? DEFAULT_PRODUCTION_ORIGINS
-    : [...DEFAULT_PRODUCTION_ORIGINS, ...DEFAULT_DEVELOPMENT_ORIGINS];
-
-  return Array.from(new Set([...baseline, ...(vercelOrigin ? [vercelOrigin] : []), ...configured]));
+  return Array.from(new Set([
+    ...DEFAULT_PRODUCTION_ORIGINS,
+    ...DEFAULT_DEVELOPMENT_ORIGINS,
+    ...configured,
+  ]));
 }
 
 export function getClientIp(req: ApiRequest): string {
-  const forwarded = req.headers['x-forwarded-for'];
-  if (typeof forwarded === 'string') {
-    return forwarded.split(',')[0].trim();
+  // Express resolves req.ip using its configured trusted proxy chain. Prefer
+  // that value so an arbitrary X-Forwarded-For header cannot choose the key.
+  if (typeof req.ip === 'string' && isIP(req.ip)) {
+    return req.ip;
   }
 
-  if (Array.isArray(forwarded) && forwarded[0]) {
-    return forwarded[0].split(',')[0].trim();
+  // Vercel overwrites X-Forwarded-For with the connecting client IP. Only trust
+  // this header in that deployment environment; on other hosts, use the socket.
+  if (process.env.VERCEL === '1') {
+    const forwarded = req.headers['x-forwarded-for'];
+    const candidate = typeof forwarded === 'string'
+      ? forwarded.split(',')[0].trim()
+      : Array.isArray(forwarded) && forwarded[0]
+        ? forwarded[0].split(',')[0].trim()
+        : '';
+    if (isIP(candidate)) return candidate;
   }
 
-  return req.socket?.remoteAddress || 'unknown';
+  const remoteAddress = req.socket?.remoteAddress;
+  if (remoteAddress && isIP(remoteAddress)) return remoteAddress;
+  return 'unknown';
+}
+
+/** Logs metadata only; request bodies and query strings may contain personal data. */
+export function logApiRequest(req: any, res: any): void {
+  if (typeof res.getHeader === 'function' && res.getHeader('X-Request-ID')) return;
+
+  const requestId = randomUUID();
+  const startedAt = Date.now();
+  res.setHeader?.('X-Request-ID', requestId);
+  res.once?.('finish', () => {
+    const status = Number(res.statusCode || 200);
+    const entry = {
+      timestamp: new Date().toISOString(),
+      level: status >= 500 ? 'error' : status >= 400 ? 'warn' : 'info',
+      event: 'http.request',
+      requestId,
+      method: String(req.method || 'UNKNOWN'),
+      path: String(req.url || '/').split('?')[0],
+      status,
+      durationMs: Date.now() - startedAt,
+    };
+    const write = status >= 500 ? console.error : status >= 400 ? console.warn : console.log;
+    write(JSON.stringify(entry));
+  });
 }
 
 export function applySecurityHeaders(res: ApiResponse): void {
@@ -93,7 +150,7 @@ export function handleCors(
   const allowedOrigins = getAllowedOrigins();
   const normalizedOrigin = requestOrigin ? normalizeOrigin(requestOrigin) : null;
 
-  if (requestOrigin && (!normalizedOrigin || !allowedOrigins.includes(normalizedOrigin))) {
+  if (!requestOrigin || !normalizedOrigin || !allowedOrigins.includes(normalizedOrigin)) {
     return { ok: false, preflight: false };
   }
 
@@ -112,30 +169,52 @@ export function handleCors(
   return { ok: true, preflight: false };
 }
 
-export function checkRateLimit(
+export async function checkRateLimit(
   key: string,
   maxRequests = 10,
   windowMs = 60_000
-): { allowed: boolean; retryAfterSeconds: number } {
+): Promise<{ allowed: boolean; retryAfterSeconds: number }> {
   const now = Date.now();
-  const entry = rateLimitStore.get(key);
+  let count: number;
+  let ttlMs: number;
 
-  if (!entry || now > entry.resetAt) {
-    rateLimitStore.set(key, { count: 1, resetAt: now + windowMs });
-    return { allowed: true, retryAfterSeconds: Math.ceil(windowMs / 1000) };
+  try {
+    const result = await getRedis().eval<[string], [number, number]>(
+      `local count = redis.call('INCR', KEYS[1])
+       if count == 1 then redis.call('PEXPIRE', KEYS[1], ARGV[1]) end
+       return {count, redis.call('PTTL', KEYS[1])}`,
+      [`somatisme:rate-limit:${key}`],
+      [String(windowMs)],
+    );
+    [count, ttlMs] = result;
+  } catch {
+    // Keep public forms available without Upstash; this fallback is per serverless instance.
+    if (!warnedAboutLocalRateLimits) {
+      console.warn('[SECURITY] Upstash unavailable; using per-instance rate limits.');
+      warnedAboutLocalRateLimits = true;
+    }
+    for (const [bucketKey, bucket] of localRateLimits) {
+      if (bucket.resetAt <= now) localRateLimits.delete(bucketKey);
+    }
+    if (localRateLimits.size >= 10_000 && !localRateLimits.has(key)) {
+      const oldestKey = localRateLimits.keys().next().value;
+      if (oldestKey) localRateLimits.delete(oldestKey);
+    }
+    const bucket = localRateLimits.get(key);
+    if (!bucket || bucket.resetAt <= now) {
+      localRateLimits.set(key, { count: 1, resetAt: now + windowMs });
+      count = 1;
+      ttlMs = windowMs;
+    } else {
+      bucket.count += 1;
+      count = bucket.count;
+      ttlMs = bucket.resetAt - now;
+    }
   }
 
-  if (entry.count >= maxRequests) {
-    return {
-      allowed: false,
-      retryAfterSeconds: Math.max(1, Math.ceil((entry.resetAt - now) / 1000)),
-    };
-  }
-
-  entry.count += 1;
   return {
-    allowed: true,
-    retryAfterSeconds: Math.max(1, Math.ceil((entry.resetAt - now) / 1000)),
+    allowed: count <= maxRequests,
+    retryAfterSeconds: Math.max(1, Math.ceil(ttlMs / 1000)),
   };
 }
 
@@ -190,7 +269,8 @@ export function isValidPhone(phone: unknown): boolean {
     return false;
   }
 
-  return /^[\d\s\-+()]{7,20}$/.test(phone);
+  const digits = phone.replace(/\D/g, '');
+  return /^[\d\s\-+().]{7,24}$/.test(phone) && digits.length >= 7 && digits.length <= 15;
 }
 
 export function isLikelyBot(payload: Record<string, unknown>, minDurationMs: number): boolean {
@@ -206,64 +286,6 @@ export function isLikelyBot(payload: Record<string, unknown>, minDurationMs: num
   return Number.isFinite(duration) && duration > 0 && duration < minDurationMs;
 }
 
-export async function verifyRecaptcha(
-  token: string | null | undefined,
-  minScore = 0.5
-): Promise<boolean> {
-  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
-  if (!secretKey) {
-    return true;
-  }
-
-  if (!token || typeof token !== 'string' || token.length > 2048) {
-    return false;
-  }
-
-  try {
-    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(token)}`,
-    });
-
-    if (!response.ok) {
-      return false;
-    }
-
-    const data = await response.json() as {
-      success?: boolean;
-      score?: number;
-      action?: string;
-    };
-
-    return data.success === true && (data.score ?? 1) >= minScore;
-  } catch {
-    return false;
-  }
-}
-
-export function isSafePdfBase64(pdfBase64: unknown, maxBytes = 1_500_000): boolean {
-  if (typeof pdfBase64 !== 'string' || pdfBase64.length === 0) {
-    return false;
-  }
-
-  if (!/^[A-Za-z0-9+/=]+$/.test(pdfBase64)) {
-    return false;
-  }
-
-  const approxBytes = Math.floor((pdfBase64.length * 3) / 4);
-  if (approxBytes > maxBytes) {
-    return false;
-  }
-
-  try {
-    const prefix = Buffer.from(pdfBase64.slice(0, 64), 'base64').toString('utf8');
-    return prefix.startsWith('%PDF-');
-  } catch {
-    return false;
-  }
-}
-
 export const contactSchema = z.object({
   name: z.string().min(1).max(100),
   email: z.string().min(3).max(254),
@@ -271,25 +293,4 @@ export const contactSchema = z.object({
   company: z.string().max(150).optional().default(''),
   subject: z.string().min(1).max(200),
   message: z.string().min(1).max(2000),
-  recaptchaToken: z.string().max(2048).optional().nullable(),
-});
-
-export const orderSchema = z.object({
-  orderForm: z.object({
-    name: z.string().min(1).max(100),
-    email: z.string().min(3).max(254),
-    phone: z.string().min(7).max(20),
-    company: z.string().max(150).optional().default(''),
-    address: z.string().max(200).optional().default(''),
-    message: z.string().max(1000).optional().default(''),
-  }),
-  orderItems: z.array(z.object({
-    name: z.string().min(1).max(200),
-    price: z.number().finite().min(0).max(10_000_000),
-    quantity: z.number().int().min(1).max(100).optional().default(1),
-  })).min(1).max(50),
-  cartTotal: z.number().finite().positive().max(10_000_000),
-  pdfBase64: z.string().optional(),
-  invoiceNumber: z.string().min(1).max(60),
-  recaptchaToken: z.string().max(2048).optional().nullable(),
 });

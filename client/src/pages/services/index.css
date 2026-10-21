@@ -42,6 +42,12 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@media (max-width: 640px) {
+  .hero-orb {
+    filter: blur(48px);
+  }
+}
+
 :root {
   /* SOMATISME - DESIGN INDUSTRIEL PROFESSIONNEL 2026 */
   /* Couleurs Industrielles Sérieuses */
@@ -423,7 +429,7 @@
 
   /* Section Styles */
   .section-padding {
-    @apply py-20 md:py-28 lg:py-32;
+    @apply py-14 md:py-28 lg:py-32;
   }
 
   .section-dark {

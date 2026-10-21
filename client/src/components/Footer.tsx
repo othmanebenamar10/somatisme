@@ -1,5 +1,5 @@
 import { Link } from 'wouter';
-import { Mail, Phone, MapPin, Linkedin, Zap, ArrowRight } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
 
@@ -9,21 +9,21 @@ export default function Footer() {
 
   const footerLinks = [
     {
-      title: 'Services',
+      title: t('nav.services'),
       links: [
-        { label: 'Automatisme Industriel', href: '/services/automation' },
-        { label: 'Régulation & Instrumentation', href: '/services/regulation' },
-        { label: 'Installation Électrique', href: '/services/electrical' },
-        { label: 'Maintenance Industrielle', href: '/services/maintenance' },
+        { label: t('service.automation.title'), href: '/services/automation' },
+        { label: t('home.expertise.regulation.title'), href: '/services/regulation' },
+        { label: t('service.electrical.title'), href: '/services/electrical' },
+        { label: t('service.maintenance.title'), href: '/services/maintenance' },
       ]
     },
     {
-      title: 'Entreprise',
+      title: t('footer.company'),
       links: [
-        { label: 'À propos', href: '/about' },
-        { label: 'Projets', href: '/projects' },
-        { label: 'Nous contacter', href: '/contact' },
-        { label: 'Produits', href: '/products' },
+        { label: t('nav.about'), href: '/about' },
+        { label: t('nav.projects'), href: '/projects' },
+        { label: t('nav.contact'), href: '/contact' },
+        { label: t('nav.products'), href: '/products' },
       ]
     },
   ];
@@ -37,9 +37,9 @@ export default function Footer() {
       {/* Top accent line */}
       <div className="h-1 bg-gradient-to-r from-accent via-secondary to-accent"></div>
 
-      <div className="container relative z-10 py-20">
+      <div className="container relative z-10 py-14 sm:py-20">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-12 md:mb-16">
           {/* Company Info - Premium */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -50,17 +50,13 @@ export default function Footer() {
             <Link href="/">
               <motion.a
                 whileHover={{ scale: 1.05 }}
-                className="inline-flex items-center gap-2 group"
+                className="inline-flex items-center group"
               >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-accent to-secondary rounded-lg blur opacity-75 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="relative px-3 py-2 bg-primary rounded-lg">
-                    <Zap size={20} className="text-accent" />
-                  </div>
-                </div>
-                <span className="text-xl font-black bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">
-                  SOMATISME
-                </span>
+                <img
+                  src="/logo-somatisme-green.png"
+                  alt="SOMATISME — Automatisme industriel"
+                  className="h-14 w-auto max-w-full object-contain"
+                />
               </motion.a>
             </Link>
             <p className="text-sm text-gray-300 leading-relaxed">
@@ -117,7 +113,7 @@ export default function Footer() {
           >
             <h4 className="font-bold text-lg uppercase tracking-wider text-white flex items-center gap-2">
               <span className="w-1 h-1 rounded-full bg-accent"></span>
-              Coordonnées
+              {t('footer.contact')}
             </h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3 group">

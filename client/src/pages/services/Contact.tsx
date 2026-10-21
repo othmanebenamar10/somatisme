@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { useState, useRef, useEffect } from 'react';
-import { useRecaptcha } from '@/hooks/useRecaptcha';
+import { useState } from 'react';
+import { fetchJsonWithTimeout } from '@/lib/fetchWithTimeout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Mail, Phone, MapPin, ArrowRight, User, Building, MessageSquare, Send, CheckCircle2, ShieldCheck, ClipboardCheck, X } from 'lucide-react';
@@ -8,6 +8,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
+import CountryPhoneInput from '@/components/CountryPhoneInput';
+import { toInternationalPhone } from '@/data/phoneCountries';
 
 /**
  * SOMATISME - Page Contact
@@ -16,6 +18,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Contact() {
   const { t } = useLanguage();
+  const [phoneCountryIso, setPhoneCountryIso] = useState('MA');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -27,7 +30,6 @@ export default function Contact() {
   const [botField, setBotField] = useState(''); // Anti-spam Honeypot
   const [formStartTime] = useState(() => Date.now()); // Timing bot detection
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { getToken } = useRecaptcha();
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [currentStep, setCurrentStep] = useState(1); // Step 1: Contact Info, Step 2: Details, Step 3: Confirm
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -46,7 +48,8 @@ export default function Contact() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (formData.email && !emailRegex.test(formData.email)) errors.email = 'Email invalide';
       if (formData.phone) {
-        const phoneRegex = /^(06\d{8}|(\+212|00212)\d{9})$/;
+        // Allows optional leading + and digits/spaces
+        const phoneRegex = /^\+?[0-9\s\-()]{7,20}$/;
         if (!phoneRegex.test(formData.phone)) errors.phone = 'Téléphone invalide';
       }
     }
@@ -95,22 +98,18 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
-      const recaptchaToken = await getToken('contact_form');
-
-      const response = await fetch('/api/contact', {
+      const { response, data } = await fetchJsonWithTimeout<Record<string, string>>('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
-          recaptchaToken,
+          phone: toInternationalPhone(phoneCountryIso, formData.phone),
           _duration: Date.now() - formStartTime,
+          website: botField,
         }),
       });
 
-      let data: Record<string, string> = {};
-      try {
-        data = await response.json();
-      } catch {
+      if (!data) {
         console.error('[CONTACT] Response not JSON, status:', response.status);
         toast.error(`Erreur serveur (${response.status}). Veuillez réessayer.`);
         return;
@@ -126,7 +125,9 @@ export default function Contact() {
       }
     } catch (error) {
       console.error('[CONTACT] Fetch error:', error);
-      toast.error('Impossible de joindre le serveur. Vérifiez votre connexion.');
+      toast.error(error instanceof Error && error.name === 'TimeoutError'
+        ? 'Le serveur met trop de temps à répondre. Vérifiez votre connexion avant de réessayer.'
+        : 'Impossible de joindre le serveur. Vérifiez votre connexion.');
     } finally {
       setIsSubmitting(false);
     }
@@ -138,7 +139,7 @@ export default function Contact() {
       <Header />
 
       {/* Hero Section - RADICAL NEW DESIGN */}
-      <section className="relative min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-slate-800 to-primary">
+      <section className="relative min-h-[55vh] sm:min-h-[60vh] md:min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br from-primary via-slate-800 to-primary">
         {/* Animated Orbs */}
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
         <div className="absolute bottom-0 right-1/3 w-80 h-80 bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
@@ -160,7 +161,7 @@ export default function Contact() {
               <span className="text-accent font-bold text-sm uppercase tracking-widest">Nous Contacter</span>
             </motion.div>
 
-            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white mb-8 leading-tight">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 sm:mb-8 leading-tight">
               Parlons de Votre <br />
               <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">Projet</span>
             </h1>
@@ -193,7 +194,7 @@ export default function Contact() {
                 {
                   icon: Phone,
                   title: t('contact.info.phone'),
-                  value: '06 79 82 56 46',
+                  value: '+212 6 79 82 56 46',
                   href: 'tel:+212679825646',
                 },
                 {
@@ -344,17 +345,13 @@ export default function Contact() {
                       <label className="block text-sm font-semibold text-foreground mb-2">
                         {t('contact.form.phone')}
                       </label>
-                      <div className="relative group">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-accent transition-colors" size={18} />
-                        <Input
-                          type="tel"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          placeholder={t('contact.form.phone.placeholder')}
-                          className={`pl-10 bg-background/50 border-border focus:border-accent/50 focus:ring-accent/20 transition-all h-12 rounded-xl ${formErrors.phone ? 'border-destructive' : ''}`}
-                        />
-                      </div>
+                      <CountryPhoneInput
+                        id="contact-phone"
+                        value={formData.phone}
+                        countryIso={phoneCountryIso}
+                        onValueChange={(phone) => setFormData((previous) => ({ ...previous, phone }))}
+                        onCountryIsoChange={setPhoneCountryIso}
+                      />
                       {formErrors.phone && <p className="text-xs text-destructive mt-1">{formErrors.phone}</p>}
                     </div>
                     <div>
@@ -450,7 +447,7 @@ export default function Contact() {
                     {formData.phone && (
                       <div className="flex justify-between items-start">
                         <span className="text-sm text-muted-foreground">Téléphone:</span>
-                        <span className="font-semibold text-foreground">{formData.phone}</span>
+                        <span className="font-semibold text-foreground">{toInternationalPhone(phoneCountryIso, formData.phone)}</span>
                       </div>
                     )}
                     {formData.company && (

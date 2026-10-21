@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import nodemailer, { type Transporter } from 'nodemailer';
 import {
   checkRateLimit,
   contactSchema,
@@ -8,27 +8,36 @@ import {
   isLikelyBot,
   isValidEmail,
   isValidPhone,
+  logApiRequest,
   sanitizeHeaderValue,
   sanitizePlainText,
   sendError,
-  verifyRecaptcha,
-} from './_lib/security.js'; // Removed verifyRecaptcha
+} from './_lib/security.js';
 
 const ADMIN_EMAIL = process.env.EMAIL_TO || 'somatisme@gmail.com';
+let transporter: Transporter | undefined;
 
 function getTransporter() {
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT || '587', 10),
-    secure: process.env.SMTP_PORT === '465',
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
+  if (!transporter) {
+    const port = Number.parseInt(process.env.SMTP_PORT || '587', 10);
+    transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port,
+      secure: port === 465,
+      pool: true,
+      maxConnections: 2,
+      maxMessages: 100,
+      connectionTimeout: 8_000,
+      greetingTimeout: 8_000,
+      socketTimeout: 15_000,
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+    });
+  }
+  return transporter;
 }
 
 export default async function handler(req: any, res: any) {
+  logApiRequest(req, res);
   const cors = handleCors(req, res, ['POST', 'OPTIONS']);
   if (!cors.ok) {
     return sendError(res, 403, 'Origin not allowed');
@@ -47,7 +56,13 @@ export default async function handler(req: any, res: any) {
   }
 
   const ip = getClientIp(req);
-  const rateLimit = checkRateLimit(`contact:${ip}`, 5, 60_000);
+  let rateLimit: Awaited<ReturnType<typeof checkRateLimit>>;
+  try {
+    rateLimit = await checkRateLimit(`contact:${ip}`, 5, 60_000);
+  } catch (error) {
+    console.error('[CONTACT] Rate limiter unavailable:', error);
+    return sendError(res, 503, 'Service temporairement indisponible');
+  }
   if (!rateLimit.allowed) {
     res.setHeader('Retry-After', String(rateLimit.retryAfterSeconds));
     return sendError(res, 429, 'Too many requests. Please retry later.');
@@ -66,14 +81,13 @@ export default async function handler(req: any, res: any) {
       company: sanitizePlainText(body.company, 150),
       subject: sanitizeHeaderValue(body.subject, 200),
       message: sanitizePlainText(body.message, 2000),
-      // recaptchaToken: sanitizePlainText(body.recaptchaToken, 2048) || undefined, // Removed reCAPTCHA token
     });
 
     if (!parsed.success) {
       return sendError(res, 400, 'Invalid request payload');
     }
 
-    const { name, email, phone, company, subject, message } = parsed.data; // Removed recaptchaToken
+    const { name, email, phone, company, subject, message } = parsed.data;
 
     if (!isValidEmail(email)) {
       return sendError(res, 400, 'Adresse email invalide');
@@ -82,6 +96,9 @@ export default async function handler(req: any, res: any) {
     if (phone && !isValidPhone(phone)) {
       return sendError(res, 400, 'Numero de telephone invalide');
     }
+
+    // reCAPTCHA v3 is advisory: honeypot and IP rate limiting above protect the
+    // contact form without blocking genuine visitors on failed Google checks.
 
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
       console.error('[CONTACT] SMTP not configured');

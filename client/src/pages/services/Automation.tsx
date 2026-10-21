@@ -28,14 +28,14 @@ export default function Automation() {
             className="max-w-3xl"
           >
             <h1 className="text-display text-foreground mb-6">
-              Automatisme <span className="text-accent">Industriel</span>
+              {t('home.expertise.automation.title')}
             </h1>
             <p className="text-lg text-muted-foreground mb-8">
-              Systèmes de contrôle et d'automatisation avancés pour optimiser vos processus de production et augmenter votre productivité.
+              {t('home.expertise.automation.desc')}
             </p>
             <Link href="/contact">
               <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 gap-2">
-                Demander un devis
+                {t('home.hero.cta.quote')}
                 <ArrowRight size={18} />
               </Button>
             </Link>
@@ -52,7 +52,7 @@ export default function Automation() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-heading text-foreground mb-6">Nos Solutions</h2>
+              <h2 className="text-heading text-foreground mb-6">{t('home.expertise.title')}</h2>
               <div className="space-y-4">
                 {[
                   'Développement sur automates (Siemens S7-1200/1500, Schneider M580/M340, Rockwell)',

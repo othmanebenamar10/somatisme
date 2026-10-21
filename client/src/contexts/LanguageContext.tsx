@@ -1,16 +1,102 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { localeTranslations } from './localeTranslations';
+
+export type Language = 'fr' | 'en' | 'es';
 
 interface LanguageContextType {
+  language: Language;
+  setLanguage: (language: Language) => void;
   t: (key: string) => string;
 }
 
 const translations = {
+    "language.select": "Choisir la langue",
+    "shop.cart.storageError": "Le panier ne peut pas être enregistré sur cet appareil.",
+    "shop.payment.success": "Paiement terminé. La confirmation sera envoyée par email après validation Stripe.",
+    "shop.payment.cancelled": "Paiement annulé. Votre panier a été conservé.",
+    "shop.cart.added": "Produit ajouté au panier.",
+    "shop.cart.quantityLimit": "La quantité disponible est déjà dans votre panier.",
+    "shop.form.requiredOrder": "Veuillez remplir tous les champs requis.",
+    "shop.form.requiredQuote": "Veuillez remplir votre nom, votre email et votre téléphone.",
+    "shop.form.emailInvalid": "Veuillez saisir une adresse email valide.",
+    "shop.form.phoneInvalid": "Veuillez saisir un numéro de téléphone valide.",
+    "shop.form.cartEmpty": "Votre panier est vide.",
+    "shop.checkout.startError": "Impossible de démarrer le paiement.",
+    "shop.checkout.timeout": "Le serveur met trop de temps à répondre. Vérifiez votre connexion puis réessayez.",
+    "shop.checkout.error": "Erreur lors de la création du paiement. Votre panier est conservé.",
+    "shop.quote.prepareError": "Impossible de préparer le devis.",
+    "shop.quote.timeout": "Le serveur met trop de temps à répondre. Vérifiez votre connexion avant de réessayer.",
+    "shop.quote.error": "Erreur lors de la préparation du devis. Veuillez réessayer.",
+    "shop.quote.whatsappIntro": "Bonjour l’équipe SOMATISME,",
+    "shop.quote.whatsappRequested": "Je viens de demander le devis {quoteNumber}. Le récapitulatif PDF a été envoyé à {email}.",
+    "shop.quote.whatsappItems": "Articles demandés :",
+    "shop.quote.whatsappItem": "• {name} — Qté {quantity}",
+    "shop.quote.whatsappMore": "… et {count} autre(s) article(s)",
+    "shop.quote.whatsappThanks": "Merci.",
+    "shop.hero.badge": "Nos produits",
+    "shop.hero.title": "Équipements",
+    "shop.hero.titleAccent": "industriels",
+    "shop.hero.description": "Équipements industriels de qualité professionnelle.",
+    "shop.search.placeholder": "Rechercher un produit…",
+    "shop.sort.label": "Trier par",
+    "shop.sort.nameAsc": "Nom A → Z",
+    "shop.sort.nameDesc": "Nom Z → A",
+    "shop.sort.priceAsc": "Prix croissant",
+    "shop.sort.priceDesc": "Prix décroissant",
+    "shop.cart.button": "Panier",
+    "shop.cart.title": "Panier",
+    "shop.cart.emptyTitle": "Panier vide",
+    "shop.cart.emptyDescription": "Ajoutez des produits pour commencer.",
+    "shop.products.label": "Produits",
+    "shop.summary.title": "Résumé",
+    "shop.summary.subtotal": "Sous-total",
+    "shop.summary.shipping": "Livraison (2 %)",
+    "shop.summary.vat": "TVA (20 %)",
+    "shop.summary.total": "Total TTC",
+    "shop.checkout.button": "Payer par carte",
+    "shop.checkout.command": "Commander",
+    "shop.checkout.secure": "Paiement sécurisé par carte",
+    "shop.products.outOfStock": "Rupture de stock",
+    "shop.products.add": "Ajouter au panier",
+    "shop.products.stock": "Stock disponible : {count}",
+    "shop.products.none": "Aucun produit trouvé.",
+    "shop.checkout.formTitle": "Coordonnées et choix de commande",
+    "shop.payment.infoTitle": "Informations de paiement :",
+    "shop.payment.stripe": "Paiement sécurisé par carte avec Stripe.",
+    "shop.payment.confirmation": "La confirmation de paiement sera envoyée par email.",
+    "shop.payment.coordinate": "Nous vous contacterons pour organiser la suite.",
+    "shop.form.cancel": "Annuler",
+    "shop.form.next": "Suivant",
+    "shop.form.previous": "Précédent",
+    "shop.form.name": "Nom complet *",
+    "shop.form.email": "Email *",
+    "shop.form.phone": "Téléphone *",
+    "shop.form.company": "Entreprise",
+    "shop.form.address": "Adresse",
+    "shop.form.message": "Message complémentaire",
+    "shop.form.namePlaceholder": "Nom complet",
+    "shop.form.emailPlaceholder": "Email",
+    "shop.form.companyPlaceholder": "Nom de l’entreprise",
+    "shop.form.addressPlaceholder": "Adresse",
+    "shop.form.messagePlaceholder": "Toute information supplémentaire…",
+    "shop.quote.info": "Demandez un devis : le PDF détaillé sera envoyé à votre adresse email, puis WhatsApp s’ouvrira avec le récapitulatif de votre demande.",
+    "shop.quote.button": "Recevoir le devis PDF + WhatsApp",
+    "shop.quote.loading": "Préparation du devis…",
+    "shop.checkout.loading": "Redirection vers le paiement…",
+    "shop.category.all": "Tous",
+    "shop.category.plc": "Automates & CPU",
+    "shop.category.sensors": "Capteurs & détecteurs",
+    "shop.category.electrical": "Électricité industrielle",
+    "shop.category.modules": "Modules & communication",
+    "shop.category.equipment": "Équipements divers",
     "nav.home": "Accueil",
     "nav.about": "À Propos",
     "nav.services": "Services",
     "nav.projects": "Projets",
     "nav.products": "Produits",
     "nav.contact": "Contact",
+    "nav.openMenu": "Ouvrir le menu",
+    "nav.closeMenu": "Fermer le menu",
     "header.tagline": "Solutions d'automatisme industriel depuis plus de 15 ans",
     "home.hero.badge": "Expertise Industrielle",
     "home.hero.title": "Solutions d'Automatisme",
@@ -86,11 +172,13 @@ const translations = {
     "cta.home.subtitle": "Contactez nos experts pour discuter de vos besoins spécifiques et découvrir comment nos solutions peuvent optimiser vos processus industriels.",
     "cta.home.button": "Nous contacter maintenant",
     "footer.tagline": "Solutions d'automatisme industriel, régulation et installation électrique pour l'industrie.",
-    "footer.phone": "06 79 82 56 46",
+    "footer.company": "Entreprise",
+    "footer.contact": "Coordonnées",
+    "footer.phone": "+212 6 79 82 56 46",
     "footer.fax": "",
     "footer.email": "somatisme@gmail.com",
     "footer.address": "Rue résistance residence Nassime GH 12 Appt N°1, Mohammedia",
-    "footer.copyright": "© 2026 SOMATISME. Tous droits réservés.",
+    "footer.copyright": "Tous droits réservés.",
     "footer.privacy": "Politique de confidentialité",
     "footer.terms": "Conditions d'utilisation",
     "sector.agro": "Agro-alimentaire",
@@ -212,10 +300,16 @@ const translations = {
     "projects.process.step4.desc": "Installation sur site, essais d'ensemble et formation des opérateurs. Nous assurons une transition en douceur vers votre nouvelle installation.",
     "projects.cta.title": "Prêt à démarrer votre projet ?",
     "service.conseil.title": "Conseil & Ingénierie",
+    "service.conseil.hero": "Des choix techniques éclairés pour fiabiliser vos installations et préparer leur évolution.",
+    "service.conseil.subtitle": "Des études adaptées aux réalités de votre site industriel",
+    "service.conseil.desc": "De l’audit initial au cahier des charges, nous analysons vos équipements, vos contraintes d’exploitation et vos objectifs pour recommander des solutions concrètes, chiffrées et évolutives.",
     "service.automation.title": "Automatisme Industriel",
     "service.electrical.title": "Installation Électrique",
     "service.maintenance.title": "Assistance Technique",
+    "service.maintenance.hero": "Préservez la disponibilité de vos équipements grâce à une maintenance adaptée à vos installations et à vos impératifs de production.",
+    "service.maintenance.btn": "Demander une intervention",
     "service.formation.title": "Formation",
+    "service.formation.hero": "Des formations pratiques, animées par des professionnels de terrain et adaptées à vos équipements.",
     "service.realisation.title": "Réalisation sur Site",
     "service.realisation.hero": "La maîtrise technique et la tenue des délais pour vos projets industriels.",
     "service.realisation.domains.title": "Nos Domaines d'Intervention",
@@ -244,7 +338,7 @@ const translations = {
     "contact.form.privacy": "Vos données sont traitées en toute confidentialité conformément à la politique de protection des données industrielles.",
     "contact.form.required": "Les champs marqués d'une étoile (*) sont obligatoires.",
     "contact.form.validation.email": "Veuillez entrer une adresse email valide.",
-    "contact.form.validation.phone": "Veuillez entrer un numéro de téléphone valide (06xxxxxxxx ou +212...)",
+    "contact.form.validation.phone": "Veuillez entrer un numéro de téléphone valide avec l’indicatif du pays.",
     "contact.form.success": "Message envoyé avec succès !",
     "contact.form.error": "Erreur lors de l'envoi.",
     "contact.terms.title": "Conditions d'Utilisation",
@@ -289,17 +383,76 @@ const translations = {
     "contact.form.email.placeholder": "exemple@gmail.com",
     "contact.form.phone.placeholder": "06XXXXXXXX",
     "contact.form.company.placeholder": "Société ABC",
+    "projects.hero.badge": "Nos réalisations",
+    "projects.hero.successTitle": "Projets réussis",
+    "projects.notFound": "Projet introuvable",
+    "projects.backToList": "Retour aux projets",
+    "projects.all": "Tous les projets",
+    "projects.detail.presentation": "Présentation du projet",
+    "projects.detail.gallery": "Galerie",
+    "projects.detail.photosComing": "Photos à venir",
+    "projects.tech.used": "Technologies utilisées",
+    "projects.cta.similar.title": "Un projet similaire ?",
+    "projects.cta.similar.desc": "Contactez-nous pour discuter de votre besoin.",
+    "projects.other": "Autres réalisations",
+    "projects.stats.projects": "Projets réalisés",
+    "projects.stats.customers": "Clients satisfaits",
+    "projects.stats.experience": "Années d'expérience",
+    "projects.cta.title": "Prêt à démarrer votre projet ?",
+    "projects.detail.qualite-assuree.title": "Installation logiciel pour la qualité assurée",
+    "projects.detail.qualite-assuree.category": "Qualité",
+    "projects.detail.qualite-assuree.description": "L'assurance qualité (AQ) est une approche proactive et systématique visant à garantir la conformité des produits ou services aux exigences définies, prévenant ainsi les défauts avant qu'ils ne surviennent. Elle structure les processus opérationnels, assure le respect des normes (ex: ISO 9001) et améliore la confiance client. Contrairement au contrôle qualité (QC) qui détecte les défauts sur le produit final, l'AQ se concentre sur l'amélioration des processus de production pour éviter les erreurs. La gestion proactive implique la définition de normes, la documentation, la formation du personnel et des audits continus. En informatique, le QA concerne les tests de logiciels pour garantir la conformité, la performance et l'expérience utilisateur, souvent géré par un QA Lead ou un analyste.",
+    "projects.detail.qualite-assuree.tech": "ISO 9001, Audit qualité, Documentation process, Formation personnel, Tests logiciels, QA Lead",
+    "projects.detail.qualite-assuree.result": "Conformité process assurée, prévention des défauts, confiance client renforcée",
+    "projects.detail.unite-poudre-bostik.title": "Installation et modification unité poudre — Bostik",
+    "projects.detail.unite-poudre-bostik.category": "Automatisme",
+    "projects.detail.unite-poudre-bostik.description": "Installation et modification de l'unité poudre au sein de la Société des colles marocain « Bostik ». Intervention complète sur la ligne de production : adaptation des équipements existants, mise à niveau des automatismes et optimisation du process de fabrication des colles en poudre pour répondre aux nouvelles exigences de production.",
+    "projects.detail.unite-poudre-bostik.tech": "Automatismes industriels, Modification ligne process, Instrumentation, Mise en service",
+    "projects.detail.unite-poudre-bostik.result": "Ligne de production modernisée, capacité de production optimisée, conformité process",
+    "projects.detail.logiciel-qualite-fater.title": "Installation de logiciel de qualité — Fater",
+    "projects.detail.logiciel-qualite-fater.category": "Qualité",
+    "projects.detail.logiciel-qualite-fater.description": "Installation et déploiement d'un logiciel de qualité au sein de l'entreprise Fater. Mise en place des outils de suivi, de contrôle et de traçabilité qualité pour les lignes de production. Paramétrage des indicateurs de performance, formation des équipes et intégration avec les systèmes de supervision existants.",
+    "projects.detail.logiciel-qualite-fater.tech": "Logiciel qualité, Traçabilité, KPI production, Formation équipes, Intégration SCADA",
+    "projects.detail.logiciel-qualite-fater.result": "Traçabilité complète, réduction des non-conformités, amélioration continue assurée",
+    "projects.detail.hmi-siemens-rockwell.title": "Installation HMI Siemens et Rockwell",
+    "projects.detail.hmi-siemens-rockwell.category": "Automatisme",
+    "projects.detail.hmi-siemens-rockwell.description": "Installation et mise en service d'interfaces homme-machine (HMI) sur des plateformes Siemens et Rockwell Automation. Déploiement de panneaux opérateurs Siemens TP/KTP et Allen-Bradley PanelView, développement des écrans de supervision, intégration avec les automates S7 et ControlLogix, et formation des opérateurs à l'utilisation des nouvelles interfaces.",
+    "projects.detail.hmi-siemens-rockwell.tech": "HMI Siemens TP/KTP, Rockwell PanelView, WinCC, FactoryTalk, API S7 & ControlLogix",
+    "projects.detail.hmi-siemens-rockwell.result": "Interface opérateur intuitive, supervision facilitée, réduction des erreurs de manipulation",
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const t = (key: string) => {
-    return (translations as Record<string, string>)[key] || key;
-  };
+  const [language, setLanguage] = useState<Language>(() => {
+    if (typeof window === 'undefined') return 'fr';
+    try {
+      const saved = window.localStorage.getItem('somatisme-language');
+      return saved === 'en' || saved === 'es' ? saved : 'fr';
+    } catch {
+      return 'fr';
+    }
+  });
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.documentElement.dir = 'ltr';
+    try {
+      window.localStorage.setItem('somatisme-language', language);
+    } catch {
+      // The selected language still applies for this session when storage is blocked.
+    }
+  }, [language]);
+
+  const t = useMemo(() => (key: string) => {
+    if (language === 'fr') return (translations as Record<string, string>)[key] || key;
+    return localeTranslations[language][key]
+      || (translations as Record<string, string>)[key]
+      || key;
+  }, [language]);
 
   return (
-    <LanguageContext.Provider value={{ t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );
