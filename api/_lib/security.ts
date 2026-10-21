@@ -1,9 +1,12 @@
 import { z } from 'zod';
 import { randomUUID } from 'node:crypto';
+import { isIP } from 'node:net';
+import { Redis } from '@upstash/redis';
 
 type ApiRequest = {
   method?: string;
   headers: Record<string, string | string[] | undefined>;
+  ip?: string;
   body?: Record<string, unknown>;
   socket?: { remoteAddress?: string };
 };
@@ -13,10 +16,21 @@ type ApiResponse = {
   status(code: number): { json(data: unknown): void; end(): void };
 };
 
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+let redisClient: Redis | undefined;
+
+export function getRedis(): Redis {
+  if (!redisClient) {
+    const url = process.env.UPSTASH_REDIS_REST_URL;
+    const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+    if (!url || !token) {
+      throw new Error('Upstash Redis is not configured');
+    }
+    redisClient = new Redis({ url, token });
+  }
+  return redisClient;
+}
 
 const DEFAULT_PRODUCTION_ORIGINS = [
-  'https://somatisme.vercel.app',
   'https://www.somatisme.ma',
   'https://somatisme.ma',
 ];
@@ -39,6 +53,9 @@ function normalizeOrigin(origin: string): string | null {
 }
 
 export function getAllowedOrigins(): string[] {
+  const production = process.env.NODE_ENV === 'production';
+  if (production) return DEFAULT_PRODUCTION_ORIGINS;
+
   const configured = (process.env.ALLOWED_ORIGINS || '')
     .split(',')
     .map((value) => value.trim())
@@ -46,28 +63,35 @@ export function getAllowedOrigins(): string[] {
     .map(normalizeOrigin)
     .filter((value): value is string => Boolean(value));
 
-  const vercelOrigin = process.env.VERCEL_URL
-    ? normalizeOrigin(`https://${process.env.VERCEL_URL}`)
-    : null;
-
-  const baseline = process.env.NODE_ENV === 'production'
-    ? DEFAULT_PRODUCTION_ORIGINS
-    : [...DEFAULT_PRODUCTION_ORIGINS, ...DEFAULT_DEVELOPMENT_ORIGINS];
-
-  return Array.from(new Set([...baseline, ...(vercelOrigin ? [vercelOrigin] : []), ...configured]));
+  return Array.from(new Set([
+    ...DEFAULT_PRODUCTION_ORIGINS,
+    ...DEFAULT_DEVELOPMENT_ORIGINS,
+    ...configured,
+  ]));
 }
 
 export function getClientIp(req: ApiRequest): string {
-  const forwarded = req.headers['x-forwarded-for'];
-  if (typeof forwarded === 'string') {
-    return forwarded.split(',')[0].trim();
+  // Express resolves req.ip using its configured trusted proxy chain. Prefer
+  // that value so an arbitrary X-Forwarded-For header cannot choose the key.
+  if (typeof req.ip === 'string' && isIP(req.ip)) {
+    return req.ip;
   }
 
-  if (Array.isArray(forwarded) && forwarded[0]) {
-    return forwarded[0].split(',')[0].trim();
+  // Vercel overwrites X-Forwarded-For with the connecting client IP. Only trust
+  // this header in that deployment environment; on other hosts, use the socket.
+  if (process.env.VERCEL === '1') {
+    const forwarded = req.headers['x-forwarded-for'];
+    const candidate = typeof forwarded === 'string'
+      ? forwarded.split(',')[0].trim()
+      : Array.isArray(forwarded) && forwarded[0]
+        ? forwarded[0].split(',')[0].trim()
+        : '';
+    if (isIP(candidate)) return candidate;
   }
 
-  return req.socket?.remoteAddress || 'unknown';
+  const remoteAddress = req.socket?.remoteAddress;
+  if (remoteAddress && isIP(remoteAddress)) return remoteAddress;
+  return 'unknown';
 }
 
 /** Logs metadata only; request bodies and query strings may contain personal data. */
@@ -118,7 +142,7 @@ export function handleCors(
   const allowedOrigins = getAllowedOrigins();
   const normalizedOrigin = requestOrigin ? normalizeOrigin(requestOrigin) : null;
 
-  if (requestOrigin && (!normalizedOrigin || !allowedOrigins.includes(normalizedOrigin))) {
+  if (!requestOrigin || !normalizedOrigin || !allowedOrigins.includes(normalizedOrigin)) {
     return { ok: false, preflight: false };
   }
 
@@ -137,35 +161,22 @@ export function handleCors(
   return { ok: true, preflight: false };
 }
 
-export function checkRateLimit(
+export async function checkRateLimit(
   key: string,
   maxRequests = 10,
   windowMs = 60_000
-): { allowed: boolean; retryAfterSeconds: number } {
-  const now = Date.now();
-  const entry = rateLimitStore.get(key);
-
-  if (!entry || now > entry.resetAt) {
-    rateLimitStore.set(key, { count: 1, resetAt: now + windowMs });
-    if (rateLimitStore.size > 5_000) {
-      for (const [storedKey, storedEntry] of rateLimitStore) {
-        if (storedEntry.resetAt <= now) rateLimitStore.delete(storedKey);
-      }
-    }
-    return { allowed: true, retryAfterSeconds: Math.ceil(windowMs / 1000) };
-  }
-
-  if (entry.count >= maxRequests) {
-    return {
-      allowed: false,
-      retryAfterSeconds: Math.max(1, Math.ceil((entry.resetAt - now) / 1000)),
-    };
-  }
-
-  entry.count += 1;
+): Promise<{ allowed: boolean; retryAfterSeconds: number }> {
+  const result = await getRedis().eval<[string], [number, number]>(
+    `local count = redis.call('INCR', KEYS[1])
+     if count == 1 then redis.call('PEXPIRE', KEYS[1], ARGV[1]) end
+     return {count, redis.call('PTTL', KEYS[1])}`,
+    [`somatisme:rate-limit:${key}`],
+    [String(windowMs)],
+  );
+  const [count, ttlMs] = result;
   return {
-    allowed: true,
-    retryAfterSeconds: Math.max(1, Math.ceil((entry.resetAt - now) / 1000)),
+    allowed: count <= maxRequests,
+    retryAfterSeconds: Math.max(1, Math.ceil(ttlMs / 1000)),
   };
 }
 
@@ -244,7 +255,7 @@ export async function verifyRecaptcha(
 ): Promise<boolean> {
   const secretKey = process.env.RECAPTCHA_SECRET_KEY;
   if (!secretKey) {
-    return true;
+    return false;
   }
 
   if (!token || typeof token !== 'string' || token.length > 2048) {

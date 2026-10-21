@@ -40,9 +40,27 @@ Ajouter les variables d'environnement dans Vercel Dashboard :
 
 ```env
 NODE_ENV=production
-VITE_ANALYTICS_ENDPOINT=https://analytics.example.com
-VITE_ANALYTICS_WEBSITE_ID=your-website-id
+PUBLIC_APP_URL=https://somatisme.ma
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=...
+SMTP_PASS=...
+EMAIL_TO=...
+UPSTASH_REDIS_REST_URL=https://....upstash.io
+UPSTASH_REDIS_REST_TOKEN=...
+RECAPTCHA_SECRET_KEY=...
+VITE_RECAPTCHA_SITE_KEY=...
 ```
+
+`RECAPTCHA_SECRET_KEY` is required in production. The contact, checkout, and
+quote APIs return `503` if it is missing, and reject submissions with missing
+or invalid tokens. Set `VITE_RECAPTCHA_SITE_KEY` before building the frontend;
+the reCAPTCHA site key must be registered for both `somatisme.ma` and
+`www.somatisme.ma`. Quote emails use the same SMTP and Upstash Redis variables.
+
+Configure the Stripe webhook at `https://somatisme.ma/api/webhooks/stripe` for the `checkout.session.completed` event, then add its signing secret as `STRIPE_WEBHOOK_SECRET`. `VITE_*` variables are embedded in the frontend build and must be set before deployment.
 
 ### Étape 4 : Domaine Personnalisé
 

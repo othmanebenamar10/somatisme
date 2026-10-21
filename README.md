@@ -5,9 +5,9 @@ Site web d'entreprise moderne, sécurisé et premium pour **SOMATISME**, spécia
 ## ✨ Dernières Améliorations (Avril 2026)
 
 - 🎨 **Redesign Industriel Complet** : Palette Navy Blue (#1e3a5f) + Cyan (#06b6d4) + Gris (#2d3748)
-- 🛒 **Système de Commande 2 Étapes** : Panier → Formulaire client
-- 💰 **Frais de Livraison Dynamiques** : 10% du sous-total
-- 📄 **Génération PDF Facture** : Factures professionnelles avec détails complets
+- 🛒 **Paiement Stripe Checkout** : Montants et panier validés côté serveur
+- 💰 **Frais de Livraison** : 2% du sous-total, calculés côté serveur
+- 📄 **Confirmation de paiement** : Emails déclenchés par webhook Stripe signé
 - 📱 **Message WhatsApp Optimisé** : Format simple et lisible
 - 🔘 **Boutons Améliorés** : Centrage parfait, styles uniformes, ombres cyan
 - 📧 **SMTP Configuré** : Prêt pour Gmail/Outlook avec nodemailer
@@ -26,8 +26,8 @@ Site web d'entreprise moderne, sécurisé et premium pour **SOMATISME**, spécia
 - ✅ **15+ Pages Complètes** : Accueil, À propos, Services (4 pages), Projets, Contact, Produits, etc.
 - ✅ **Système de Panier** : Ajout/suppression de produits, calcul dynamique
 - ✅ **Formulaire de Commande** : 2 étapes avec validation complète
-- ✅ **Génération de Facture PDF** : Avec logo, détails, frais de livraison
-- ✅ **Intégration WhatsApp** : Envoi de commandes via WhatsApp
+- ✅ **Paiement par carte** : Stripe Checkout avec vérification serveur
+- ✅ **Emails de commande** : Confirmation client et notification administrateur après paiement
 - ✅ **Formulaire de Contact** : Avec SMTP nodemailer
 - ✅ **SEO Avancé** : Meta tags, sitemap.xml, robots.txt, structured data
 - ✅ **Multilingue** : Support FR/AR avec sélecteur de langue
@@ -215,8 +215,8 @@ Le site est optimisé pour le **Français**. L'architecture de traduction via `L
 ## 🎯 Checklist de Déploiement
 
 - [ ] Vérifier tous les liens internes
-- [ ] Configurer RESEND_API_KEY dans Vercel Environment Variables
-- [ ] Configurer CONTACT_EMAIL et RESEND_FROM_EMAIL
+- [ ] Configurer SMTP, Stripe, le webhook Stripe et les clés Upstash Redis
+- [ ] Configurer RECAPTCHA_SECRET_KEY et VITE_RECAPTCHA_SITE_KEY
 - [ ] Tester le formulaire de contact
 - [ ] Valider le responsive design
 - [ ] Vérifier les images et assets

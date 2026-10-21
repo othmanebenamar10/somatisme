@@ -2,7 +2,7 @@
 
 **Date** : 20 Avril 2026  
 **Version** : 1.1.0  
-**Status** : ✅ Production Ready
+**Status** : Rapport historique, remplacé par la révision du 19 octobre 2026.
 
 ---
 
@@ -180,7 +180,7 @@ Total: ~1.4 MB (gzip: ~409 kB) ✅
 - ✅ Email au client (avec PDF)
 - ✅ Email à l'admin (avec PDF)
 - ✅ Message WhatsApp automatique
-- ✅ Paiement à la livraison
+- ✅ Paiement par Stripe Checkout confirmé par webhook signé
 
 ---
 
@@ -190,7 +190,7 @@ Total: ~1.4 MB (gzip: ~409 kB) ✅
 - ✅ Panier persistant
 - ✅ Ajout/suppression produits
 - ✅ Calcul dynamique total
-- ✅ Frais de livraison 10%
+- ✅ Frais de livraison 2% et TVA 20% recalculés côté serveur
 - ✅ Recherche produits
 - ✅ Filtrage par catégorie
 - ✅ Stock management
@@ -274,7 +274,7 @@ Total: ~1.4 MB (gzip: ~409 kB) ✅
 
 ## 🎯 CONCLUSION
 
-**Le site SOMATISME est 100% prêt pour la production ! ✅**
+**Ce rapport ne valide plus la préparation actuelle du site pour la production. ✅**
 
 Tous les éléments sont en place :
 - Design professionnel industriel

@@ -57,7 +57,13 @@ export default async function handler(req: any, res: any) {
   }
 
   const ip = getClientIp(req);
-  const rateLimit = checkRateLimit(`contact:${ip}`, 5, 60_000);
+  let rateLimit: Awaited<ReturnType<typeof checkRateLimit>>;
+  try {
+    rateLimit = await checkRateLimit(`contact:${ip}`, 5, 60_000);
+  } catch (error) {
+    console.error('[CONTACT] Rate limiter unavailable:', error);
+    return sendError(res, 503, 'Service temporairement indisponible');
+  }
   if (!rateLimit.allowed) {
     res.setHeader('Retry-After', String(rateLimit.retryAfterSeconds));
     return sendError(res, 429, 'Too many requests. Please retry later.');
@@ -93,18 +99,14 @@ export default async function handler(req: any, res: any) {
       return sendError(res, 400, 'Numero de telephone invalide');
     }
 
-    if (recaptchaToken) {
-      const isHuman = await verifyRecaptcha(recaptchaToken, 0.4, 'contact_form');
-      if (!isHuman) {
-        console.warn(`[CONTACT] reCAPTCHA verification failed for IP: ${ip}`);
-        return sendError(res, 403, 'La vérification anti-spam a échoué. Veuillez réessayer.');
-      }
-    } else if (process.env.RECAPTCHA_SECRET_KEY) {
-      // A missing browser token can happen when Google's script is blocked or
-      // the public VITE_RECAPTCHA_SITE_KEY was not included in the build. Keep
-      // the form usable; the honeypot, minimum completion time and rate limit
-      // above remain active. Any token that is supplied is still verified.
-      console.warn(`[CONTACT] reCAPTCHA token unavailable; using fallback protections for IP: ${ip}`);
+    if (!process.env.RECAPTCHA_SECRET_KEY && process.env.NODE_ENV === 'production') {
+      console.error('[CONTACT] RECAPTCHA_SECRET_KEY is required in production');
+      return sendError(res, 503, 'Le formulaire est temporairement indisponible.');
+    }
+
+    if (process.env.RECAPTCHA_SECRET_KEY
+      && !await verifyRecaptcha(recaptchaToken, 0.4, 'contact_form')) {
+      return sendError(res, 403, 'La vérification anti-spam est requise. Veuillez réessayer.');
     }
 
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {

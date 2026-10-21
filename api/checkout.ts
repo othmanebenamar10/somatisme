@@ -1,106 +1,155 @@
 import Stripe from 'stripe';
-import { randomUUID } from 'node:crypto';
+import { z } from 'zod';
 import { getProductById } from '../shared/products.js';
-import { checkRateLimit, getAllowedOrigins, getClientIp, handleCors, isValidEmail, logApiRequest, sanitizePlainText, sendError } from './_lib/security.js';
+import { calculateOrderTotals } from './_lib/pricing.js';
+import {
+  checkRateLimit,
+  getAllowedOrigins,
+  getClientIp,
+  handleCors,
+  isValidEmail,
+  isValidPhone,
+  logApiRequest,
+  sanitizePlainText,
+  sendError,
+  verifyRecaptcha,
+} from './_lib/security.js';
+
+const checkoutSchema = z.object({
+  items: z.array(z.object({
+    productId: z.string().min(1).max(40),
+    quantity: z.number().int().min(1).max(100),
+  })).min(1).max(50),
+  customerInfo: z.object({
+    name: z.string().min(1).max(100),
+    email: z.string().min(3).max(254),
+    phone: z.string().min(7).max(24),
+    company: z.string().max(150).optional().default(''),
+    address: z.string().max(200).optional().default(''),
+    message: z.string().max(500).optional().default(''),
+  }),
+  recaptchaToken: z.string().max(2048).optional(),
+  requestId: z.string().regex(/^[\w-]{16,100}$/).optional(),
+});
+
+type CheckoutLineItem = {
+  price_data: {
+    currency: 'mad';
+    product_data: { name: string; description?: string; metadata?: Record<string, string> };
+    unit_amount: number;
+  };
+  quantity: number;
+};
 
 export default async function handler(req: any, res: any) {
   logApiRequest(req, res);
   const cors = handleCors(req, res, ['POST', 'OPTIONS']);
-  if (!cors.ok) {
-    return sendError(res, 403, 'Origin not allowed');
-  }
-  if (cors.preflight) {
-    return res.status(204).end();
-  }
-
-  if (req.method !== 'POST') {
-    return sendError(res, 405, 'Method not allowed');
-  }
+  if (!cors.ok) return sendError(res, 403, 'Origin not allowed');
+  if (cors.preflight) return res.status(204).end();
+  if (req.method !== 'POST') return sendError(res, 405, 'Method not allowed');
 
   const contentLength = Number.parseInt(String(req.headers['content-length'] || '0'), 10);
   if (contentLength > 50_000) return sendError(res, 413, 'Request too large');
 
   const ip = getClientIp(req);
-  const rateLimit = checkRateLimit(`checkout:${ip}`, 10, 60_000);
+  let rateLimit: Awaited<ReturnType<typeof checkRateLimit>>;
+  try {
+    rateLimit = await checkRateLimit(`checkout:${ip}`, 10, 60_000);
+  } catch (error) {
+    console.error('[CHECKOUT] Rate limiter unavailable:', error);
+    return sendError(res, 503, 'Service temporairement indisponible');
+  }
   if (!rateLimit.allowed) {
     res.setHeader('Retry-After', String(rateLimit.retryAfterSeconds));
-    return sendError(res, 429, 'Too many requests');
+    return sendError(res, 429, 'Trop de tentatives. Veuillez réessayer plus tard.');
+  }
+
+  const parsed = checkoutSchema.safeParse(req.body || {});
+  if (!parsed.success) return sendError(res, 400, 'Informations de commande invalides');
+
+  const { items, customerInfo, recaptchaToken, requestId } = parsed.data;
+  const customer = {
+    name: sanitizePlainText(customerInfo.name, 100),
+    email: sanitizePlainText(customerInfo.email, 254).toLowerCase(),
+    phone: sanitizePlainText(customerInfo.phone, 24),
+    company: sanitizePlainText(customerInfo.company, 150),
+    address: sanitizePlainText(customerInfo.address, 200),
+    message: sanitizePlainText(customerInfo.message, 500),
+  };
+  if (!isValidEmail(customer.email) || !isValidPhone(customer.phone)) {
+    return sendError(res, 400, 'Adresse email ou numéro de téléphone invalide');
+  }
+
+  if (!process.env.RECAPTCHA_SECRET_KEY && process.env.NODE_ENV === 'production') {
+    console.error('[CHECKOUT] RECAPTCHA_SECRET_KEY is required in production');
+    return sendError(res, 503, 'Le paiement est temporairement indisponible.');
+  }
+
+  if (process.env.RECAPTCHA_SECRET_KEY
+    && !await verifyRecaptcha(recaptchaToken, 0.4, 'order_submit')) {
+    return sendError(res, 403, 'La vérification anti-spam a échoué. Veuillez réessayer.');
+  }
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return sendError(res, 503, 'Le paiement en ligne est temporairement indisponible.');
+  }
+
+  const quantities = new Map<string, number>();
+  for (const item of items) {
+    quantities.set(item.productId, (quantities.get(item.productId) || 0) + item.quantity);
+  }
+
+  const verifiedItems = [...quantities.entries()].map(([productId, quantity]) => {
+    const product = getProductById(productId);
+    return product && quantity <= product.stock ? { product, quantity } : null;
+  });
+  if (verifiedItems.some((item) => item === null)) {
+    return sendError(res, 400, 'Un produit est indisponible ou la quantité demandée est invalide.');
+  }
+
+  const orderItems = verifiedItems.filter((item): item is NonNullable<typeof item> => item !== null);
+  const subtotal = orderItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const totals = calculateOrderTotals(subtotal);
+
+  let appOrigin: string;
+  try {
+    const appBaseUrl = process.env.PUBLIC_APP_URL
+      || (process.env.NODE_ENV !== 'production' ? 'http://localhost:5173' : '');
+    if (!appBaseUrl) return sendError(res, 500, 'URL publique du site non configurée');
+    appOrigin = new URL(appBaseUrl).origin;
+  } catch {
+    return sendError(res, 500, 'URL publique du site invalide');
+  }
+  if (!getAllowedOrigins().includes(appOrigin)) {
+    return sendError(res, 500, 'URL publique du site non autorisée');
   }
 
   try {
-    const { items, customerInfo, requestId } = req.body || {};
-
-    if (!Array.isArray(items) || items.length === 0 || items.length > 50) {
-      return sendError(res, 400, 'No items provided');
-    }
-
-    const customerEmail = sanitizePlainText(customerInfo?.email, 254).toLowerCase();
-    if (!isValidEmail(customerEmail)) {
-      return sendError(res, 400, 'Customer email required');
-    }
-
-    const quantitiesByProduct = new Map<string, number>();
-    for (const item of items) {
-      const id = sanitizePlainText(item?.productId, 40);
-      quantitiesByProduct.set(id, (quantitiesByProduct.get(id) || 0) + Number(item?.quantity));
-    }
-
-    const verifiedItems = items.map((item: any) => {
-      const product = getProductById(sanitizePlainText(item?.productId, 40));
-      const quantity = Number(item?.quantity);
-      if (!product || !Number.isInteger(quantity) || quantity < 1 || (quantitiesByProduct.get(product.id) || 0) > product.stock) return null;
-      return { product, quantity };
-    });
-    if (verifiedItems.some((item) => item === null)) {
-      return sendError(res, 400, 'Produit indisponible ou quantité invalide');
-    }
-
-    if (!process.env.STRIPE_SECRET_KEY) {
-      return sendError(res, 503, 'Le paiement en ligne est temporairement indisponible.');
-    }
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = verifiedItems.map((entry) => {
-      const { product, quantity } = entry!;
-      return ({
+    const lineItems: CheckoutLineItem[] = orderItems.map(({ product, quantity }) => ({
       price_data: {
-        currency: 'mad',
+        currency: 'mad' as const,
         product_data: {
           name: product.name,
           description: product.description,
+          metadata: { catalog_product_id: product.id },
         },
         unit_amount: Math.round(product.price * 100),
       },
       quantity,
-    });
-    });
+    }));
 
-    const subtotal = verifiedItems.reduce((sum, entry) => sum + entry!.product.price * entry!.quantity, 0);
-    const shippingFee = Math.round(subtotal * 0.02);
-    const tax = Math.round(subtotal * 0.2);
-    if (shippingFee > 0) {
+    if (totals.shippingFee > 0) {
       lineItems.push({
-        price_data: { currency: 'mad', product_data: { name: 'Frais de livraison et de gestion' }, unit_amount: shippingFee * 100 },
+        price_data: { currency: 'mad' as const, product_data: { name: 'Frais de livraison' }, unit_amount: totals.shippingFee * 100 },
         quantity: 1,
       });
     }
-    if (tax > 0) {
+    if (totals.tax > 0) {
       lineItems.push({
-        price_data: { currency: 'mad', product_data: { name: 'TVA (20 %)' }, unit_amount: tax * 100 },
+        price_data: { currency: 'mad' as const, product_data: { name: 'TVA (20 %)' }, unit_amount: totals.tax * 100 },
         quantity: 1,
       });
-    }
-
-    const appBaseUrl = process.env.PUBLIC_APP_URL
-      || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:5173');
-    let appOrigin: string;
-    try {
-      appOrigin = new URL(appBaseUrl).origin;
-    } catch {
-      return sendError(res, 500, 'URL publique du site invalide');
-    }
-    if (!getAllowedOrigins().includes(appOrigin)) {
-      return sendError(res, 500, 'URL publique du site non autorisée');
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -109,23 +158,20 @@ export default async function handler(req: any, res: any) {
       mode: 'payment',
       success_url: `${appOrigin}/products?payment=success`,
       cancel_url: `${appOrigin}/products?payment=cancelled`,
-      customer_email: customerEmail,
+      customer_email: customer.email,
       metadata: {
-        customer_name: sanitizePlainText(customerInfo?.name, 100),
-        customer_phone: sanitizePlainText(customerInfo?.phone, 20),
-        customer_company: sanitizePlainText(customerInfo?.company, 150),
-        customer_address: sanitizePlainText(customerInfo?.address, 200),
-        customer_message: sanitizePlainText(customerInfo?.message, 500),
+        customer_name: customer.name,
+        customer_phone: customer.phone,
+        customer_company: customer.company,
+        customer_address: customer.address,
+        customer_message: customer.message,
       },
-    }, {
-      idempotencyKey: typeof requestId === 'string' && /^[\w-]{16,100}$/.test(requestId)
-        ? requestId
-        : randomUUID(),
-    });
+    }, requestId ? { idempotencyKey: requestId } : undefined);
 
-    return res.status(200).json({ sessionId: session.id });
+    if (!session.url) return sendError(res, 502, 'Impossible de créer la page de paiement.');
+    return res.status(200).json({ url: session.url });
   } catch (error: any) {
-    console.error('Stripe checkout error:', error?.message || error);
-    return sendError(res, 500, 'Erreur lors de la creation de la session de paiement.');
+    console.error('[CHECKOUT] Stripe error:', error?.message || error);
+    return sendError(res, 500, 'Erreur lors de la création de la session de paiement.');
   }
 }

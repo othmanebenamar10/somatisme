@@ -11,7 +11,6 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import jsPDF from 'jspdf';
 
 import { products, type Product } from '@shared/products';
 import CountryPhoneInput from '@/components/CountryPhoneInput';
@@ -63,6 +62,23 @@ export default function Products() {
       toast.error('Le panier ne peut pas être enregistré sur cet appareil.');
     }
   }, [cart]);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const paymentStatus = url.searchParams.get('payment');
+    if (!paymentStatus) return;
+
+    if (paymentStatus === 'success') {
+      setCart([]);
+      setShowCart(false);
+      toast.success('Paiement terminé. La confirmation sera envoyée par email après validation Stripe.');
+    } else if (paymentStatus === 'cancelled') {
+      toast.info('Paiement annulé. Votre panier a été conservé.');
+    }
+
+    url.searchParams.delete('payment');
+    window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+  }, []);
   
   const [showCart, setShowCart] = useState(false);
   const [showOrderDialog, setShowOrderDialog] = useState(false);
@@ -76,17 +92,20 @@ export default function Products() {
     message: ''
   });
   const [phoneCountryIso, setPhoneCountryIso] = useState('MA');
-  const invoiceNumberRef = useRef<string | null>(null);
-  const [orderHoneypot, setOrderHoneypot] = useState(''); // Bot trap
-  const [orderFormOpenTime, setOrderFormOpenTime] = useState(0); // Timing check
+  const checkoutRequestIdRef = useRef<string | null>(null);
   const { getToken: getRecaptchaToken } = useRecaptcha();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionAction, setSubmissionAction] = useState<'checkout' | 'quote' | null>(null);
+  const isSubmitting = submissionAction !== null;
   const [sortBy, setSortBy] = useState<'default' | 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc'>('default');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 24;
 
+  useEffect(() => {
+    checkoutRequestIdRef.current = null;
+  }, [cart]);
+
   const updateOrderForm = (field: keyof typeof orderForm, value: string) => {
-    invoiceNumberRef.current = null;
+    checkoutRequestIdRef.current = null;
     setOrderForm((previous) => ({ ...previous, [field]: value }));
   };
 
@@ -120,7 +139,6 @@ export default function Products() {
   const visibleProducts = filteredProducts.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const addToCart = (product: Product) => {
-    invoiceNumberRef.current = null;
     setCart((prevCart) => {
       const existing = prevCart.find((item) => item.id === product.id);
       if (existing) {
@@ -138,7 +156,6 @@ export default function Products() {
   };
 
   const updateCartQuantity = (productId: string, quantity: number) => {
-    invoiceNumberRef.current = null;
     setCart((previous) => previous.flatMap((item) => {
       if (item.id !== productId) return [item];
       const nextQuantity = Math.min(item.stock, Math.floor(quantity));
@@ -147,7 +164,6 @@ export default function Products() {
   };
 
   const removeFromCart = (productId: string) => {
-    invoiceNumberRef.current = null;
     setCart((previous) => previous.filter((item) => item.id !== productId));
   };
 
@@ -157,24 +173,10 @@ export default function Products() {
   const cartTotal = cartSubtotal + shippingFee + tva;
 
   const handleOrderSubmit = async () => {
-    if (!orderForm.name || !orderForm.email || !orderForm.phone) {
+    if (!orderForm.name.trim() || !orderForm.email.trim() || !orderForm.phone.trim()) {
       toast.error('Veuillez remplir tous les champs requis');
       return;
     }
-
-    // Honeypot check: bots fill hidden fields, humans don't
-    if (orderHoneypot) {
-      setCart([]);
-      setShowOrderDialog(false);
-      return;
-    }
-
-    // Timing check: < 2s = bot
-    if (orderFormOpenTime && Date.now() - orderFormOpenTime < 2000) {
-      toast.error('Veuillez patienter avant de soumettre.');
-      return;
-    }
-
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(orderForm.email.trim())) {
       toast.error('Veuillez saisir une adresse email valide.');
       return;
@@ -184,394 +186,94 @@ export default function Products() {
       return;
     }
 
-    const whatsappWindow = window.open('about:blank', '_blank');
-    if (whatsappWindow) whatsappWindow.opener = null;
-    setIsSubmitting(true);
-
+    setSubmissionAction('checkout');
     try {
-      const orderItems = cart.map(item => ({
-        productId: item.id,
-        quantity: item.quantity
-      }));
-      const internationalOrderForm = {
-        ...orderForm,
-        phone: toInternationalPhone(phoneCountryIso, orderForm.phone),
-      };
-
-      // Generate a clear order summary PDF for the customer and admin.
-      const doc = new jsPDF();
-      const timestamp = Date.now();
-      const invoiceNumber = invoiceNumberRef.current || `CMD-${timestamp}-${crypto.randomUUID().replaceAll('-', '').slice(0, 8).toUpperCase()}`;
-      invoiceNumberRef.current = invoiceNumber;
-      const date = new Date().toLocaleDateString('fr-FR');
-
-      // Colors
-      const C = {
-        navy:   [18,  42,  72]  as [number,number,number],
-        navyDk: [12,  28,  50]  as [number,number,number],
-        cyan:   [0,   188, 212] as [number,number,number],
-        white:  [255, 255, 255] as [number,number,number],
-        light:  [245, 248, 252] as [number,number,number],
-        text:   [30,  42,  65]  as [number,number,number],
-        sub:    [80,  95,  115] as [number,number,number],
-        muted:  [130, 145, 165] as [number,number,number],
-        faint:  [180, 192, 210] as [number,number,number],
-      };
-
-      // ══════════════════════════════════════════
-      // HEADER — navy background + circle deco
-      // ══════════════════════════════════════════
-      doc.setFillColor(...C.navy);
-      doc.rect(0, 0, 210, 58, 'F');
-
-      // Decorative cyan circle outline (top-right)
-      doc.setDrawColor(...C.cyan);
-      doc.setLineWidth(7);
-      doc.circle(196, 20, 22, 'S');
-      // Dark filled circle (overlapping bottom of cyan circle)
-      doc.setFillColor(...C.navyDk);
-      doc.circle(196, 40, 14, 'F');
-
-      // SOMATISME
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(26);
-      doc.setTextColor(...C.white);
-      doc.text('SOMATISME', 12, 22);
-
-      // AUTOMATISATION INDUSTRIELLE (cyan)
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
-      doc.setTextColor(...C.cyan);
-      doc.text('AUTOMATISATION INDUSTRIELLE', 12, 31);
-
-      // Tagline
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7.5);
-      doc.setTextColor(...C.faint);
-      doc.text('Equipements • Régulation • Installation Electrique', 12, 38);
-
-      // Contact line
-      doc.setFontSize(7.5);
-      doc.setTextColor(160, 180, 205);
-      doc.text('+212 6 79 82 56 46  |  somatisme@gmail.com  |  www.somatisme.ma', 12, 44);
-
-      // Checksum / secure
-      doc.setFontSize(6.5);
-      doc.setTextColor(...C.muted);
-      doc.setFont('helvetica', 'italic');
-      // ══════════════════════════════════════════
-      // INVOICE BLOCK — light rounded rectangle
-      // ══════════════════════════════════════════
-      doc.setFillColor(...C.light);
-      doc.roundedRect(12, 65, 186, 38, 3, 3, 'F');
-
-      // Order summary title
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(19);
-      doc.setTextColor(...C.text);
-      doc.text('RECAPITULATIF DE COMMANDE', 20, 82);
-
-      // "À PAYER" cyan badge
-      doc.setFillColor(...C.cyan);
-      doc.roundedRect(20, 86, 48, 8, 2, 2, 'F');
-      doc.setFontSize(7);
-      doc.setTextColor(...C.white);
-      doc.setFont('helvetica', 'bold');
-      doc.text('A CONFIRMER', 22, 91.5);
-
-      // Invoice number (right side of block)
-      doc.setFontSize(7);
-      doc.setTextColor(...C.muted);
-      doc.setFont('helvetica', 'normal');
-      doc.text('REFERENCE', 105, 72);
-      doc.setFontSize(8.5);
-      doc.setTextColor(...C.text);
-      doc.setFont('helvetica', 'bold');
-      doc.text(invoiceNumber, 105, 79);
-
-      // Date
-      doc.setFontSize(7.5);
-      doc.setTextColor(...C.muted);
-      doc.setFont('helvetica', 'normal');
-      doc.text('DATE', 105, 89);
-      doc.setTextColor(...C.text);
-      doc.setFont('helvetica', 'bold');
-      doc.text(date, 122, 89);
-
-      doc.setFontSize(7.5);
-      doc.setTextColor(...C.muted);
-      doc.setFont('helvetica', 'normal');
-
-      // ══════════════════════════════════════════
-      // TWO COLUMNS: FACTURE À  |  DE
-      // ══════════════════════════════════════════
-      const col1 = 12;
-      const col2 = 110;
-      const infoY = 115;
-
-      // — FACTURE À —
-      doc.setFontSize(8);
-      doc.setTextColor(...C.cyan);
-      doc.setFont('helvetica', 'bold');
-      doc.text('CLIENT', col1, infoY);
-      doc.setDrawColor(...C.cyan);
-      doc.setLineWidth(0.6);
-      doc.line(col1, infoY + 1.5, col1 + 30, infoY + 1.5);
-
-      doc.setFontSize(11);
-      doc.setTextColor(...C.text);
-      doc.setFont('helvetica', 'bold');
-      doc.text(orderForm.name, col1, infoY + 10);
-
-      doc.setFontSize(8);
-      doc.setTextColor(...C.sub);
-      doc.setFont('helvetica', 'normal');
-      let cy2 = infoY + 17;
-      if (orderForm.address) { doc.text(orderForm.address, col1, cy2); cy2 += 6; }
-      doc.text(orderForm.email, col1, cy2); cy2 += 6;
-      doc.text(internationalOrderForm.phone, col1, cy2);
-      if (orderForm.company) { cy2 += 6; doc.text(orderForm.company, col1, cy2); }
-
-      // — DE —
-      doc.setFontSize(8);
-      doc.setTextColor(...C.cyan);
-      doc.setFont('helvetica', 'bold');
-      doc.text('DE', col2, infoY);
-      doc.setDrawColor(...C.cyan);
-      doc.setLineWidth(0.6);
-      doc.line(col2, infoY + 1.5, col2 + 10, infoY + 1.5);
-
-      doc.setFontSize(11);
-      doc.setTextColor(...C.text);
-      doc.setFont('helvetica', 'bold');
-      doc.text('SOMATISME', col2, infoY + 10);
-
-      doc.setFontSize(8);
-      doc.setTextColor(...C.sub);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Equipements Industriels', col2, infoY + 17);
-      doc.text('Rue Résistance Nassime GH12 Appt 1', col2, infoY + 23);
-      doc.text('Mohammedia, Maroc', col2, infoY + 29);
-      doc.text('+212 6 79 82 56 46', col2, infoY + 35);
-      doc.text('somatisme@gmail.com', col2, infoY + 41);
-
-      // ══════════════════════════════════════════
-      // PRODUCTS TABLE
-      // ══════════════════════════════════════════
-      const tY = 162;
-
-      // Header row
-      doc.setFillColor(...C.navy);
-      doc.rect(12, tY, 186, 10, 'F');
-      doc.setFontSize(8);
-      doc.setTextColor(...C.white);
-      doc.setFont('helvetica', 'bold');
-      doc.text('#', 16, tY + 7);
-      doc.text('DESCRIPTION', 28, tY + 7);
-      doc.text('QTE', 118, tY + 7);
-      doc.text('PRIX U.', 140, tY + 7);
-      doc.text('TOTAL', 174, tY + 7);
-
-      // Product rows
-      let rY = tY + 10;
-      cart.forEach((item, idx) => {
-        if (rY > 235) {
-          doc.addPage();
-          rY = 20;
-          doc.setFillColor(...C.navy);
-          doc.rect(12, rY, 186, 10, 'F');
-          doc.setFontSize(8);
-          doc.setTextColor(...C.white);
-          doc.setFont('helvetica', 'bold');
-          doc.text('DESCRIPTION', 28, rY + 7);
-          doc.text('QTE', 118, rY + 7);
-          doc.text('PRIX U.', 140, rY + 7);
-          doc.text('TOTAL', 174, rY + 7);
-          rY += 10;
-        }
-        const bg: [number, number, number] = idx % 2 === 0 ? C.white : C.light;
-        doc.setFillColor(...bg);
-        doc.rect(12, rY, 186, 10, 'F');
-
-        doc.setFontSize(8);
-        doc.setTextColor(...C.muted);
-        doc.setFont('helvetica', 'normal');
-        doc.text(String(idx + 1).padStart(2, '0'), 16, rY + 7);
-
-        doc.setTextColor(...C.text);
-        const nm = item.name.length > 44 ? item.name.substring(0, 44) + '...' : item.name;
-        doc.text(nm, 28, rY + 7);
-
-        doc.text(String(item.quantity), 120, rY + 7);
-        doc.text(`${item.price} MAD`, 138, rY + 7);
-
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(...C.text);
-        doc.text(`${item.price * item.quantity} MAD`, 196, rY + 7, { align: 'right' });
-
-        rY += 10;
-      });
-
-      // ══════════════════════════════════════════
-      // NOTES & CONDITIONS  +  TOTALS
-      // ══════════════════════════════════════════
-      if (rY > 215) {
-        doc.addPage();
-        rY = 25;
-      }
-      const botY = rY + 10;
-
-      // Notes (left)
-      doc.setFontSize(8);
-      doc.setTextColor(...C.cyan);
-      doc.setFont('helvetica', 'bold');
-      doc.text('NOTES & CONDITIONS', col1, botY);
-
-      doc.setFontSize(7.5);
-      doc.setTextColor(...C.sub);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Merci pour votre demande.', col1, botY + 8);
-      doc.text('Notre equipe confirmera la disponibilite', col1, botY + 14);
-      doc.text('et les modalites avant validation.', col1, botY + 20);
-      doc.text('Ce document est un recapitulatif,', col1, botY + 26);
-      doc.text('pas une facture.', col1, botY + 32);
-
-      // Totals (right)
-      const totX = 105;
-      doc.setFontSize(8.5);
-      doc.setTextColor(...C.sub);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Sous-total', totX, botY + 8);
-      doc.setTextColor(...C.text);
-      doc.text(`${cartSubtotal} MAD`, 196, botY + 8, { align: 'right' });
-
-      doc.setTextColor(...C.sub);
-      doc.text('Livraison estimative', totX, botY + 16);
-      doc.setTextColor(...C.text);
-      doc.text(`${shippingFee} MAD`, 196, botY + 16, { align: 'right' });
-
-      doc.setTextColor(...C.sub);
-      doc.text('TVA (20%)', totX, botY + 24);
-      doc.setTextColor(...C.text);
-      doc.text(`${tva} MAD`, 196, botY + 24, { align: 'right' });
-
-      // Separator
-      doc.setDrawColor(210, 220, 230);
-      doc.setLineWidth(0.3);
-      doc.line(totX, botY + 28, 198, botY + 28);
-
-      // TOTAL box
-      doc.setFillColor(...C.navy);
-      doc.roundedRect(totX, botY + 31, 93, 14, 2, 2, 'F');
-      doc.setFontSize(10);
-      doc.setTextColor(...C.white);
-      doc.setFont('helvetica', 'bold');
-      doc.text('TOTAL ESTIMATIF', totX + 5, botY + 40);
-      doc.setFontSize(12);
-      doc.text(`${cartTotal} MAD`, 196, botY + 40, { align: 'right' });
-
-      // ══════════════════════════════════════════
-      // FOOTER
-      // ══════════════════════════════════════════
-      const fY = 272;
-      doc.setFillColor(...C.navy);
-      doc.rect(0, fY, 210, 25, 'F');
-
-      doc.setFontSize(9);
-      doc.setTextColor(...C.white);
-      doc.setFont('helvetica', 'bold');
-      doc.text('SOMATISME', 105, fY + 8, { align: 'center' });
-
-      doc.setFontSize(7);
-      doc.setTextColor(160, 178, 200);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Equipements Industriels  |  +212 6 79 82 56 46  |  somatisme@gmail.com', 105, fY + 14, { align: 'center' });
-
-      doc.setTextColor(...C.cyan);
-      doc.setFont('helvetica', 'bold');
-      doc.text('www.somatisme.ma', 105, fY + 20, { align: 'center' });
-
-      doc.setFontSize(5.5);
-      doc.setTextColor(...C.muted);
-      doc.setFont('helvetica', 'normal');
-      doc.text(invoiceNumber, 105, fY + 24.5, { align: 'center' });
-
-      // Get PDF as base64
-      const pdfBase64 = doc.output('dataurlstring').split(',')[1];
-
-      // Get reCAPTCHA token before sending
       const recaptchaToken = await getRecaptchaToken('order_submit');
-      const submitDuration = orderFormOpenTime ? Date.now() - orderFormOpenTime : 99999;
-
-      const emailResponse = await fetch('/api/send-order-email', {
+      const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          orderForm: internationalOrderForm,
-          orderItems,
-          cartTotal,
-          pdfBase64,
-          invoiceNumber,
+          items: cart.map(({ id, quantity }) => ({ productId: id, quantity })),
+          customerInfo: {
+            ...orderForm,
+            phone: toInternationalPhone(phoneCountryIso, orderForm.phone),
+          },
           recaptchaToken,
-          _duration: submitDuration,
-          website: orderHoneypot || undefined,
-        })
+          requestId: checkoutRequestIdRef.current || (checkoutRequestIdRef.current = crypto.randomUUID()),
+        }),
       });
-      const emailResult = await emailResponse.json().catch(() => ({}));
-      if (!emailResponse.ok) {
-        whatsappWindow?.close();
-        toast.error(emailResult.error || 'La commande n’a pas pu être envoyée. Votre panier est conservé.');
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || typeof result.url !== 'string') {
+        toast.error(result.error || 'Impossible de démarrer le paiement.');
+        return;
+      }
+      window.location.assign(result.url);
+    } catch (error) {
+      console.error('Checkout initialization failed:', error);
+      toast.error('Erreur lors de la création du paiement. Votre panier est conservé.');
+    } finally {
+      setSubmissionAction(null);
+    }
+  };
+  const handleQuoteRequest = async () => {
+    if (!orderForm.name.trim() || !orderForm.email.trim() || !orderForm.phone.trim()) {
+      toast.error('Veuillez remplir votre nom, votre email et votre téléphone.');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(orderForm.email.trim())) {
+      toast.error('Veuillez saisir une adresse email valide.');
+      return;
+    }
+    if (orderForm.phone.replace(/\D/g, '').length < 7) {
+      toast.error('Veuillez saisir un numéro de téléphone valide.');
+      return;
+    }
+    if (cart.length === 0) {
+      toast.error('Votre panier est vide.');
+      return;
+    }
+
+    setSubmissionAction('quote');
+    try {
+      const recaptchaToken = await getRecaptchaToken('quote_request');
+      const response = await fetch('/api/quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: cart.map(({ id, quantity }) => ({ productId: id, quantity })),
+          customerInfo: {
+            ...orderForm,
+            phone: toInternationalPhone(phoneCountryIso, orderForm.phone),
+          },
+          recaptchaToken,
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || typeof result.quoteNumber !== 'string') {
+        toast.error(result.error || 'Impossible de préparer le devis.');
         return;
       }
 
-      // Download the order summary only after the server accepts the request.
-      try {
-        doc.save(`Commande_${invoiceNumber}_SOMATISME.pdf`);
-      } catch (pdfError) {
-        console.error('Order summary download failed:', pdfError);
-        toast.error('Demande enregistrée, mais le téléchargement du récapitulatif a échoué.');
-      }
-
-      // Send order via WhatsApp with clean format
-      const orderMessage = `Bonjour SOMATISME, je viens d'envoyer une demande de commande depuis votre site.
-
-Reference : ${invoiceNumber}
-Nom : ${orderForm.name}
-Telephone : ${internationalOrderForm.phone}
-Email : ${orderForm.email}
-${orderForm.company ? `Entreprise : ${orderForm.company}\n` : ''}${orderForm.address ? `Adresse : ${orderForm.address}\n` : ''}
-Articles :
-${cart.map((item) => `• ${item.name} — ${item.quantity} × ${item.price} MAD = ${item.price * item.quantity} MAD`).join('\n')}
-
-Sous-total : ${cartSubtotal} MAD
-Livraison : ${shippingFee} MAD
-TVA : ${tva} MAD
-Total estimatif : ${cartTotal} MAD
-${orderForm.message ? `\nMessage : ${orderForm.message}\n` : ''}
-Merci de confirmer la disponibilité et les modalités de livraison.`;
-      
-      const whatsappUrl = `https://wa.me/212679825646?text=${encodeURIComponent(orderMessage)}`;
-      if (whatsappWindow) {
-        whatsappWindow.location.href = whatsappUrl;
-      } else {
-        toast.info('Commande enregistrée.', {
-          action: { label: 'Ouvrir WhatsApp', onClick: () => window.location.assign(whatsappUrl) },
-        });
-      }
-      
-      toast.success(emailResult.message || 'Commande envoyée avec succès.');
-      setCart([]);
-      invoiceNumberRef.current = null;
-      setShowOrderDialog(false);
-      setShowCart(false);
-      setOrderForm({ name: '', email: '', phone: '', company: '', address: '', message: '' });
-      setPhoneCountryIso('MA');
+      const requestedItems = cart.slice(0, 12)
+        .map((item) => `• ${item.name} — Qté ${item.quantity}`)
+        .join('\n');
+      const moreItems = cart.length > 12 ? `\n… et ${cart.length - 12} autre(s) article(s)` : '';
+      const whatsappMessage = [
+        'Bonjour l’équipe SOMATISME,',
+        '',
+        `Je viens de demander le devis ${result.quoteNumber}. Le récapitulatif PDF a été envoyé à ${orderForm.email}.`,
+        '',
+        'Articles demandés :',
+        requestedItems + moreItems,
+        '',
+        'Merci.',
+      ].join('\n');
+      window.location.assign(`https://wa.me/212679825646?text=${encodeURIComponent(whatsappMessage)}`);
     } catch (error) {
-      whatsappWindow?.close();
-      toast.error('Erreur lors de l\'envoi de la commande');
-      console.error('Order submission error:', error);
+      console.error('Quote request failed:', error);
+      toast.error('Erreur lors de la préparation du devis. Veuillez réessayer.');
     } finally {
-      setIsSubmitting(false);
+      setSubmissionAction(null);
     }
   };
 
@@ -872,7 +574,7 @@ Merci de confirmer la disponibilité et les modalités de livraison.`;
 
                   {/* Info */}
                   <p className="text-xs text-muted-foreground text-center bg-muted/30 p-2 rounded-lg">
-                    {language === 'ar' ? 'الدفع عند الاستلام' : 'Paiement à la livraison'}
+                    {language === 'ar' ? 'Paiement sécurisé par carte' : 'Paiement sécurisé par carte'}
                   </p>
                 </div>
               )}
@@ -977,7 +679,6 @@ Merci de confirmer la disponibilité et les modalités de livraison.`;
       {/* Order Dialog - Step by Step */}
       <Dialog open={showOrderDialog} onOpenChange={(open) => {
         setShowOrderDialog(open);
-        if (open) setOrderFormOpenTime(Date.now()); // Record time for bot detection
         if (!open) setCartStep('summary');
       }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
@@ -985,7 +686,7 @@ Merci de confirmer la disponibilité et les modalités de livraison.`;
             <DialogTitle className="text-2xl text-white font-bold">
               {cartStep === 'summary' 
                 ? (language === 'ar' ? 'سلة التسوق' : 'Panier')
-                : (language === 'ar' ? 'إتمام الطلب' : 'Commander')
+                : (language === 'ar' ? 'إتمام الطلب' : 'Coordonnées et choix de commande')
               }
             </DialogTitle>
           </DialogHeader>
@@ -1039,8 +740,8 @@ Merci de confirmer la disponibilité et les modalités de livraison.`;
                     {language === 'ar' ? 'معلومات الدفع:' : 'Informations de paiement:'}
                   </p>
                   <ul className="text-xs text-foreground space-y-1.5">
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'الدفع عبر WhatsApp' : 'Paiement via WhatsApp'}</li>
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'سيتم إرسال ملخص الطلب عبر البريد الإلكتروني' : 'Récapitulatif de commande envoyé par email'}</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'Paiement sécurisé par carte avec Stripe' : 'Paiement sécurisé par carte avec Stripe'}</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'سيتم إرسال ملخص الطلب عبر البريد الإلكتروني' : 'Confirmation de paiement envoyée par email'}</li>
                     <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'Coordonner avec nous pour le rendez-vous' : 'Coordonner avec nous pour le rendez-vous'}</li>
                   </ul>
                 </div>
@@ -1069,17 +770,6 @@ Merci de confirmer la disponibilité et les modalités de livraison.`;
               <>
                 {/* Form Fields */}
                 <div className="space-y-4">
-                  {/* Honeypot — hidden from humans, bots fill it */}
-                  <div style={{ position: 'absolute', left: '-9999px', top: '-9999px', opacity: 0, pointerEvents: 'none' }} aria-hidden="true" tabIndex={-1}>
-                    <input
-                      type="text"
-                      name="website"
-                      value={orderHoneypot}
-                      onChange={(e) => setOrderHoneypot(e.target.value)}
-                      autoComplete="off"
-                      tabIndex={-1}
-                    />
-                  </div>
                   <div>
                     <label className="block text-sm font-bold text-primary mb-2">
                       {language === 'ar' ? 'الاسم الكامل *' : 'Nom complet *'}
@@ -1112,7 +802,7 @@ Merci de confirmer la disponibilité et les modalités de livraison.`;
                       countryIso={phoneCountryIso}
                       onValueChange={(phone) => updateOrderForm('phone', phone)}
                       onCountryIsoChange={(countryIso) => {
-                        invoiceNumberRef.current = null;
+                        checkoutRequestIdRef.current = null;
                         setPhoneCountryIso(countryIso);
                       }}
                     />
@@ -1152,23 +842,36 @@ Merci de confirmer la disponibilité et les modalités de livraison.`;
                   </div>
                 </div>
 
+                <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm leading-5 text-emerald-900">
+                  Demandez un devis : le PDF détaillé sera envoyé à votre adresse email, puis WhatsApp s’ouvrira avec le récapitulatif de votre demande.
+                </p>
+
                 {/* Navigation Buttons */}
-                <div className="flex gap-3 pt-6 border-t border-cyan-200">
+                <div className="grid grid-cols-1 gap-3 border-t border-cyan-200 pt-5 sm:grid-cols-3">
                   <Button
                     onClick={() => setCartStep('summary')}
-                    className="flex-1 border-2 border-primary text-primary hover:bg-primary/5 font-bold"
+                    disabled={isSubmitting}
+                    className="border-2 border-primary text-primary hover:bg-primary/5 font-bold"
                     variant="outline"
                   >
                     ← {language === 'ar' ? 'السابق' : 'Précédent'}
                   </Button>
                   <Button
+                    onClick={handleQuoteRequest}
+                    disabled={isSubmitting}
+                    variant="outline"
+                    className="border-2 border-emerald-600 font-bold text-emerald-800 hover:bg-emerald-50"
+                  >
+                    {submissionAction === 'quote' ? 'Préparation du devis…' : 'Recevoir le devis PDF + WhatsApp'}
+                  </Button>
+                  <Button
                     onClick={handleOrderSubmit}
                     disabled={isSubmitting}
-                    className="flex-1 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-bold shadow-lg shadow-cyan-500/30"
+                    className="bg-gradient-to-r from-cyan-500 to-cyan-600 font-bold text-white shadow-lg shadow-cyan-500/30 hover:from-cyan-600 hover:to-cyan-700"
                   >
-                    {isSubmitting
-                      ? (language === 'ar' ? 'جاري الإرسال...' : 'Envoi en cours...')
-                      : (language === 'ar' ? 'إرسال الطلب' : 'Envoyer la commande')
+                    {submissionAction === 'checkout'
+                      ? 'Redirection vers le paiement…'
+                      : 'Payer par carte'
                     }
                   </Button>
                 </div>

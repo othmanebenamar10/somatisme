@@ -80,9 +80,9 @@ export default function Home() {
       {/* Hero Section - INDUSTRIAL PROFESSIONAL DESIGN 2026 */}
       <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-primary via-slate-800 to-primary">
         {/* Animated Background Orbs */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 8s ease-in-out infinite' }}></div>
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animation: 'float 10s ease-in-out infinite 2s' }}></div>
-        <div className="absolute top-1/2 right-0 w-72 h-72 bg-cyan-500/15 rounded-full blur-[100px] animate-pulse" style={{ animation: 'float 12s ease-in-out infinite 4s' }}></div>
+        <div className="hero-orb absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px]"></div>
+        <div className="hero-orb absolute bottom-0 right-1/4 w-80 h-80 bg-cyan-400/10 rounded-full blur-[120px]"></div>
+        <div className="hero-orb absolute top-1/2 right-0 w-72 h-72 bg-cyan-500/15 rounded-full blur-[100px]"></div>
 
         {/* Grid Pattern Overlay */}
         <div className="absolute inset-0 opacity-10" style={{
@@ -206,8 +206,6 @@ export default function Home() {
 
               {/* Floating Stats Cards */}
               <motion.div
-                animate={{ y: [0, -15, 0] }}
-                transition={{ duration: 5, repeat: Infinity }}
                 className="hidden sm:block absolute -bottom-8 -left-8 bg-gradient-to-br from-cyan-500/90 to-cyan-600 p-6 rounded-2xl max-w-xs shadow-2xl"
               >
                 <div className="flex items-center gap-3 mb-3">
@@ -221,8 +219,6 @@ export default function Home() {
 
               {/* Corner Accent */}
               <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
                 className="hidden sm:block absolute -top-4 -right-4 w-32 h-32 border-2 border-accent/30 rounded-full"
               ></motion.div>
             </motion.div>

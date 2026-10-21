@@ -95,13 +95,6 @@ export default function WhatsAppButton() {
           aria-haspopup="dialog"
           aria-expanded={isOpen}
         >
-          {/* Pulsing ring */}
-          <motion.div
-            className="absolute inset-0 rounded-full border-2 border-green-400"
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-
           {/* WhatsApp Icon */}
           <WhatsAppMark className="relative z-10 h-8 w-8" />
 

@@ -38,17 +38,8 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-gradient-to-r from-background via-primary/5 to-background border-b border-accent/20 backdrop-blur-xl">
-      {/* Animated top accent line */}
-      <motion.div 
-        className="h-1 bg-gradient-to-r from-accent via-secondary to-accent"
-        animate={{ backgroundPosition: ['0% center', '100% center'] }}
-        transition={{ duration: 3, repeat: Infinity }}
-      ></motion.div>
-
-      {/* Decorative animated elements */}
-      <div className="absolute top-0 right-0 w-40 h-40 bg-accent/5 rounded-full blur-3xl -z-10 animate-pulse"></div>
-      <div className="absolute top-0 left-1/2 w-32 h-32 bg-secondary/5 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+    <header className="sticky top-0 z-50 w-full bg-background border-b border-accent/20">
+      <div className="h-1 bg-gradient-to-r from-accent via-secondary to-accent"></div>
 
       <div className="container flex items-center justify-between h-20 sm:h-24">
         {/* Brand */}
@@ -86,11 +77,7 @@ export default function Header() {
               >
                 <span className="flex items-center gap-1">
                   {item.label}
-                  <motion.span
-                    className="opacity-0 group-hover:opacity-100"
-                    animate={{ x: [0, 3, 0] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                  >
+                  <motion.span className="opacity-0 group-hover:opacity-100 transition-opacity">
                     <ArrowRight size={14} />
                   </motion.span>
                 </span>
@@ -121,22 +108,15 @@ export default function Header() {
             >
               <motion.button
                 className="relative px-8 py-3 rounded-xl font-bold uppercase tracking-wide text-sm text-white bg-gradient-to-r from-accent to-orange-500 shadow-lg shadow-accent/50 overflow-hidden group"
-                animate={{ boxShadow: ['0 0 20px rgba(234, 88, 12, 0.3)', '0 0 40px rgba(234, 88, 12, 0.6)', '0 0 20px rgba(234, 88, 12, 0.3)'] }}
-                transition={{ duration: 2, repeat: Infinity }}
               >
                 {/* Animated background shine */}
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20"
-                  animate={{ x: ['-100%', '100%'] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
                 ></motion.div>
                 
                 <span className="relative flex items-center gap-2">
                   {t('cta.contact')}
-                  <motion.span
-                    animate={{ x: [0, 3, 0] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                  >
+                  <motion.span>
                     <ArrowRight size={16} />
                   </motion.span>
                 </span>
@@ -171,7 +151,7 @@ export default function Header() {
           animate={{ opacity: 1, y: 0, height: 'auto' }}
           exit={{ opacity: 0, y: -20, height: 0 }}
           transition={{ duration: 0.3 }}
-          className="lg:hidden border-t-2 border-accent/20 bg-gradient-to-b from-background to-primary/10 backdrop-blur-xl overflow-hidden"
+          className="lg:hidden border-t-2 border-accent/20 bg-background overflow-hidden"
         >
           <nav className="container py-8 flex flex-col gap-6">
             <motion.div 
@@ -189,17 +169,9 @@ export default function Header() {
                     whileTap={{ scale: 0.95 }}
                     className="text-foreground transition-colors font-bold text-lg uppercase tracking-wide flex items-center gap-3 group"
                   >
-                    <motion.span 
-                      className="w-2 h-2 rounded-full bg-gradient-to-r from-accent to-secondary"
-                      animate={{ scale: [1, 1.3, 1] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    ></motion.span>
+                    <motion.span className="w-2 h-2 rounded-full bg-gradient-to-r from-accent to-secondary"></motion.span>
                     {item.label}
-                    <motion.span
-                      className="opacity-0 group-hover:opacity-100 ml-auto"
-                      animate={{ x: [0, 3, 0] }}
-                      transition={{ duration: 1, repeat: Infinity }}
-                    >
+                    <motion.span className="opacity-0 group-hover:opacity-100 ml-auto transition-opacity">
                       <ArrowRight size={16} />
                     </motion.span>
                   </motion.a>
@@ -221,10 +193,7 @@ export default function Header() {
                   className="w-full px-8 py-4 rounded-xl font-bold uppercase tracking-wide text-sm text-white bg-gradient-to-r from-accent to-orange-500 shadow-lg shadow-accent/50 flex items-center justify-center gap-2 group"
                 >
                   {t('cta.contact')}
-                  <motion.span
-                    animate={{ x: [0, 3, 0] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                  >
+                  <motion.span>
                     <ArrowRight size={16} />
                   </motion.span>
                 </motion.button>

@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { randomUUID } from 'node:crypto';
+import stripeWebhookHandler from '../api/webhooks/stripe';
 
 const { default: apiRouter } = await import('./routes/api');
 
@@ -27,9 +28,9 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", 'https://www.google.com/recaptcha/', 'https://www.gstatic.com/recaptcha/'],
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+      imgSrc: ["'self'", 'data:', 'blob:', 'https://images.unsplash.com', 'https://ui-avatars.com', 'https://d2xsxph8kpxj0f.cloudfront.net'],
       fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
-      connectSrc: ["'self'", 'https://www.google.com/recaptcha/', 'https://www.gstatic.com/recaptcha/', 'https:'],
+      connectSrc: ["'self'", 'https://www.google.com/recaptcha/', 'https://www.gstatic.com/recaptcha/'],
       frameSrc: ["'self'", 'https://www.google.com/recaptcha/', 'https://recaptcha.google.com/', 'https://www.google.com/maps/', 'https://maps.google.com/'],
       objectSrc: ["'none'"],
       frameAncestors: ["'none'"],
@@ -38,6 +39,9 @@ app.use(helmet({
     },
   },
 }));
+app.post('/api/webhooks/stripe', express.raw({ type: 'application/json', limit: '1mb' }), (req, res) => {
+  void stripeWebhookHandler(req, res);
+});
 app.use(express.json({ limit: '2mb', strict: true }));
 app.use('/api', (req, res, next) => {
   const requestId = randomUUID();
