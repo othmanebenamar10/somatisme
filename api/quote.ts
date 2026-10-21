@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import nodemailer, { type Transporter } from 'nodemailer';
 import { z } from 'zod';
-import { getProductById } from '../shared/products.ts';
+import { getProductById } from './_lib/products.js';
 import { calculateOrderTotals } from './_lib/pricing.js';
 import { createQuotePdf } from './_lib/quote-pdf.js';
 import {
