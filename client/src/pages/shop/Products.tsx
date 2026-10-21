@@ -681,9 +681,9 @@ export default function Products() {
         setShowOrderDialog(open);
         if (!open) setCartStep('summary');
       }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
-          <DialogHeader className="bg-gradient-to-r from-cyan-500 to-cyan-600 -mx-6 -mt-6 px-6 py-4 rounded-t-lg">
-            <DialogTitle className="text-2xl text-white font-bold">
+        <DialogContent className="w-[calc(100%-1rem)] min-w-0 max-w-2xl max-h-[calc(100dvh-2rem)] overflow-x-hidden overflow-y-auto bg-white">
+          <DialogHeader className="-mx-6 -mt-6 min-w-0 rounded-t-lg bg-gradient-to-r from-cyan-500 to-cyan-600 px-6 py-4">
+            <DialogTitle className="min-w-0 break-words pr-8 text-xl font-bold leading-tight text-white sm:text-2xl">
               {cartStep === 'summary' 
                 ? (language === 'ar' ? 'سلة التسوق' : 'Panier')
                 : (language === 'ar' ? 'إتمام الطلب' : 'Coordonnées et choix de commande')
@@ -691,7 +691,7 @@ export default function Products() {
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-4 mt-4">
+          <div className="mt-4 w-full min-w-0 space-y-4">
             {/* STEP 1: CART SUMMARY */}
             {cartStep === 'summary' && (
               <>
@@ -838,6 +838,7 @@ export default function Products() {
                       onChange={(e) => updateOrderForm('message', e.target.value)}
                       placeholder={language === 'ar' ? 'أي معلومات إضافية...' : 'Toute information supplémentaire...'}
                       rows={3}
+                      className="min-w-0 resize-y"
                     />
                   </div>
                 </div>
@@ -847,11 +848,11 @@ export default function Products() {
                 </p>
 
                 {/* Navigation Buttons */}
-                <div className="grid grid-cols-1 gap-3 border-t border-cyan-200 pt-5 sm:grid-cols-3">
+                <div className="grid min-w-0 grid-cols-1 gap-3 border-t border-cyan-200 pt-5 sm:grid-cols-2 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.35fr)_minmax(0,1fr)]">
                   <Button
                     onClick={() => setCartStep('summary')}
                     disabled={isSubmitting}
-                    className="border-2 border-primary text-primary hover:bg-primary/5 font-bold"
+                    className="h-auto min-h-11 w-full min-w-0 whitespace-normal px-3 py-2 text-center leading-tight border-2 border-primary text-primary hover:bg-primary/5 font-bold"
                     variant="outline"
                   >
                     ← {language === 'ar' ? 'السابق' : 'Précédent'}
@@ -860,14 +861,14 @@ export default function Products() {
                     onClick={handleQuoteRequest}
                     disabled={isSubmitting}
                     variant="outline"
-                    className="border-2 border-emerald-600 font-bold text-emerald-800 hover:bg-emerald-50"
+                    className="h-auto min-h-11 w-full min-w-0 whitespace-normal px-3 py-2 text-center leading-tight border-2 border-emerald-600 font-bold text-emerald-800 hover:bg-emerald-50 sm:col-span-2 lg:col-span-1"
                   >
                     {submissionAction === 'quote' ? 'Préparation du devis…' : 'Recevoir le devis PDF + WhatsApp'}
                   </Button>
                   <Button
                     onClick={handleOrderSubmit}
                     disabled={isSubmitting}
-                    className="bg-gradient-to-r from-cyan-500 to-cyan-600 font-bold text-white shadow-lg shadow-cyan-500/30 hover:from-cyan-600 hover:to-cyan-700"
+                    className="h-auto min-h-11 w-full min-w-0 whitespace-normal px-3 py-2 text-center leading-tight bg-gradient-to-r from-cyan-500 to-cyan-600 font-bold text-white shadow-lg shadow-cyan-500/30 hover:from-cyan-600 hover:to-cyan-700 sm:col-span-2 lg:col-span-1"
                   >
                     {submissionAction === 'checkout'
                       ? 'Redirection vers le paiement…'
