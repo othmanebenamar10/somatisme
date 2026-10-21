@@ -31,6 +31,7 @@ export function getRedis(): Redis {
 }
 
 const DEFAULT_PRODUCTION_ORIGINS = [
+  'https://somatisme.vercel.app',
   'https://www.somatisme.ma',
   'https://somatisme.ma',
 ];
