@@ -13,8 +13,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Electrical() {
   const { t } = useLanguage();
-  const titleParts = t('service.electrical.title').split(' ');
-  const titleAccent = titleParts.pop();
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -30,14 +28,14 @@ export default function Electrical() {
             className="max-w-3xl"
           >
             <h1 className="text-display text-foreground mb-6">
-              {titleParts.join(' ')} <span className="text-accent">{titleAccent}</span>
+              {t('home.expertise.electrical.title')}
             </h1>
             <p className="text-lg text-muted-foreground mb-8">
-              Solutions électriques sécurisées, conformes aux normes et optimisées pour la performance de vos installations.
+              {t('home.expertise.electrical.desc')}
             </p>
             <Link href="/contact">
               <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 gap-2">
-                Demander un devis
+                {t('home.hero.cta.quote')}
                 <ArrowRight size={18} />
               </Button>
             </Link>
@@ -54,7 +52,7 @@ export default function Electrical() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-heading text-foreground mb-6">Nos Services</h2>
+              <h2 className="text-heading text-foreground mb-6">{t('home.expertise.title')}</h2>
               <div className="space-y-4">
                 {[
                   'Conception et réalisation de TGBT et tableaux de distribution',

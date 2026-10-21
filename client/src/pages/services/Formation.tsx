@@ -4,8 +4,10 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Formation() {
+  const { t } = useLanguage();
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
@@ -16,9 +18,9 @@ export default function Formation() {
               <div className="p-4 bg-accent/10 rounded-2xl mb-6 inline-block">
                 <GraduationCap className="text-accent w-12 h-12" />
               </div>
-              <h1 className="text-display mb-6">Formation <span className="text-accent">Industrielle</span></h1>
+              <h1 className="text-display mb-6">{t('service.formation.title')}</h1>
               <p className="text-xl text-muted-foreground">
-                Formations à la carte, pratiques et efficaces par des hommes de terrain expérimentés.
+                {t('service.formation.hero')}
               </p>
             </motion.div>
           </div>
@@ -69,8 +71,8 @@ export default function Formation() {
                     Nous adaptons nos modules à vos équipements spécifiques (Schneider, Siemens, Rockwell, etc.) et à votre niveau technique.
                   </p>
                   <Link href="/contact">
-                    <Button variant="outline" className="w-full bg-accent-foreground/10 border-accent-foreground/20 hover:bg-accent-foreground/20 text-accent-foreground">
-                      Demander un devis
+                      <Button variant="outline" className="w-full bg-accent-foreground/10 border-accent-foreground/20 hover:bg-accent-foreground/20 text-accent-foreground">
+                      {t('home.hero.cta.quote')}
                     </Button>
                   </Link>
                 </div>

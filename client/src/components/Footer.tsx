@@ -9,21 +9,21 @@ export default function Footer() {
 
   const footerLinks = [
     {
-      title: 'Services',
+      title: t('nav.services'),
       links: [
-        { label: 'Automatisme Industriel', href: '/services/automation' },
-        { label: 'Régulation & Instrumentation', href: '/services/regulation' },
-        { label: 'Installation Électrique', href: '/services/electrical' },
-        { label: 'Maintenance Industrielle', href: '/services/maintenance' },
+        { label: t('service.automation.title'), href: '/services/automation' },
+        { label: t('home.expertise.regulation.title'), href: '/services/regulation' },
+        { label: t('service.electrical.title'), href: '/services/electrical' },
+        { label: t('service.maintenance.title'), href: '/services/maintenance' },
       ]
     },
     {
-      title: 'Entreprise',
+      title: t('footer.company'),
       links: [
-        { label: 'À propos', href: '/about' },
-        { label: 'Projets', href: '/projects' },
-        { label: 'Nous contacter', href: '/contact' },
-        { label: 'Produits', href: '/products' },
+        { label: t('nav.about'), href: '/about' },
+        { label: t('nav.projects'), href: '/projects' },
+        { label: t('nav.contact'), href: '/contact' },
+        { label: t('nav.products'), href: '/products' },
       ]
     },
   ];
@@ -113,7 +113,7 @@ export default function Footer() {
           >
             <h4 className="font-bold text-lg uppercase tracking-wider text-white flex items-center gap-2">
               <span className="w-1 h-1 rounded-full bg-accent"></span>
-              Coordonnées
+              {t('footer.contact')}
             </h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3 group">

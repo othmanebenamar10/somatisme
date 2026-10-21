@@ -15,14 +15,15 @@ import { toast } from 'sonner';
 import { products, type Product } from '@shared/products';
 import CountryPhoneInput from '@/components/CountryPhoneInput';
 import { toInternationalPhone } from '@/data/phoneCountries';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const categories = [
-  { id: 'all', name: 'Tous', nameAr: 'الكل' },
-  { id: 'plc', name: 'Automates & CPU', nameAr: 'أتمتة وتحكم' },
-  { id: 'sensors', name: 'Capteurs & Détecteurs', nameAr: 'حساسات وكاشفات' },
-  { id: 'electrical', name: 'Électricité Industrielle', nameAr: 'كهرباء صناعية' },
-  { id: 'modules', name: 'Modules & Communication', nameAr: 'وحدات وتوصيلات' },
-  { id: 'equipment', name: 'Équipements Divers', nameAr: 'معدات متنوعة' },
+  { id: 'all', nameKey: 'shop.category.all' },
+  { id: 'plc', nameKey: 'shop.category.plc' },
+  { id: 'sensors', nameKey: 'shop.category.sensors' },
+  { id: 'electrical', nameKey: 'shop.category.electrical' },
+  { id: 'modules', nameKey: 'shop.category.modules' },
+  { id: 'equipment', nameKey: 'shop.category.equipment' },
 ];
 
 interface CartItem extends Product {
@@ -30,7 +31,7 @@ interface CartItem extends Product {
 }
 
 export default function Products() {
-  const [language, setLanguage] = useState<'fr' | 'ar'>('fr');
+  const { t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -58,9 +59,9 @@ export default function Products() {
     try {
       localStorage.setItem('somatisme_cart', JSON.stringify(cart));
     } catch {
-      toast.error('Le panier ne peut pas être enregistré sur cet appareil.');
+      toast.error(t('shop.cart.storageError'));
     }
-  }, [cart]);
+  }, [cart, t]);
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -70,14 +71,14 @@ export default function Products() {
     if (paymentStatus === 'success') {
       setCart([]);
       setShowCart(false);
-      toast.success('Paiement terminé. La confirmation sera envoyée par email après validation Stripe.');
+      toast.success(t('shop.payment.success'));
     } else if (paymentStatus === 'cancelled') {
-      toast.info('Paiement annulé. Votre panier a été conservé.');
+      toast.info(t('shop.payment.cancelled'));
     }
 
     url.searchParams.delete('payment');
     window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
-  }, []);
+  }, [t]);
   
   const [showCart, setShowCart] = useState(false);
   const [showOrderDialog, setShowOrderDialog] = useState(false);
@@ -120,9 +121,7 @@ export default function Products() {
       const searchLower = searchQuery.toLowerCase();
       const matchesSearch = searchQuery === '' ||
         product.name.toLowerCase().includes(searchLower) ||
-        product.nameAr.toLowerCase().includes(searchLower) ||
         product.description.toLowerCase().includes(searchLower) ||
-        product.descriptionAr.toLowerCase().includes(searchLower) ||
         product.brand.toLowerCase().includes(searchLower) ||
         product.category.toLowerCase().includes(searchLower);
       return matchesCategory && matchesSearch;
@@ -142,7 +141,7 @@ export default function Products() {
       const existing = prevCart.find((item) => item.id === product.id);
       if (existing) {
         if (existing.quantity >= product.stock) {
-          toast.error('La quantité disponible est déjà dans votre panier.');
+          toast.error(t('shop.cart.quantityLimit'));
           return prevCart;
         }
         return prevCart.map((item) =>
@@ -151,7 +150,7 @@ export default function Products() {
       }
       return [...prevCart, { ...product, quantity: 1 }];
     });
-    toast.success(language === 'ar' ? 'تم إضافة المنتج إلى السلة' : 'Produit ajouté au panier');
+    toast.success(t('shop.cart.added'));
   };
 
   const updateCartQuantity = (productId: string, quantity: number) => {
@@ -173,15 +172,15 @@ export default function Products() {
 
   const handleOrderSubmit = async () => {
     if (!orderForm.name.trim() || !orderForm.email.trim() || !orderForm.phone.trim()) {
-      toast.error('Veuillez remplir tous les champs requis');
+      toast.error(t('shop.form.requiredOrder'));
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(orderForm.email.trim())) {
-      toast.error('Veuillez saisir une adresse email valide.');
+      toast.error(t('shop.form.emailInvalid'));
       return;
     }
     if (orderForm.phone.replace(/\D/g, '').length < 7) {
-      toast.error('Veuillez saisir un numéro de téléphone valide.');
+      toast.error(t('shop.form.phoneInvalid'));
       return;
     }
 
@@ -202,34 +201,34 @@ export default function Products() {
         }),
       });
       if (!response.ok || typeof result?.url !== 'string') {
-        toast.error(result?.error || 'Impossible de démarrer le paiement.');
+        toast.error(result?.error || t('shop.checkout.startError'));
         return;
       }
       window.location.assign(result.url);
     } catch (error) {
       console.error('Checkout initialization failed:', error);
       toast.error(error instanceof Error && error.name === 'TimeoutError'
-        ? 'Le serveur met trop de temps à répondre. Vérifiez votre connexion puis réessayez.'
-        : 'Erreur lors de la création du paiement. Votre panier est conservé.');
+        ? t('shop.checkout.timeout')
+        : t('shop.checkout.error'));
     } finally {
       setSubmissionAction(null);
     }
   };
   const handleQuoteRequest = async () => {
     if (!orderForm.name.trim() || !orderForm.email.trim() || !orderForm.phone.trim()) {
-      toast.error('Veuillez remplir votre nom, votre email et votre téléphone.');
+      toast.error(t('shop.form.requiredQuote'));
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(orderForm.email.trim())) {
-      toast.error('Veuillez saisir une adresse email valide.');
+      toast.error(t('shop.form.emailInvalid'));
       return;
     }
     if (orderForm.phone.replace(/\D/g, '').length < 7) {
-      toast.error('Veuillez saisir un numéro de téléphone valide.');
+      toast.error(t('shop.form.phoneInvalid'));
       return;
     }
     if (cart.length === 0) {
-      toast.error('Votre panier est vide.');
+      toast.error(t('shop.form.cartEmpty'));
       return;
     }
 
@@ -249,30 +248,36 @@ export default function Products() {
         }),
       });
       if (!response.ok || typeof result?.quoteNumber !== 'string') {
-        toast.error(result?.error || 'Impossible de préparer le devis.');
+        toast.error(result?.error || t('shop.quote.prepareError'));
         return;
       }
 
       const requestedItems = cart.slice(0, 12)
-        .map((item) => `• ${item.name} — Qté ${item.quantity}`)
+        .map((item) => t('shop.quote.whatsappItem')
+          .replace('{name}', item.name)
+          .replace('{quantity}', String(item.quantity)))
         .join('\n');
-      const moreItems = cart.length > 12 ? `\n… et ${cart.length - 12} autre(s) article(s)` : '';
+      const moreItems = cart.length > 12
+        ? `\n${t('shop.quote.whatsappMore').replace('{count}', String(cart.length - 12))}`
+        : '';
       const whatsappMessage = [
-        'Bonjour l’équipe SOMATISME,',
+        t('shop.quote.whatsappIntro'),
         '',
-        `Je viens de demander le devis ${result.quoteNumber}. Le récapitulatif PDF a été envoyé à ${orderForm.email}.`,
+        t('shop.quote.whatsappRequested')
+          .replace('{quoteNumber}', result.quoteNumber)
+          .replace('{email}', orderForm.email),
         '',
-        'Articles demandés :',
+        t('shop.quote.whatsappItems'),
         requestedItems + moreItems,
         '',
-        'Merci.',
+        t('shop.quote.whatsappThanks'),
       ].join('\n');
       window.location.assign(`https://wa.me/212679825646?text=${encodeURIComponent(whatsappMessage)}`);
     } catch (error) {
       console.error('Quote request failed:', error);
       toast.error(error instanceof Error && error.name === 'TimeoutError'
-        ? 'Le serveur met trop de temps à répondre. Vérifiez votre connexion avant de réessayer.'
-        : 'Erreur lors de la préparation du devis. Veuillez réessayer.');
+        ? t('shop.quote.timeout')
+        : t('shop.quote.error'));
     } finally {
       setSubmissionAction(null);
     }
@@ -302,15 +307,15 @@ export default function Products() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 border border-accent/40 backdrop-blur-sm mb-8"
             >
               <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
-              <span className="text-accent font-bold text-sm uppercase tracking-widest">{language === 'ar' ? 'منتجاتنا' : 'Nos Produits'}</span>
+              <span className="text-accent font-bold text-sm uppercase tracking-widest">{t('shop.hero.badge')}</span>
             </motion.div>
 
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white mb-6 sm:mb-8 leading-tight">
-              {language === 'ar' ? 'المنتجات' : 'Équipements'} <br />
-              <span className="bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-400 bg-clip-text text-transparent">{language === 'ar' ? 'الصناعية' : 'Industriels'}</span>
+              {t('shop.hero.title')} <br />
+              <span className="bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-400 bg-clip-text text-transparent">{t('shop.hero.titleAccent')}</span>
             </h1>
             <p className="text-base sm:text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
-              {language === 'ar' ? 'أفضل المعدات الصناعية' : 'Équipements industriels de qualité professionnelle'}
+              {t('shop.hero.description')}
             </p>
           </motion.div>
         </div>
@@ -336,7 +341,7 @@ export default function Products() {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 h-5 w-5 z-10 pointer-events-none" />
                 <input
                   type="text"
-                  placeholder={language === 'ar' ? 'ابحث عن منتج...' : 'Rechercher un produit...'}
+                  placeholder={t('shop.search.placeholder')}
                   value={searchQuery}
                   onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                   style={{ color: '#1e293b', backgroundColor: '#ffffff' }}
@@ -360,11 +365,11 @@ export default function Products() {
                   style={{ color: '#1e293b', backgroundColor: '#ffffff' }}
                   className="appearance-none w-full sm:w-auto pl-4 pr-9 py-3 border-2 border-cyan-400/40 rounded-xl text-sm font-semibold focus:border-cyan-500 focus:outline-none transition-all cursor-pointer shadow-sm"
                 >
-                  <option value="default">{language === 'ar' ? 'الترتيب' : 'Trier par'}</option>
-                  <option value="name-asc">{language === 'ar' ? 'الاسم أ→ي' : 'Nom A→Z'}</option>
-                  <option value="name-desc">{language === 'ar' ? 'الاسم ي→أ' : 'Nom Z→A'}</option>
-                  <option value="price-asc">{language === 'ar' ? 'السعر ↑' : 'Prix croissant'}</option>
-                  <option value="price-desc">{language === 'ar' ? 'السعر ↓' : 'Prix décroissant'}</option>
+                  <option value="default">{t('shop.sort.label')}</option>
+                  <option value="name-asc">{t('shop.sort.nameAsc')}</option>
+                  <option value="name-desc">{t('shop.sort.nameDesc')}</option>
+                  <option value="price-asc">{t('shop.sort.priceAsc')}</option>
+                  <option value="price-desc">{t('shop.sort.priceDesc')}</option>
                 </select>
                 <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-cyan-500 text-xs">▼</span>
               </div>
@@ -380,7 +385,7 @@ export default function Products() {
                   className="relative px-8 py-3 rounded-xl font-bold uppercase tracking-wide text-sm bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-lg shadow-cyan-500/50 hover:shadow-xl hover:shadow-cyan-500/70 transition-all flex items-center gap-2"
                 >
                   <ShoppingCart className="h-5 w-5" />
-                  {language === 'ar' ? 'السلة' : 'Panier'}
+                  {t('shop.cart.button')}
                   {cart.length > 0 && (
                     <motion.div
                       initial={{ scale: 0 }}
@@ -407,7 +412,7 @@ export default function Products() {
                       : 'bg-white border-2 border-cyan-400/30 text-slate-700 hover:border-cyan-400 hover:bg-cyan-50'
                   }`}
                 >
-                  {language === 'ar' ? category.nameAr : category.name}
+                  {t(category.nameKey)}
                 </button>
               ))}
             </div>
@@ -441,7 +446,7 @@ export default function Products() {
             <div className="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white p-4 sm:p-6 flex justify-between items-center">
               <div>
                 <h3 className="text-xl sm:text-2xl font-black">
-                  {language === 'ar' ? 'سلة التسوق' : 'Panier'}
+                  {t('shop.cart.button')}
                 </h3>
                 <p className="text-xs text-white/70 mt-1">
                   {cart.length} {cart.length === 1 ? 'article' : 'articles'}
@@ -465,16 +470,16 @@ export default function Products() {
                   <div className="flex flex-col items-center justify-center h-full text-center py-12">
                     <ShoppingCart size={56} className="text-muted-foreground/20 mb-4" />
                     <p className="text-muted-foreground font-bold text-lg">
-                      {language === 'ar' ? 'السلة فارغة' : 'Panier vide'}
+                      {t('shop.cart.emptyTitle')}
                     </p>
                     <p className="text-xs text-muted-foreground mt-2">
-                      {language === 'ar' ? 'أضف منتجات لبدء التسوق' : 'Ajoutez des produits pour commencer'}
+                      {t('shop.cart.emptyDescription')}
                     </p>
                   </div>
                 ) : (
                   <>
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">
-                      {language === 'ar' ? 'المنتجات' : 'Produits'}
+                      {t('shop.products.label')}
                     </p>
                     {cart.map((item) => (
                       <motion.div
@@ -488,13 +493,13 @@ export default function Products() {
                           <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0">
                             <img
                               src={item.image}
-                              alt={language === 'ar' ? item.nameAr : item.name}
+                              alt={item.name}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                             />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-bold text-xs truncate">
-                              {language === 'ar' ? item.nameAr : item.name}
+                              {item.name}
                             </p>
                             <p className="text-xs text-muted-foreground mt-0.5">
                               {item.brand}
@@ -529,31 +534,31 @@ export default function Products() {
                   {/* Summary Card */}
                   <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-600/10 rounded-2xl p-4 border border-cyan-400/20 space-y-3">
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                      {language === 'ar' ? 'الملخص' : 'Résumé'}
+                      {t('shop.summary.title')}
                     </p>
 
                     <div className="space-y-2">
                       <div className="flex justify-between text-xs">
                         <span className="text-muted-foreground">
-                          {language === 'ar' ? 'المجموع الجزئي' : 'Sous-total'}:
+                          {t('shop.summary.subtotal')}:
                         </span>
                         <span className="font-bold">{cartSubtotal} MAD</span>
                       </div>
                       <div className="flex justify-between text-xs">
                         <span className="text-muted-foreground">
-                          {language === 'ar' ? 'الشحن (2%)' : 'Livraison (2%)'}:
+                          {t('shop.summary.shipping')}:
                         </span>
                         <span className="font-bold text-cyan-600">{shippingFee} MAD</span>
                       </div>
                       <div className="flex justify-between text-xs">
                         <span className="text-muted-foreground">
-                          {language === 'ar' ? 'ضريبة القيمة المضافة (20%)' : 'TVA (20%)'}:
+                          {t('shop.summary.vat')}:
                         </span>
                         <span className="font-bold text-amber-600">{tva} MAD</span>
                       </div>
                       <div className="border-t border-cyan-300 pt-2 flex justify-between">
                         <span className="font-bold text-sm">
-                          {language === 'ar' ? 'المجموع' : 'Total TTC'}:
+                          {t('shop.summary.total')}:
                         </span>
                         <span className="text-lg font-black bg-gradient-to-r from-cyan-500 to-cyan-600 bg-clip-text text-transparent">
                           {cartTotal} MAD
@@ -569,13 +574,13 @@ export default function Products() {
                     onClick={() => setShowOrderDialog(true)}
                     className="w-full px-4 py-3 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/50 transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-sm"
                   >
-                    {language === 'ar' ? 'إتمام الطلب' : 'Commander'}
+                    {t('shop.checkout.command')}
                     <ArrowRight size={16} />
                   </motion.button>
 
                   {/* Info */}
                   <p className="text-xs text-muted-foreground text-center bg-muted/30 p-2 rounded-lg">
-                    {language === 'ar' ? 'Paiement sécurisé par carte' : 'Paiement sécurisé par carte'}
+                    {t('shop.checkout.secure')}
                   </p>
                 </div>
               )}
@@ -601,23 +606,23 @@ export default function Products() {
                 <div className="aspect-square overflow-hidden rounded-xl mb-5 relative">
                   <img
                     src={product.image}
-                    alt={language === 'ar' ? product.nameAr : product.name}
+                      alt={product.name}
                     loading="lazy"
                     decoding="async"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute top-3 left-3">
                     <span className="badge-premium text-xs">
-                      {language === 'ar' ? product.categoryAr : product.category}
+                      {t(`shop.category.${product.category}`)}
                     </span>
                   </div>
                 </div>
                 <h3 className="text-subheading text-foreground mb-2 line-clamp-2">
-                  {language === 'ar' ? product.nameAr : product.name}
+                  {product.name}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-2">{product.brand}</p>
                 <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                  {language === 'ar' ? product.descriptionAr : product.description}
+                  {product.description}
                 </p>
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-2xl font-bold gradient-text">{product.price} MAD</p>
@@ -638,12 +643,12 @@ export default function Products() {
                 >
                   <ShoppingCart className="h-4 w-4 mr-2 inline" />
                   {product.stock === 0
-                    ? (language === 'ar' ? 'Rupture de stock' : 'Rupture')
-                    : (language === 'ar' ? 'Ajouter' : 'Ajouter au panier')
+                    ? (t('shop.products.outOfStock'))
+                    : (t('shop.products.add'))
                   }
                 </motion.button>
                 <p className="text-xs text-muted-foreground mt-3 text-center">
-                  {language === 'ar' ? `Quantite: ${product.stock}` : `Stock disponible: ${product.stock}`}
+                  {t('shop.products.stock').replace('{count}', String(product.stock))}
                 </p>
               </motion.div>
             ))}
@@ -657,7 +662,7 @@ export default function Products() {
                 className="card-glass p-12 max-w-md mx-auto"
               >
                 <p className="text-muted-foreground text-lg">
-                  {language === 'ar' ? 'Aucun produit trouve' : 'Aucun produit trouve'}
+                  {t('shop.products.none')}
                 </p>
               </motion.div>
             </div>
@@ -686,8 +691,8 @@ export default function Products() {
           <DialogHeader className="-mx-6 -mt-6 min-w-0 rounded-t-lg bg-gradient-to-r from-cyan-500 to-cyan-600 px-6 py-4">
             <DialogTitle className="min-w-0 break-words pr-8 text-xl font-bold leading-tight text-white sm:text-2xl">
               {cartStep === 'summary' 
-                ? (language === 'ar' ? 'سلة التسوق' : 'Panier')
-                : (language === 'ar' ? 'إتمام الطلب' : 'Coordonnées et choix de commande')
+                ? (t('shop.cart.button'))
+                : (t('shop.checkout.formTitle'))
               }
             </DialogTitle>
           </DialogHeader>
@@ -700,13 +705,13 @@ export default function Products() {
                 <div className="space-y-3">
                   <h3 className="font-bold text-primary flex items-center gap-2">
                     <div className="w-1 h-1 rounded-full bg-cyan-500"></div>
-                    {language === 'ar' ? 'المنتجات' : 'Produits'} ({cart.length})
+                    {t('shop.products.label')} ({cart.length})
                   </h3>
                   <div className="space-y-2 max-h-64 overflow-y-auto">
                     {cart.map((item, index) => (
                       <div key={index} className="bg-gray-50 p-3 rounded-lg border border-gray-200 flex justify-between items-center">
                         <div>
-                          <p className="font-medium text-sm">{language === 'ar' ? item.nameAr : item.name}</p>
+                          <p className="font-medium text-sm">{item.name}</p>
                           <p className="text-xs text-muted-foreground">{item.brand}</p>
                         </div>
                         <span className="font-bold text-cyan-600">{item.price} MAD</span>
@@ -718,19 +723,19 @@ export default function Products() {
                 {/* Summary Card */}
                 <div className="bg-gradient-to-br from-cyan-50 to-cyan-100/50 p-4 rounded-xl border border-cyan-200 space-y-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">{language === 'ar' ? 'الإجمالي الجزئي' : 'Sous-total'}:</span>
+                    <span className="text-muted-foreground">{t('shop.summary.subtotal')}:</span>
                     <span className="font-bold">{cartSubtotal} MAD</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">{language === 'ar' ? 'الشحن (2%)' : 'Livraison (2%)'}:</span>
+                    <span className="text-muted-foreground">{t('shop.summary.shipping')}:</span>
                     <span className="font-bold text-cyan-600">{shippingFee} MAD</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">{language === 'ar' ? 'ضريبة القيمة المضافة (20%)' : 'TVA (20%)'}:</span>
+                    <span className="text-muted-foreground">{t('shop.summary.vat')}:</span>
                     <span className="font-bold text-amber-600">{tva} MAD</span>
                   </div>
                   <div className="border-t-2 border-cyan-300 pt-2 flex justify-between">
-                    <span className="font-bold text-primary">{language === 'ar' ? 'المجموع' : 'Total TTC'}:</span>
+                    <span className="font-bold text-primary">{t('shop.summary.total')}:</span>
                     <span className="text-lg bg-gradient-to-r from-cyan-500 to-cyan-600 bg-clip-text text-transparent font-bold">{cartTotal} MAD</span>
                   </div>
                 </div>
@@ -738,12 +743,12 @@ export default function Products() {
                 {/* Payment Info */}
                 <div className="bg-gradient-to-br from-primary/5 to-cyan-500/5 p-4 rounded-xl border border-primary/20">
                   <p className="font-bold mb-2 text-primary text-sm">
-                    {language === 'ar' ? 'معلومات الدفع:' : 'Informations de paiement:'}
+                    {t('shop.payment.infoTitle')}
                   </p>
                   <ul className="text-xs text-foreground space-y-1.5">
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'Paiement sécurisé par carte avec Stripe' : 'Paiement sécurisé par carte avec Stripe'}</li>
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'سيتم إرسال ملخص الطلب عبر البريد الإلكتروني' : 'Confirmation de paiement envoyée par email'}</li>
-                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{language === 'ar' ? 'Coordonner avec nous pour le rendez-vous' : 'Coordonner avec nous pour le rendez-vous'}</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{t('shop.payment.stripe')}</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{t('shop.payment.confirmation')}</li>
+                    <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>{t('shop.payment.coordinate')}</li>
                   </ul>
                 </div>
 
@@ -754,13 +759,13 @@ export default function Products() {
                     className="flex-1 border-2 border-primary text-primary hover:bg-primary/5 font-bold"
                     variant="outline"
                   >
-                    {language === 'ar' ? 'إلغاء' : 'Annuler'}
+                    {t('shop.form.cancel')}
                   </Button>
                   <Button
                     onClick={() => setCartStep('form')}
                     className="flex-1 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-bold shadow-lg shadow-cyan-500/30"
                   >
-                    {language === 'ar' ? 'التالي' : 'Suivant'} →
+                    {t('shop.form.next')} →
                   </Button>
                 </div>
               </>
@@ -773,29 +778,29 @@ export default function Products() {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-bold text-primary mb-2">
-                      {language === 'ar' ? 'الاسم الكامل *' : 'Nom complet *'}
+                      {t('shop.form.name')}
                     </label>
                     <Input
                       value={orderForm.name}
                       onChange={(e) => updateOrderForm('name', e.target.value)}
-                      placeholder={language === 'ar' ? 'الاسم الكامل' : 'Nom complet'}
+                      placeholder={t('shop.form.namePlaceholder')}
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-primary mb-2">
-                      {language === 'ar' ? 'البريد الإلكتروني *' : 'Email *'}
+                      {t('shop.form.email')}
                     </label>
                     <Input
                       type="email"
                       value={orderForm.email}
                       onChange={(e) => updateOrderForm('email', e.target.value)}
-                      placeholder={language === 'ar' ? 'البريد الإلكتروني' : 'Email'}
+                      placeholder={t('shop.form.emailPlaceholder')}
                       className="border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500/20"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-primary mb-2">
-                      {language === 'ar' ? 'رقم الهاتف *' : 'Téléphone *'}
+                      {t('shop.form.phone')}
                     </label>
                     <CountryPhoneInput
                       id="order-phone"
@@ -810,34 +815,34 @@ export default function Products() {
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-primary mb-2">
-                      {language === 'ar' ? 'الشركة' : 'Entreprise'}
+                      {t('shop.form.company')}
                     </label>
                     <Input
                       value={orderForm.company}
                       onChange={(e) => updateOrderForm('company', e.target.value)}
-                      placeholder={language === 'ar' ? 'اسم الشركة' : 'Nom de l\'entreprise'}
+                      placeholder={t('shop.form.companyPlaceholder')}
                       className="border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500/20"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-primary mb-2">
-                      {language === 'ar' ? 'العنوان' : 'Adresse'}
+                      {t('shop.form.address')}
                     </label>
                     <Input
                       value={orderForm.address}
                       onChange={(e) => updateOrderForm('address', e.target.value)}
-                      placeholder={language === 'ar' ? 'العنوان' : 'Adresse'}
+                      placeholder={t('shop.form.addressPlaceholder')}
                       className="border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500/20"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-primary mb-2">
-                      {language === 'ar' ? 'رسالة إضافية' : 'Message additionnel'}
+                      {t('shop.form.message')}
                     </label>
                     <Textarea
                       value={orderForm.message}
                       onChange={(e) => updateOrderForm('message', e.target.value)}
-                      placeholder={language === 'ar' ? 'أي معلومات إضافية...' : 'Toute information supplémentaire...'}
+                      placeholder={t('shop.form.messagePlaceholder')}
                       rows={3}
                       className="min-w-0 resize-y"
                     />
@@ -845,7 +850,7 @@ export default function Products() {
                 </div>
 
                 <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm leading-5 text-emerald-900">
-                  Demandez un devis : le PDF détaillé sera envoyé à votre adresse email, puis WhatsApp s’ouvrira avec le récapitulatif de votre demande.
+                  {t('shop.quote.info')}
                 </p>
 
                 {/* Navigation Buttons */}
@@ -856,7 +861,7 @@ export default function Products() {
                     className="h-auto min-h-11 w-full min-w-0 whitespace-normal px-3 py-2 text-center leading-tight border-2 border-primary text-primary hover:bg-primary/5 font-bold"
                     variant="outline"
                   >
-                    ← {language === 'ar' ? 'السابق' : 'Précédent'}
+                    ← {t('shop.form.previous')}
                   </Button>
                   <Button
                     onClick={handleQuoteRequest}
@@ -864,17 +869,14 @@ export default function Products() {
                     variant="outline"
                     className="h-auto min-h-11 w-full min-w-0 whitespace-normal px-3 py-2 text-center leading-tight border-2 border-emerald-600 font-bold text-emerald-800 hover:bg-emerald-50 sm:col-span-2 lg:col-span-1"
                   >
-                    {submissionAction === 'quote' ? 'Préparation du devis…' : 'Recevoir le devis PDF + WhatsApp'}
+                    {submissionAction === 'quote' ? t('shop.quote.loading') : t('shop.quote.button')}
                   </Button>
                   <Button
                     onClick={handleOrderSubmit}
                     disabled={isSubmitting}
                     className="h-auto min-h-11 w-full min-w-0 whitespace-normal px-3 py-2 text-center leading-tight bg-gradient-to-r from-cyan-500 to-cyan-600 font-bold text-white shadow-lg shadow-cyan-500/30 hover:from-cyan-600 hover:to-cyan-700 sm:col-span-2 lg:col-span-1"
                   >
-                    {submissionAction === 'checkout'
-                      ? 'Redirection vers le paiement…'
-                      : 'Payer par carte'
-                    }
+                    {submissionAction === 'checkout' ? t('shop.checkout.loading') : t('shop.checkout.button')}
                   </Button>
                 </div>
               </>

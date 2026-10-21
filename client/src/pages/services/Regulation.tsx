@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 /**
  * SOMATISME - Service: Régulation & Instrumentation
@@ -11,6 +12,7 @@ import Footer from '@/components/Footer';
  */
 
 export default function Regulation() {
+  const { t } = useLanguage();
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
@@ -25,14 +27,14 @@ export default function Regulation() {
             className="max-w-3xl"
           >
             <h1 className="text-display text-foreground mb-6">
-              Régulation & <span className="text-accent">Instrumentation</span>
+              {t('home.expertise.regulation.title')}
             </h1>
             <p className="text-lg text-muted-foreground mb-8">
-              Solutions de mesure et de contrôle de précision pour vos processus critiques, garantissant une performance optimale et une conformité aux normes.
+              {t('home.expertise.regulation.desc')}
             </p>
             <Link href="/contact">
               <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 gap-2">
-                Demander un devis
+                {t('home.hero.cta.quote')}
                 <ArrowRight size={18} />
               </Button>
             </Link>
@@ -49,7 +51,7 @@ export default function Regulation() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-heading text-foreground mb-6">Nos Compétences</h2>
+              <h2 className="text-heading text-foreground mb-6">{t('home.expertise.title')}</h2>
               <div className="space-y-4">
                 {[
                   'Installation de capteurs et transmetteurs',
