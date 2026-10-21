@@ -6,28 +6,61 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+const partnerTranslations: Record<'en' | 'es', Record<string, { sector: string; description: string }>> = {
+  en: {
+    safran: { sector: 'Aerospace & Defence', description: 'International high-technology group working in aerospace, defence and security, with a global presence and a focus on precision equipment.' },
+    adf: { sector: 'Industrial Equipment', description: 'Industrial partner specializing in the design and supply of process equipment.' },
+    scantech: { sector: 'Analysis & Instrumentation', description: 'Global supplier of online analysers for mining, cement and bulk-material industries, with technology focused on process quality control.' },
+    ocp: { sector: 'Mining & Phosphates', description: 'Morocco-based phosphate producer and processor, and a major contributor to the country’s industrial sector.' },
+    bimbo: { sector: 'Food & Beverage', description: 'International industrial bakery group operating in more than 33 countries, including Morocco. Large-scale production relies on advanced automation.' },
+    somasteel: { sector: 'Steelmaking', description: 'Moroccan company specializing in steelmaking and steel processing, including the production of industrial sections and metal structures.' },
+    sonasid: { sector: 'Steelmaking', description: 'Morocco’s national steel producer and a leading name in the country’s metals industry.' },
+    somachame: { sector: 'Chemical Industry', description: 'Moroccan chemical and surface-treatment business producing and processing industrial chemicals for a range of sectors.' },
+    danone: { sector: 'Food & Beverage', description: 'International food company active in dairy, water and medical nutrition, with high-throughput automated production lines.' },
+    cocacola: { sector: 'Beverages', description: 'Global beverage company whose high-speed bottling and production processes rely on dependable automation.' },
+    pg: { sector: 'Consumer Goods', description: 'Procter & Gamble makes consumer, hygiene and beauty products using highly automated production lines.' },
+    fater: { sector: 'Hygiene & Healthcare', description: 'Manufacturer of hygiene and healthcare products, including absorbent products for African and international markets.' },
+    leaderfood: { sector: 'Food & Beverage', description: 'Moroccan food industry business involved in processing, packaging and distributing products for the domestic market.' },
+  },
+  es: {
+    safran: { sector: 'Aeronáutica y defensa', description: 'Grupo internacional de alta tecnología especializado en aeronáutica, defensa y seguridad, con presencia mundial y equipos de precisión.' },
+    adf: { sector: 'Equipos industriales', description: 'Socio industrial especializado en el diseño y suministro de equipos para procesos industriales.' },
+    scantech: { sector: 'Análisis e instrumentación', description: 'Proveedor mundial de analizadores en línea para las industrias minera, cementera y de materiales a granel, con tecnología para el control de procesos.' },
+    ocp: { sector: 'Minería y fosfatos', description: 'Productor y transformador de fosfatos con sede en Marruecos y actor destacado de la industria del país.' },
+    bimbo: { sector: 'Alimentación y bebidas', description: 'Grupo internacional de panificación industrial presente en más de 33 países, incluido Marruecos. Su producción a gran escala requiere automatización avanzada.' },
+    somasteel: { sector: 'Siderurgia', description: 'Empresa marroquí especializada en siderurgia y transformación del acero, incluidos perfiles y estructuras metálicas para la industria.' },
+    sonasid: { sector: 'Siderurgia', description: 'Productor nacional de acero de Marruecos y una empresa de referencia en la industria metalúrgica del país.' },
+    somachame: { sector: 'Industria química', description: 'Empresa marroquí de productos químicos y tratamiento de superficies, con actividad para distintos sectores industriales.' },
+    danone: { sector: 'Alimentación y bebidas', description: 'Empresa internacional de alimentación presente en los sectores lácteo, del agua y de la nutrición médica, con líneas de producción automatizadas de alto rendimiento.' },
+    cocacola: { sector: 'Bebidas', description: 'Empresa mundial de bebidas cuyos procesos de embotellado y producción de alta velocidad requieren una automatización fiable.' },
+    pg: { sector: 'Bienes de consumo', description: 'Procter & Gamble fabrica productos de consumo, higiene y belleza mediante líneas de producción altamente automatizadas.' },
+    fater: { sector: 'Higiene y salud', description: 'Fabricante de productos de higiene y salud, incluidos productos absorbentes para los mercados africano e internacional.' },
+    leaderfood: { sector: 'Alimentación y bebidas', description: 'Empresa marroquí del sector alimentario dedicada a la transformación, el envasado y la distribución en el mercado nacional.' },
+  },
+};
+
 /**
  * SOMATISME - Page À Propos
  * Contenu détaillé : Secteurs, Croissance, Bilan et Culture
  */
 
 export default function About() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
 
   const partners = [
-    { name: 'Safran', url: 'https://www.safran-group.com', sector: 'Aéronautique & Défense', desc: 'Groupe international de haute technologie dans l\'aéronautique, la défense et la sécurité. Présence mondiale avec des équipements de haute précision.', logoUrl: '/brands/safran.png' },
-    { name: 'ADF', url: '#', sector: 'Équipements Industriels', desc: 'Partenaire industriel spécialisé dans la conception et la fourniture d\'équipements de process pour l\'industrie.', logoUrl: '/brands/ADF.png' },
-    { name: 'Scantech Australia', url: 'https://www.scantech.com.au', sector: 'Analyse & Instrumentation', desc: 'Leader mondial des analyseurs en ligne pour l\'industrie minière, cimentière et des matériaux en vrac. Technologie de pointe pour le contrôle qualité.', logoUrl: '/brands/Scantech Australia.png' },
-    { name: 'OCP', url: 'https://www.ocpgroup.ma', sector: 'Mines & Phosphates', desc: 'Office Chérifien des Phosphates – Leader mondial de la production et transformation de phosphate. Acteur clé de l\'industrie marocaine.', logoUrl: '/brands/ocp.png' },
-    { name: 'Bimbo', url: 'https://www.grupobimbo.com', sector: 'Agroalimentaire', desc: 'Multinationale de boulangerie industrielle, présente dans plus de 33 pays dont le Maroc. Production à grande échelle nécessitant une automatisation avancée.', logoUrl: '/brands/bimbo.png' },
-    { name: 'Somasteel', url: '#', sector: 'Sidérurgie', desc: 'Entreprise marocaine spécialisée dans la sidérurgie et la transformation de l\'acier. Production de profilés et structures métalliques pour l\'industrie.', logoUrl: '/brands/somasteel.png' },
-    { name: 'Sonasid', url: 'https://www.sonasid.ma', sector: 'Sidérurgie', desc: 'Société Nationale de Sidérurgie – Premier producteur d\'acier au Maroc. Filiale d\'ArcelorMittal, référence de l\'industrie métallurgique nationale.', logoUrl: '/brands/sonasid.png' },
-    { name: 'Somachame', url: '#', sector: 'Industrie Chimique', desc: 'Industrie chimique et traitement de surface au Maroc. Fabrication et traitement de produits chimiques industriels pour divers secteurs.', logoUrl: '/brands/Somachame.png' },
-    { name: 'Danone', url: 'https://www.danone.com', sector: 'Agroalimentaire', desc: 'Multinationale agroalimentaire de référence – Produits laitiers, eaux et nutrition médicale. Ligne de production automatisée à haut débit.', logoUrl: '/brands/danone.png' },
-    { name: 'Coca-Cola', url: 'https://www.coca-cola.ma', sector: 'Boissons', desc: 'Leader mondial des boissons rafraîchissantes. Embouteillage et process industriel à grande cadence nécessitant des solutions d\'automatisation fiables.', logoUrl: '/brands/Coca-cola.png' },
-    { name: 'P&G', url: 'https://www.pg.com', sector: 'Grande Consommation', desc: 'Procter & Gamble – Leader mondial des produits de grande consommation, hygiène et beauté. Lignes de production hautement automatisées.', logoUrl: '/pg.png' },
-    { name: 'Fater', url: '#', sector: 'Hygiène & Santé', desc: 'Partenaire industriel en produits d\'hygiène et santé. Conception et fabrication de produits d\'absorption pour le marché africain et mondial.', logoUrl: '/brands/FATER.png' },
-    { name: 'Leaderfood', url: '#', sector: 'Agroalimentaire', desc: 'Industrie agroalimentaire marocaine – Transformation, conditionnement et distribution de produits alimentaires sur le marché national.', logoUrl: '/brands/Leaderfood.png' },
+    { key: 'safran', name: 'Safran', url: 'https://www.safran-group.com', sector: 'Aéronautique & Défense', desc: 'Groupe international de haute technologie dans l\'aéronautique, la défense et la sécurité. Présence mondiale avec des équipements de haute précision.', logoUrl: '/brands/safran.png' },
+    { key: 'adf', name: 'ADF', url: '#', sector: 'Équipements Industriels', desc: 'Partenaire industriel spécialisé dans la conception et la fourniture d\'équipements de process pour l\'industrie.', logoUrl: '/brands/ADF.png' },
+    { key: 'scantech', name: 'Scantech Australia', url: 'https://www.scantech.com.au', sector: 'Analyse & Instrumentation', desc: 'Leader mondial des analyseurs en ligne pour l\'industrie minière, cimentière et des matériaux en vrac. Technologie de pointe pour le contrôle qualité.', logoUrl: '/brands/Scantech Australia.png' },
+    { key: 'ocp', name: 'OCP', url: 'https://www.ocpgroup.ma', sector: 'Mines & Phosphates', desc: 'Office Chérifien des Phosphates – Leader mondial de la production et transformation de phosphate. Acteur clé de l\'industrie marocaine.', logoUrl: '/brands/ocp.png' },
+    { key: 'bimbo', name: 'Bimbo', url: 'https://www.grupobimbo.com', sector: 'Agroalimentaire', desc: 'Multinationale de boulangerie industrielle, présente dans plus de 33 pays dont le Maroc. Production à grande échelle nécessitant une automatisation avancée.', logoUrl: '/brands/bimbo.png' },
+    { key: 'somasteel', name: 'Somasteel', url: '#', sector: 'Sidérurgie', desc: 'Entreprise marocaine spécialisée dans la sidérurgie et la transformation de l\'acier. Production de profilés et structures métalliques pour l\'industrie.', logoUrl: '/brands/somasteel.png' },
+    { key: 'sonasid', name: 'Sonasid', url: 'https://www.sonasid.ma', sector: 'Sidérurgie', desc: 'Société Nationale de Sidérurgie – Premier producteur d\'acier au Maroc. Filiale d\'ArcelorMittal, référence de l\'industrie métallurgique nationale.', logoUrl: '/brands/sonasid.png' },
+    { key: 'somachame', name: 'Somachame', url: '#', sector: 'Industrie Chimique', desc: 'Industrie chimique et traitement de surface au Maroc. Fabrication et traitement de produits chimiques industriels pour divers secteurs.', logoUrl: '/brands/Somachame.png' },
+    { key: 'danone', name: 'Danone', url: 'https://www.danone.com', sector: 'Agroalimentaire', desc: 'Multinationale agroalimentaire de référence – Produits laitiers, eaux et nutrition médicale. Ligne de production automatisée à haut débit.', logoUrl: '/brands/danone.png' },
+    { key: 'cocacola', name: 'Coca-Cola', url: 'https://www.coca-cola.ma', sector: 'Boissons', desc: 'Leader mondial des boissons rafraîchissantes. Embouteillage et process industriel à grande cadence nécessitant des solutions d\'automatisation fiables.', logoUrl: '/brands/Coca-cola.png' },
+    { key: 'pg', name: 'P&G', url: 'https://www.pg.com', sector: 'Grande Consommation', desc: 'Procter & Gamble – Leader mondial des produits de grande consommation, hygiène et beauté. Lignes de production hautement automatisées.', logoUrl: '/pg.png' },
+    { key: 'fater', name: 'Fater', url: '#', sector: 'Hygiène & Santé', desc: 'Partenaire industriel en produits d\'hygiène et santé. Conception et fabrication de produits d\'absorption pour le marché africain et mondial.', logoUrl: '/brands/FATER.png' },
+    { key: 'leaderfood', name: 'Leaderfood', url: '#', sector: 'Agroalimentaire', desc: 'Industrie agroalimentaire marocaine – Transformation, conditionnement et distribution de produits alimentaires sur le marché national.', logoUrl: '/brands/Leaderfood.png' },
   ];
 
   return (
@@ -54,11 +87,11 @@ export default function About() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/20 border border-cyan-400/40 backdrop-blur-sm mb-8"
             >
               <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
-              <span className="text-cyan-400 font-bold text-sm uppercase tracking-widest">Notre Histoire</span>
+              <span className="text-cyan-400 font-bold text-sm uppercase tracking-widest">{t('about.hero.eyebrow')}</span>
             </motion.div>
 
             <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 sm:mb-8 leading-tight">
-              À Propos de <br />
+              {t('about.hero.heading')} <br />
               <span className="bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-400 bg-clip-text text-transparent">SOMATISME</span>
             </h1>
             <p className="text-base sm:text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
@@ -156,7 +189,7 @@ export default function About() {
                 className="aspect-square card-dark rounded-2xl flex flex-col justify-center p-6"
               >
                 <span className="text-5xl font-bold gradient-text">15+</span>
-                <span className="text-sm text-gray-400 mt-2">Ans de stabilite</span>
+                <span className="text-sm text-gray-400 mt-2">{t('about.experience')}</span>
               </motion.div>
             </div>
           </div>
@@ -256,10 +289,10 @@ export default function About() {
         <div className="container relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { number: '15+', label: 'Annees d\'experience' },
-              { number: '50+', label: 'Projets realises' },
-              { number: '100%', label: 'Clients satisfaits' },
-              { number: '24/7', label: 'Support technique' },
+              { number: '15+', key: 'experience' },
+              { number: '50+', key: 'projectsLabel' },
+              { number: '100%', key: 'clients' },
+              { number: '24/7', key: 'supportLabel' },
             ].map((stat, index) => (
               <motion.div
                 key={index}
@@ -269,7 +302,7 @@ export default function About() {
                 className="card-glass p-6"
               >
                 <p className="text-4xl md:text-5xl font-bold gradient-text mb-2">{stat.number}</p>
-                <p className="text-gray-400">{stat.label}</p>
+                <p className="text-gray-400">{t(`about.stats.${stat.key}`)}</p>
               </motion.div>
             ))}
           </div>
@@ -314,12 +347,12 @@ export default function About() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-foreground group-hover:text-cyan-400 transition-colors leading-tight">{partner.name}</h3>
-                    <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-cyan-500/10 text-cyan-500 border border-cyan-500/20">{partner.sector}</span>
+                    <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-cyan-500/10 text-cyan-500 border border-cyan-500/20">{language === 'fr' ? partner.sector : partnerTranslations[language][partner.key].sector}</span>
                   </div>
                 </div>
 
                 {/* Description */}
-                <p className="text-sm text-muted-foreground leading-relaxed flex-1">{partner.desc}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed flex-1">{language === 'fr' ? partner.desc : partnerTranslations[language][partner.key].description}</p>
 
                 {/* Website link */}
                 {partner.url !== '#' ? (
@@ -333,7 +366,7 @@ export default function About() {
                     {partner.url.replace('https://www.', '').replace('https://', '')}
                   </a>
                 ) : (
-                  <span className="text-xs text-muted-foreground/50 mt-auto">Site web non disponible</span>
+                  <span className="text-xs text-muted-foreground/50 mt-auto">{t('about.partner.websiteUnavailable')}</span>
                 )}
               </motion.div>
             ))}
