@@ -51,19 +51,9 @@ export default function Maintenance() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-heading text-foreground mb-6">Nos Services</h2>
+              <h2 className="text-heading text-foreground mb-6">{t('service.maintenance.services.title')}</h2>
               <div className="space-y-4">
-                {[
-                  'Contrats de maintenance préventive personnalisés',
-                  'Intervention corrective d\'urgence sur site sous 24h/48h',
-                  'Télédiagnostic et assistance à distance (VPN sécurisé)',
-                  'Mise à jour (Upgrade) de softwares automates et SCADA',
-                  'Dépannage d\'urgence sur variateurs de vitesse et servomoteurs',
-                  'Analyse de panne approfondie avec rapports techniques',
-                  'Audit de disponibilité et gestion de l\'obsolescence composants',
-                  'Support technique aux équipes d\'exploitation locales',
-                  'Réapprovisionnement et conseil sur les stocks critiques',
-                ].map((item, index) => (
+                {Array.from({ length: 9 }, (_, index) => t(`service.maintenance.item${index + 1}`)).map((item, index) => (
                   <div key={index} className="flex items-start gap-3">
                     <CheckCircle className="text-accent flex-shrink-0 mt-1" size={20} />
                     <span className="text-foreground">{item}</span>
@@ -79,7 +69,7 @@ export default function Maintenance() {
             >
               <img
                 src="https://d2xsxph8kpxj0f.cloudfront.net/310519663572602219/DJ3UxwC3g4oRjvX9YeHeX4/somatisme-maintenance-service-SMhhN34tGncAZQFNgaur8M.webp"
-                alt="Maintenance Industrielle"
+                alt={t('service.maintenance.title')}
                 className="rounded-lg shadow-lg w-full"
               />
             </motion.div>
@@ -96,22 +86,22 @@ export default function Maintenance() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-heading text-foreground mb-4">Avantages</h2>
+            <h2 className="text-heading text-foreground mb-4">{t('service.benefits.title')}</h2>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                title: 'Continuité de Service',
-                description: 'Minimisez les arrêts de production avec notre support réactif.',
+                title: t('service.maintenance.benefit1.title'),
+                description: t('service.maintenance.benefit1.description'),
               },
               {
-                title: 'Réduction des Coûts',
-                description: 'La maintenance préventive réduit les coûts de réparation d\'urgence.',
+                title: t('service.maintenance.benefit2.title'),
+                description: t('service.maintenance.benefit2.description'),
               },
               {
-                title: 'Expertise Reconnue',
-                description: 'Nos techniciens certifiés garantissent une qualité professionnelle.',
+                title: t('service.maintenance.benefit3.title'),
+                description: t('service.maintenance.benefit3.description'),
               },
             ].map((benefit, index) => (
               <motion.div

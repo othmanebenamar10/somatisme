@@ -31,30 +31,22 @@ export default function Formation() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-12">
                 <div className="bg-card border border-border p-8 rounded-2xl">
-                  <h2 className="text-heading mb-6 flex items-center gap-3"><Users className="text-accent" /> Opérateurs & Pilotes</h2>
-                  <p className="text-muted-foreground mb-4">Formation des opérateurs et pilotes de procédés :</p>
+                  <h2 className="text-heading mb-6 flex items-center gap-3"><Users className="text-accent" /> {t('service.formation.operators.title')}</h2>
+                  <p className="text-muted-foreground mb-4">{t('service.formation.operators.description')}</p>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-3 text-sm italic border-l-2 border-accent/30 pl-4 py-1">
-                      En plateforme : soit en parallèle à la programmation des systèmes d’automatisme et de supervision, soit à l’issue des essais fonctionnels.
+                      {t('service.formation.operators.item1')}
                     </li>
                     <li className="flex items-start gap-3 text-sm italic border-l-2 border-accent/30 pl-4 py-1">
-                      Sur votre site : sur leur futur poste de travail, préalablement à la mise en service industriel de l’installation.
+                      {t('service.formation.operators.item2')}
                     </li>
                   </ul>
                 </div>
 
                 <div className="bg-card border border-border p-8 rounded-2xl">
-                  <h2 className="text-heading mb-6 flex items-center gap-3"><Laptop className="text-accent" /> Maintenance & Technique</h2>
+                  <h2 className="text-heading mb-6 flex items-center gap-3"><Laptop className="text-accent" /> {t('service.formation.technical.title')}</h2>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {[
-                      "Diagnostic de pannes sur systèmes automatisés (Niveau 1 & 2)",
-                      "Programmation d'automates (Langages LADDER, SCL, GRAFCET)",
-                      "Maintenance et exploitation de systèmes SCADA / HMI",
-                      "Paramétrage et optimisation de variateurs de fréquence",
-                      "Instrumentation industrielle : Calibration et réglages",
-                      "Réseaux industriels : Diagnostic et supervision",
-                      "Sécurité machine : Normes et bonnes pratiques"
-                    ].map((item, i) => (
+                    {Array.from({ length: 7 }, (_, index) => t(`service.formation.technical.item${index + 1}`)).map((item, i) => (
                       <li key={i} className="flex items-center gap-3 p-4 bg-muted/20 rounded-lg">
                         <CheckCircle2 className="text-accent shrink-0" size={18} />
                         <span className="text-sm font-medium">{item}</span>
@@ -66,9 +58,9 @@ export default function Formation() {
 
               <aside className="space-y-6">
                 <div className="bg-accent text-accent-foreground p-8 rounded-2xl">
-                  <h3 className="text-xl font-bold mb-4">Formation sur mesure</h3>
+                  <h3 className="text-xl font-bold mb-4">{t('service.formation.custom.title')}</h3>
                   <p className="text-sm opacity-90 mb-6 leading-relaxed">
-                    Nous adaptons nos modules à vos équipements spécifiques (Schneider, Siemens, Rockwell, etc.) et à votre niveau technique.
+                    {t('service.formation.custom.description')}
                   </p>
                   <Link href="/contact">
                       <Button variant="outline" className="w-full bg-accent-foreground/10 border-accent-foreground/20 hover:bg-accent-foreground/20 text-accent-foreground">

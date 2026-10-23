@@ -9,17 +9,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 export default function Realisation() {
   const { t } = useLanguage();
 
-  const realisationSteps = [
-    "Organisation et préparation : Plans de prévention (PPSPS) et logistique",
-    "Supervision technique de montage et coordination des corps de métiers",
-    "Installation d'équipements : Pose, cheminements et raccordements",
-    "Tests de continuité et vérification du câblage I/O",
-    "Essais à vide et validation des sécurités matérielles",
-    "Mise en service industriel et réglages de boucles de régulation",
-    "Montée en cadence et validation des performances (SAT)",
-    "Assistance au démarrage et présence post-mise en service",
-    "Remise du Dossier d'Ouvrage Exécuté (DOE)"
-  ];
+  const realisationSteps = Array.from({ length: 9 }, (_, index) => t(`service.realisation.step${index + 1}`));
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -44,13 +34,13 @@ export default function Realisation() {
           <div className="container">
             <div className="text-center mb-16">
               <h2 className="text-heading mb-4">{t('service.realisation.domains.title')}</h2>
-              <p className="text-muted-foreground">Une expertise multi-systèmes pour une intégration parfaite.</p>
+              <p className="text-muted-foreground">{t('service.realisation.domains.subtitle')}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                { icon: Factory, title: "Lignes de Production", desc: "Installation de convoyeurs, machines spéciales et cellules robotisées." },
-                { icon: Zap, title: "Distribution Électrique", desc: "Pose de chemins de câbles, tirage de câbles puissance et raccordement TGBT." },
-                { icon: Settings2, title: "Instrumentation", desc: "Montage de capteurs, vannes de régulation et instrumentation de process." }
+                { icon: Factory, title: t('service.realisation.domain1.title'), desc: t('service.realisation.domain1.description') },
+                { icon: Zap, title: t('service.realisation.domain2.title'), desc: t('service.realisation.domain2.description') },
+                { icon: Settings2, title: t('service.realisation.domain3.title'), desc: t('service.realisation.domain3.description') }
               ].map((item, i) => (
                 <div key={i} className="p-8 bg-card border border-border rounded-2xl hover:border-accent transition-colors group">
                   <item.icon className="text-accent mb-4 group-hover:scale-110 transition-transform" size={32} />
@@ -74,13 +64,13 @@ export default function Realisation() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-4 bg-muted/50 rounded-xl border border-border">
                     <Truck className="text-accent mb-2" size={24} />
-                    <h5 className="font-bold text-sm">Logistique Projet</h5>
-                    <p className="text-xs text-muted-foreground">Gestion des approvisionnements et du matériel.</p>
+                    <h5 className="font-bold text-sm">{t('service.realisation.logistics.title')}</h5>
+                    <p className="text-xs text-muted-foreground">{t('service.realisation.logistics.description')}</p>
                   </div>
                   <div className="p-4 bg-muted/50 rounded-xl border border-border">
                     <Ruler className="text-accent mb-2" size={24} />
-                    <h5 className="font-bold text-sm">Précision FAT/SAT</h5>
-                    <p className="text-xs text-muted-foreground">Protocoles de réception rigoureux en usine et sur site.</p>
+                    <h5 className="font-bold text-sm">{t('service.realisation.fat.title')}</h5>
+                    <p className="text-xs text-muted-foreground">{t('service.realisation.fat.description')}</p>
                   </div>
                 </div>
               </div>
@@ -111,23 +101,23 @@ export default function Realisation() {
               <div className="lg:w-1/2">
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-destructive/10 text-destructive rounded-full text-xs font-bold mb-6">
                   <ShieldAlert size={14} />
-                  ZÉRO ACCIDENT
+                  {t('service.realisation.safety.badge')}
                 </div>
                 <h2 className="text-heading mb-6">{t('service.realisation.safety.title')}</h2>
                 <p className="text-lg text-muted-foreground mb-8">
                   {t('service.realisation.safety.desc')}
                 </p>
                 <ul className="space-y-4">
-                  {[t('service.realisation.safety.item1'), "Utilisation systématique des EPI", "Analyses de risques quotidiennes", "Vérification périodique de l'outillage"].map((item, idx) => (
+                  {[1, 2, 3, 4].map((number, idx) => (
                     <li key={idx} className="flex items-center gap-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-destructive"></div>
-                      <span className="font-medium text-foreground">{item}</span>
+                      <span className="font-medium text-foreground">{t(`service.realisation.safety.item${number}`)}</span>
                     </li>
                   ))}
                 </ul>
               </div>
               <div className="lg:w-1/2 rounded-3xl overflow-hidden shadow-2xl border-4 border-background">
-                <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80" alt="Sécurité" className="w-full h-full object-cover" />
+                <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80" alt={t('service.realisation.safety.imageAlt')} className="w-full h-full object-cover" />
               </div>
             </div>
           </div>

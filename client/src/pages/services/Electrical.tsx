@@ -80,7 +80,7 @@ export default function Electrical() {
             >
               <img
                 src="https://d2xsxph8kpxj0f.cloudfront.net/310519663572602219/DJ3UxwC3g4oRjvX9YeHeX4/somatisme-electrical-installation-oYfQNxYRmAM255cbCAQrfv.webp"
-                alt="Installation Électrique Industrielle"
+                alt={t('service.electrical.title')}
                 className="rounded-lg shadow-lg w-full"
               />
             </motion.div>
@@ -92,25 +92,25 @@ export default function Electrical() {
       <section className="py-20 bg-primary/5 border-y border-border">
         <div className="container">
           <div className="text-center mb-16">
-            <h2 className="text-heading mb-4">Distribution & Qualité d'Énergie</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Une infrastructure électrique robuste est la colonne vertébrale de votre production.</p>
+            <h2 className="text-heading mb-4">{t('service.electrical.distribution.title')}</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">{t('service.electrical.distribution.description')}</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
                 icon: Layers,
-                title: "TGBT Haute Puissance",
-                desc: "Étude et réalisation d'armoires de distribution jusqu'à 3200A avec jeux de barres optimisés."
+                title: t('service.electrical.distribution.item1.title'),
+                desc: t('service.electrical.distribution.item1.description')
               },
               {
                 icon: BarChart3,
-                title: "Analyse Harmonique",
-                desc: "Mesures et filtrage des perturbations pour protéger vos équipements électroniques sensibles."
+                title: t('service.electrical.distribution.item2.title'),
+                desc: t('service.electrical.distribution.item2.description')
               },
               {
                 icon: ShieldAlert,
-                title: "Protection Foudre",
-                desc: "Mise en place de réseaux de terre et de paratonnerres conformes aux risques industriels."
+                title: t('service.electrical.distribution.item3.title'),
+                desc: t('service.electrical.distribution.item3.description')
               }
             ].map((item, i) => (
               <div key={i} className="p-8 bg-card border border-border rounded-2xl">
@@ -132,22 +132,22 @@ export default function Electrical() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-heading text-foreground mb-4">Avantages</h2>
+            <h2 className="text-heading text-foreground mb-4">{t('service.benefits.title')}</h2>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                title: 'Sécurité Maximale',
-                description: 'Installations conformes aux normes de sécurité les plus strictes.',
+                title: t('service.electrical.benefit1.title'),
+                description: t('service.electrical.benefit1.description'),
               },
               {
-                title: 'Fiabilité',
-                description: 'Systèmes robustes et durables pour une continuité de service.',
+                title: t('service.electrical.benefit2.title'),
+                description: t('service.electrical.benefit2.description'),
               },
               {
-                title: 'Efficacité Énergétique',
-                description: 'Solutions optimisées pour réduire votre consommation électrique.',
+                title: t('service.electrical.benefit3.title'),
+                description: t('service.electrical.benefit3.description'),
               },
             ].map((benefit, index) => (
               <motion.div
@@ -174,11 +174,11 @@ export default function Electrical() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-heading text-primary-foreground mb-6">
-              Besoin d'une installation électrique ?
+              {t('service.electrical.cta.title')}
             </h2>
             <Link href="/contact">
               <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white gap-2">
-                Nous contacter
+                {t('cta.contact')}
                 <ArrowRight size={18} />
               </Button>
             </Link>

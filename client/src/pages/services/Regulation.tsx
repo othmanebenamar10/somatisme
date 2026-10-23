@@ -53,14 +53,7 @@ export default function Regulation() {
             >
               <h2 className="text-heading text-foreground mb-6">{t('home.expertise.title')}</h2>
               <div className="space-y-4">
-                {[
-                  'Installation de capteurs et transmetteurs',
-                  'Systèmes de régulation avancés',
-                  'Calibration d\'instruments de précision',
-                  'Monitoring en temps réel',
-                  'Acquisition de données',
-                  'Conformité aux normes internationales',
-                ].map((item, index) => (
+                {Array.from({ length: 6 }, (_, index) => t(`service.regulation.scope.item${index + 1}`)).map((item, index) => (
                   <div key={index} className="flex items-start gap-3">
                     <CheckCircle className="text-accent flex-shrink-0 mt-1" size={20} />
                     <span className="text-foreground">{item}</span>
@@ -76,7 +69,7 @@ export default function Regulation() {
             >
               <img
                 src="https://d2xsxph8kpxj0f.cloudfront.net/310519663572602219/DJ3UxwC3g4oRjvX9YeHeX4/somatisme-automation-tech-FSEKAzPRsDfEawe3XPbZBV.webp"
-                alt="Régulation & Instrumentation"
+                alt={t('home.expertise.regulation.title')}
                 className="rounded-lg shadow-lg w-full"
               />
             </motion.div>
@@ -93,22 +86,22 @@ export default function Regulation() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-heading text-foreground mb-4">Avantages</h2>
+            <h2 className="text-heading text-foreground mb-4">{t('service.benefits.title')}</h2>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                title: 'Précision Garantie',
-                description: 'Mesures précises et fiables pour un contrôle optimal de vos processus.',
+                title: t('service.regulation.benefit1.title'),
+                description: t('service.regulation.benefit1.description'),
               },
               {
-                title: 'Conformité Normes',
-                description: 'Respect des normes ISO et réglementations industrielles.',
+                title: t('service.regulation.benefit2.title'),
+                description: t('service.regulation.benefit2.description'),
               },
               {
-                title: 'Support Technique',
-                description: 'Assistance continue et maintenance préventive de vos systèmes.',
+                title: t('service.regulation.benefit3.title'),
+                description: t('service.regulation.benefit3.description'),
               },
             ].map((benefit, index) => (
               <motion.div
@@ -135,11 +128,11 @@ export default function Regulation() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-heading text-primary-foreground mb-6">
-              Besoin de solutions de régulation ?
+              {t('service.regulation.cta.title')}
             </h2>
             <Link href="/contact">
               <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white gap-2">
-                Nous contacter
+                {t('cta.contact')}
                 <ArrowRight size={18} />
               </Button>
             </Link>

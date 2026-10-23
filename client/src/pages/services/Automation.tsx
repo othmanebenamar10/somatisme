@@ -54,17 +54,7 @@ export default function Automation() {
             >
               <h2 className="text-heading text-foreground mb-6">{t('home.expertise.title')}</h2>
               <div className="space-y-4">
-                {[
-                  'Développement sur automates (Siemens S7-1200/1500, Schneider M580/M340, Rockwell)',
-                  'Systèmes SCADA complexes (WinCC, Ignition, Wonderware, PCVue)',
-                  'Migration de systèmes obsolètes (Retrofit de S5 vers S7, TSX vers M580)',
-                  'Réseaux industriels et bus de terrain (Profinet, EtherNet/IP, Modbus TCP, EtherCAT)',
-                  'Régulation de process (Boucles PID complexes, commande prédictive)',
-                  'Interfaçage HMI ergonomique pour aide à l\'exploitation',
-                  'Intégration de robots industriels et cobotique',
-                  'Gestion de Batch et traçabilité avancée',
-                  'Systèmes de sécurité machine intégrés (Failsafe)',
-                ].map((item, index) => (
+                {Array.from({ length: 9 }, (_, index) => t(`service.automation.scope.item${index + 1}`)).map((item, index) => (
                   <div key={index} className="flex items-start gap-3">
                     <CheckCircle className="text-accent flex-shrink-0 mt-1" size={20} />
                     <span className="text-foreground">{item}</span>
@@ -80,7 +70,7 @@ export default function Automation() {
             >
               <img
                 src="https://d2xsxph8kpxj0f.cloudfront.net/310519663572602219/DJ3UxwC3g4oRjvX9YeHeX4/somatisme-automation-tech-FSEKAzPRsDfEawe3XPbZBV.webp"
-                alt="Automatisme Industriel"
+                alt={t('service.automation.title')}
                 className="rounded-lg shadow-lg w-full"
               />
             </motion.div>
@@ -93,39 +83,39 @@ export default function Automation() {
         <div className="container">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             <div>
-              <h2 className="text-heading mb-8">Ingénierie de Contrôle</h2>
+              <h2 className="text-heading mb-8">{t('service.automation.control.title')}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-accent font-bold">
                     <Terminal size={18} />
-                    <span>Protocoles OT</span>
+                    <span>{t('service.automation.ot.title')}</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">Maîtrise complète de Profinet, EtherNet/IP, Modbus TCP/RTU, et OPC UA pour l'interopérabilité IIoT.</p>
+                  <p className="text-sm text-muted-foreground">{t('service.automation.ot.description')}</p>
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-accent font-bold">
                     <Workflow size={18} />
-                    <span>Standards Logiciels</span>
+                    <span>{t('service.automation.standards.title')}</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">Programmation structurée conforme à la norme CEI 61131-3 (Ladder, SCL, CFC, Grafcet).</p>
+                  <p className="text-sm text-muted-foreground">{t('service.automation.standards.description')}</p>
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-accent font-bold">
                     <Zap size={18} />
-                    <span>Régulation PID</span>
+                    <span>{t('service.automation.pid.title')}</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">Optimisation de boucles complexes, cascade, feed-forward et régulation de process critique.</p>
+                  <p className="text-sm text-muted-foreground">{t('service.automation.pid.description')}</p>
                 </div>
               </div>
             </div>
             <div className="bg-primary/5 rounded-3xl p-10 border border-primary/10">
-              <h3 className="text-xl font-bold mb-6">Approche Industrie 4.0</h3>
-              <p className="text-muted-foreground mb-6 leading-relaxed">Nous intégrons des solutions de Edge Computing et de remontée de données Cloud pour transformer vos automates en véritables sources d'intelligence décisionnelle.</p>
+              <h3 className="text-xl font-bold mb-6">{t('service.automation.industry4.title')}</h3>
+              <p className="text-muted-foreground mb-6 leading-relaxed">{t('service.automation.industry4.description')}</p>
               <ul className="space-y-4">
-                {['Dashboarding temps réel', 'Maintenance prédictive via IA', 'Cybersécurité des réseaux OT'].map((item, i) => (
+                {[1, 2, 3].map((i) => (
                   <li key={i} className="flex items-center gap-3 text-sm font-medium">
                     <div className="w-1.5 h-1.5 rounded-full bg-accent"></div>
-                    {item}
+                    {t(`service.automation.industry4.item${i}`)}
                   </li>
                 ))}
               </ul>
@@ -137,27 +127,27 @@ export default function Automation() {
       {/* Technical Expertise Grid */}
       <section className="py-20 bg-muted/20 border-y border-border">
         <div className="container">
-          <h2 className="text-heading text-center mb-16">Expertise Technologique</h2>
+          <h2 className="text-heading text-center mb-16">{t('service.automation.expertise.title')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-card p-8 rounded-2xl border border-border">
               <Cpu className="text-accent mb-4" size={32} />
-              <h3 className="text-xl font-bold mb-4">PLC & Contrôle</h3>
+              <h3 className="text-xl font-bold mb-4">{t('service.automation.expertise.plc.title')}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Siemens (TIA Portal, Step7), Schneider (Control Expert, Machine Expert), Rockwell (Studio 5000). Programmation structurée conforme CEI 61131-3.
+                {t('service.automation.expertise.plc.description')}
               </p>
             </div>
             <div className="bg-card p-8 rounded-2xl border border-border">
               <Layout className="text-accent mb-4" size={32} />
-              <h3 className="text-xl font-bold mb-4">HMI & SCADA</h3>
+              <h3 className="text-xl font-bold mb-4">{t('service.automation.expertise.hmi.title')}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Interfaces intuitives WinCC, Ignition, Aveva System Platform. Monitoring en temps réel, archivage de données et reporting avancé.
+                {t('service.automation.expertise.hmi.description')}
               </p>
             </div>
             <div className="bg-card p-8 rounded-2xl border border-border">
               <Database className="text-accent mb-4" size={32} />
-              <h3 className="text-xl font-bold mb-4">Réseaux Industriels</h3>
+              <h3 className="text-xl font-bold mb-4">{t('service.automation.expertise.network.title')}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Architecture Profinet, EtherNet/IP, Modbus TCP. Sécurisation des flux de données et segmentation VLAN pour l'OT.
+                {t('service.automation.expertise.network.description')}
               </p>
             </div>
           </div>
@@ -173,22 +163,22 @@ export default function Automation() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-heading text-foreground mb-4">Avantages</h2>
+            <h2 className="text-heading text-foreground mb-4">{t('service.benefits.title')}</h2>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                title: 'Productivité Accrue',
-                description: 'Augmentez votre rendement de production jusqu\'à 40% avec nos systèmes d\'automatisation.',
+                title: t('service.automation.benefit1.title'),
+                description: t('service.automation.benefit1.description'),
               },
               {
-                title: 'Réduction des Coûts',
-                description: 'Diminuez vos coûts opérationnels en automatisant les tâches répétitives.',
+                title: t('service.automation.benefit2.title'),
+                description: t('service.automation.benefit2.description'),
               },
               {
-                title: 'Qualité Améliorée',
-                description: 'Garantissez une qualité constante avec nos systèmes de contrôle de précision.',
+                title: t('service.automation.benefit3.title'),
+                description: t('service.automation.benefit3.description'),
               },
             ].map((benefit, index) => (
               <motion.div
@@ -215,11 +205,11 @@ export default function Automation() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-heading text-primary-foreground mb-6">
-              Prêt à automatiser votre production ?
+              {t('service.automation.cta.title')}
             </h2>
             <Link href="/contact">
               <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white gap-2">
-                Nous contacter
+                {t('cta.contact')}
                 <ArrowRight size={18} />
               </Button>
             </Link>
