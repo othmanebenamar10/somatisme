@@ -10,6 +10,7 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface CountryPhoneInputProps {
   value: string;
@@ -34,19 +35,23 @@ export default function CountryPhoneInput({
   id = 'phone',
   className = '',
 }: CountryPhoneInputProps) {
+  const { language, t } = useLanguage();
   const [countryPickerOpen, setCountryPickerOpen] = useState(false);
   const selectedCountry = phoneCountries.find((country) => country.iso2 === countryIso) || phoneCountries[0];
+  const countryNames = new Intl.DisplayNames([language], { type: 'region' });
+  const getCountryName = (iso2: string, fallback: string) => countryNames.of(iso2.toUpperCase()) || fallback;
+  const selectedCountryName = getCountryName(selectedCountry.iso2, selectedCountry.name);
 
   return (
     <div className={`flex min-w-0 ${className}`}>
-      <label className="sr-only" htmlFor={`${id}-country`}>Pays et indicatif téléphonique</label>
+      <label className="sr-only" htmlFor={`${id}-country`}>{t('phone.country.label')}</label>
       <Popover open={countryPickerOpen} onOpenChange={setCountryPickerOpen}>
         <PopoverTrigger asChild>
           <Button
             id={`${id}-country`}
             type="button"
             variant="outline"
-            aria-label={`Pays et indicatif téléphonique : ${selectedCountry.name} ${selectedCountry.dialCode}`}
+            aria-label={t('phone.country.selected').replace('{country}', selectedCountryName).replace('{dialCode}', selectedCountry.dialCode)}
             aria-expanded={countryPickerOpen}
             className="h-12 w-[7.5rem] shrink-0 justify-between rounded-l-md rounded-r-none border-slate-300 bg-white px-3 text-slate-800 hover:bg-slate-50 sm:w-[9rem]"
           >
@@ -59,13 +64,13 @@ export default function CountryPhoneInput({
         </PopoverTrigger>
         <PopoverContent align="start" className="w-[min(22rem,calc(100vw-2rem))] p-0">
           <Command>
-            <CommandInput placeholder="Rechercher un pays ou un indicatif…" />
+            <CommandInput placeholder={t('phone.country.search')} />
             <CommandList className="max-h-[min(18rem,50dvh)]">
-              <CommandEmpty>Aucun pays trouvé.</CommandEmpty>
+              <CommandEmpty>{t('phone.country.empty')}</CommandEmpty>
               {phoneCountries.map((country) => (
                 <CommandItem
                   key={country.iso2}
-                  value={`${country.name} ${country.dialCode} ${country.iso2}`}
+                  value={`${getCountryName(country.iso2, country.name)} ${country.dialCode} ${country.iso2}`}
                   onSelect={() => {
                     onCountryIsoChange(country.iso2);
                     setCountryPickerOpen(false);
@@ -73,7 +78,7 @@ export default function CountryPhoneInput({
                   className="min-h-10"
                 >
                   <span aria-hidden="true">{flagFor(country.iso2)}</span>
-                  <span className="min-w-0 flex-1 truncate">{country.name}</span>
+                  <span className="min-w-0 flex-1 truncate">{getCountryName(country.iso2, country.name)}</span>
                   <span className="text-muted-foreground">{country.dialCode}</span>
                   <Check className={`ml-2 h-4 w-4 ${country.iso2 === countryIso ? 'opacity-100' : 'opacity-0'}`} />
                 </CommandItem>

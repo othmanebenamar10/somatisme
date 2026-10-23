@@ -43,20 +43,20 @@ export default function Contact() {
     const errors: Record<string, string> = {};
 
     if (step === 1) {
-      if (!formData.name.trim()) errors.name = 'Le nom est requis';
-      if (!formData.email.trim()) errors.email = 'L\'email est requis';
+      if (!formData.name.trim()) errors.name = t('contact.validation.nameRequired');
+      if (!formData.email.trim()) errors.email = t('contact.validation.emailRequired');
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (formData.email && !emailRegex.test(formData.email)) errors.email = 'Email invalide';
+      if (formData.email && !emailRegex.test(formData.email)) errors.email = t('contact.form.validation.email');
       if (formData.phone) {
         // Allows optional leading + and digits/spaces
         const phoneRegex = /^\+?[0-9\s\-()]{7,20}$/;
-        if (!phoneRegex.test(formData.phone)) errors.phone = 'Téléphone invalide';
+        if (!phoneRegex.test(formData.phone)) errors.phone = t('contact.form.validation.phone');
       }
     }
 
     if (step === 2) {
-      if (!formData.subject.trim()) errors.subject = 'Le sujet est requis';
-      if (!formData.message.trim()) errors.message = 'Le message est requis';
+      if (!formData.subject.trim()) errors.subject = t('contact.validation.subjectRequired');
+      if (!formData.message.trim()) errors.message = t('contact.validation.messageRequired');
     }
 
     setFormErrors(errors);
@@ -85,13 +85,13 @@ export default function Contact() {
 
     // Sécurité : Si le champ caché est rempli, c'est un bot
     if (botField) {
-      toast.error('Erreur de soumission');
+      toast.error(t('contact.form.error'));
       return;
     }
 
     // Terms must be accepted on step 3
     if (!termsAccepted) {
-      toast.error('Veuillez accepter les conditions avant de soumettre.');
+      toast.error(t('contact.terms.required'));
       return;
     }
 
@@ -111,7 +111,7 @@ export default function Contact() {
 
       if (!data) {
         console.error('[CONTACT] Response not JSON, status:', response.status);
-        toast.error(`Erreur serveur (${response.status}). Veuillez réessayer.`);
+        toast.error(t('contact.form.serverError').replace('{status}', String(response.status)));
         return;
       }
 
@@ -126,8 +126,8 @@ export default function Contact() {
     } catch (error) {
       console.error('[CONTACT] Fetch error:', error);
       toast.error(error instanceof Error && error.name === 'TimeoutError'
-        ? 'Le serveur met trop de temps à répondre. Vérifiez votre connexion avant de réessayer.'
-        : 'Impossible de joindre le serveur. Vérifiez votre connexion.');
+        ? t('contact.form.timeout')
+        : t('contact.form.networkError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -158,12 +158,12 @@ export default function Contact() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 border border-accent/40 backdrop-blur-sm mb-8"
             >
               <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
-              <span className="text-accent font-bold text-sm uppercase tracking-widest">Nous Contacter</span>
+              <span className="text-accent font-bold text-sm uppercase tracking-widest">{t('contact.hero.eyebrow')}</span>
             </motion.div>
 
             <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 sm:mb-8 leading-tight">
-              Parlons de Votre <br />
-              <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">Projet</span>
+              {t('contact.hero.heading')} <br />
+              <span className="bg-gradient-to-r from-accent via-secondary to-accent bg-clip-text text-transparent">{t('contact.hero.project')}</span>
             </h1>
             <p className="text-base sm:text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
               {t('contact.hero.subtitle')}
@@ -187,7 +187,7 @@ export default function Contact() {
               <div className="card-premium p-6 mb-8">
                 <h3 className="text-subheading text-foreground mb-2">{t('contact.info.title')}</h3>
                 <div className="divider-gradient w-16 mb-4"></div>
-                <p className="text-sm text-muted-foreground">Notre equipe est a votre disposition pour repondre a toutes vos questions.</p>
+                <p className="text-sm text-muted-foreground">{t('contact.info.description')}</p>
               </div>
 
               {[
@@ -260,9 +260,9 @@ export default function Contact() {
                         {currentStep > step ? '✓' : step}
                       </motion.div>
                       <span className="text-xs font-semibold text-foreground text-center">
-                        {step === 1 && 'Infos'}
-                        {step === 2 && 'Détails'}
-                        {step === 3 && 'Confirmer'}
+                        {step === 1 && t('contact.step.info')}
+                        {step === 2 && t('contact.step.details')}
+                        {step === 3 && t('contact.step.confirm')}
                       </span>
                     </motion.div>
                   ))}
@@ -281,9 +281,9 @@ export default function Contact() {
                   <ClipboardCheck className="text-accent" size={24} />
                 </div>
                 <h3 className="text-xl font-bold text-foreground">
-                  {currentStep === 1 && 'Vos Informations'}
-                  {currentStep === 2 && 'Détails de la Demande'}
-                  {currentStep === 3 && 'Résumé & Confirmation'}
+                  {currentStep === 1 && t('contact.step.infoTitle')}
+                  {currentStep === 2 && t('contact.step.detailsTitle')}
+                  {currentStep === 3 && t('contact.step.confirmTitle')}
                 </h3>
               </div>
 
@@ -437,38 +437,38 @@ export default function Contact() {
                 >
                   <div className="bg-muted/50 rounded-xl p-6 space-y-4">
                     <div className="flex justify-between items-start">
-                      <span className="text-sm text-muted-foreground">Nom:</span>
+                      <span className="text-sm text-muted-foreground">{t('contact.form.review.name')}:</span>
                       <span className="font-semibold text-foreground">{formData.name}</span>
                     </div>
                     <div className="flex justify-between items-start">
-                      <span className="text-sm text-muted-foreground">Email:</span>
+                      <span className="text-sm text-muted-foreground">{t('contact.form.review.email')}:</span>
                       <span className="font-semibold text-foreground">{formData.email}</span>
                     </div>
                     {formData.phone && (
                       <div className="flex justify-between items-start">
-                        <span className="text-sm text-muted-foreground">Téléphone:</span>
+                        <span className="text-sm text-muted-foreground">{t('contact.form.review.phone')}:</span>
                         <span className="font-semibold text-foreground">{toInternationalPhone(phoneCountryIso, formData.phone)}</span>
                       </div>
                     )}
                     {formData.company && (
                       <div className="flex justify-between items-start">
-                        <span className="text-sm text-muted-foreground">Entreprise:</span>
+                        <span className="text-sm text-muted-foreground">{t('contact.form.review.company')}:</span>
                         <span className="font-semibold text-foreground">{formData.company}</span>
                       </div>
                     )}
                     <div className="border-t border-border pt-4">
                       <div className="flex justify-between items-start mb-2">
-                        <span className="text-sm text-muted-foreground">Sujet:</span>
-                        <span className="font-semibold text-foreground">{formData.subject}</span>
+                        <span className="text-sm text-muted-foreground">{t('contact.form.review.subject')}:</span>
+                        <span className="font-semibold text-foreground">{formData.subject ? t(`contact.form.subject.${formData.subject}`) : ''}</span>
                       </div>
                       <div className="flex justify-between items-start">
-                        <span className="text-sm text-muted-foreground">Message:</span>
+                        <span className="text-sm text-muted-foreground">{t('contact.form.review.message')}:</span>
                         <span className="font-semibold text-foreground text-right max-w-xs">{formData.message.substring(0, 50)}...</span>
                       </div>
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground bg-muted/30 p-3 rounded-lg border border-border/50">
-                    ✓ Vérifiez vos informations avant de soumettre. Vous recevrez une confirmation par email.
+                    ✓ {t('contact.form.review.notice')}
                   </p>
 
                   {/* Terms acceptance checkbox */}
@@ -501,7 +501,7 @@ export default function Contact() {
                     whileTap={{ scale: 0.98 }}
                     className="flex-1 px-6 py-3 border-2 border-accent/30 text-accent rounded-xl font-bold uppercase tracking-wide hover:border-accent/60 hover:bg-accent/10 transition-all h-14"
                   >
-                    ← Précédent
+                    ← {t('contact.form.previous')}
                   </motion.button>
                 )}
                 <Button
@@ -510,9 +510,9 @@ export default function Contact() {
                   className={`flex-1 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white gap-2 h-14 rounded-xl text-lg font-bold shadow-lg shadow-cyan-500/20 group overflow-hidden relative uppercase tracking-wide ${currentStep > 1 ? '' : 'w-full'}`}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
-                    {isSubmitting ? 'Envoi...' : (
+                    {isSubmitting ? t('contact.form.submitting') : (
                       <>
-                        {currentStep === 3 ? 'Envoyer' : 'Suivant'}
+                        {currentStep === 3 ? t('contact.form.send') : t('contact.form.next')}
                         <Send size={20} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                       </>
                     )}
